@@ -1,0 +1,1406 @@
+﻿
+@{
+    ViewBag.Title = "frmSalesPurchase";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:881px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}
+.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}
+.dytable tr td:nth-child(2){width:auto !important;}
+.dytable tr td:nth-child(3){width:auto !important;}
+.dytable tr td:nth-child(4){width:auto !important;}
+.dytable tr td:nth-child(5){width:auto !important;}
+.dytable tr td:nth-child(6){width:auto !important;}
+.dytable tr td:nth-child(7){width:auto !important;}
+.dytable tr td:nth-child(8){width:auto !important;}
+
+
+ .dytable tr td:nth-of-type(1):before{content:'Distributor';font-weight: bold;}
+ .dytable tr td:nth-of-type(2):before{content:'Year/Month';font-weight: bold;}
+ .dytable tr td:nth-of-type(3):before{content:'UPC';font-weight: bold;text-align:left}
+ .dytable tr td:nth-of-type(4):before{content:'Qty';font-weight: bold;}
+ .dytable tr td:nth-of-type(5):before{content:'Qty DC';font-weight: bold;text-align:left}
+ .dytable tr td:nth-of-type(6):before{content:'Sales';font-weight: bold;}
+.dytable tr td:nth-child(6){text-align:left !important;}
+ .dytable tr td:nth-of-type(7):before{content:'Sales DC';font-weight: bold;}
+ .dytable tr td:nth-of-type(8):before{content:'Mfg Item';font-weight: bold;}
+
+
+  .dytable1 tr td:nth-of-type(1):before{content:'Distributor';font-weight: bold;}
+  .dytable1 tr td:nth-of-type(2):before{content:'Year/Month';font-weight: bold;}
+  .dytable1 tr td:nth-of-type(3):before{content:'Mfg UPC';font-weight: bold;text-align:left}
+  .dytable1 tr td:nth-of-type(4):before{content:'Purchase';font-weight: bold;}
+.dytable tr td:nth-child(4){text-align:left !important;}
+  .dytable1 tr td:nth-of-type(5):before{content:'Mfg Name';font-weight: bold;text-align:left}
+
+
+  .dytable2 tr td:nth-of-type(1):before{content:'Distributor';font-weight: bold;}
+  .dytable2 tr td:nth-of-type(2):before{content:'Ddtlink';font-weight: bold;}
+  .dytable2 tr td:nth-of-type(3):before{content:'Purchase Rows';font-weight: bold;}
+.dytable tr td:nth-child(3){text-align:left !important;}
+  .dytable2 tr td:nth-of-type(4):before{content:'Purchase';font-weight: bold;}
+.dytable tr td:nth-child(4){text-align:left !important;}
+  .dytable2 tr td:nth-of-type(5):before{content:'Sales Rows';font-weight: bold;}
+.dytable tr td:nth-child(5){text-align:left !important;}
+  .dytable2 tr td:nth-of-type(6):before{content:'Sales Qty';font-weight: bold;}
+  .dytable2 tr td:nth-of-type(7):before{content:'Sales';font-weight: bold;}
+.dytable tr td:nth-child(7){text-align:left !important;}
+   @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+<style type="text/css">
+    /* Style The Dropdown Button */
+    .searchmenubtn {
+        color: white;
+        padding: 13px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border: 1px !important;
+        border-color: black !important;
+    }
+    /* The container <div> - needed to position the dropdown content */
+    .searchmenu {
+        position: relative;
+        display: inline-block;
+        border: 1px !important;
+        border-color: black !important;
+        z-index: 1000;
+    }
+    /* Dropdown Content (Hidden by Default) */
+    .searchmenu-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 260px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        top: 2.8em;
+    }
+        /* Links inside the dropdown */
+        .searchmenu-content a {
+            top: 1em;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            color: black;
+            text-decoration: none !important;
+            display: block;
+            height: 30px;
+            margin-left: 5px;
+        }
+            /* Change color of dropdown links on hover */
+            .searchmenu-content a:hover {
+                top: -5px;
+                background-color: #BCD8F3 !important;
+                color: #800909 !important;
+            }
+    /* Show the dropdown menu on hover */
+    .searchmenu:hover .searchmenu-content {
+        display: block;
+        margin-top: -10px;
+    }
+
+    .searchmenu-content:after {
+        top: -7px;
+        content: " ";
+        left: 6%;
+        position: absolute;
+        width: 10px;
+        height: 9px;
+        border-right: 2px solid #0866c6;
+        border-bottom: 2px solid #0866c6;
+        background: white;
+        transform: rotate(222deg);
+    }
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .searchmenu:hover .searchmenubtn {
+    }
+   
+
+</style>
+<script type="text/javascript">
+    var search;
+    var Totalpagecount;
+    var pagesizes = "";
+    var SGlobalLblpage = "";
+    var SGlobalLblpageno = "";
+    var SGlobalLblTotalRecords = "";
+    var GlobalLblpage = "";
+    var GlobalLblpageno = "";
+    var GlobalLblTotalRecords = "";
+    var selecttab = "PurchaseTab";
+    var tablename = "";
+    var dyclass = "", parents = "", sortDirection = "";
+    $(document).ready(function () {
+        sales = new viewModel();
+        search = sales;
+        ko.applyBindings(sales);
+
+        $('#PageFirst').click({ handler: sales.PageFirst });
+        $('#PagePrevious').click({ handler: sales.PagePrevious });
+        $('#PageNext').click({ handler: sales.PageNext });
+        $('#PageLast').click({ handler: sales.PageLast });
+        $('#tab4').click({ handler: sales.FillDistTotals });
+
+     
+
+        //img.optionbtn
+        $(".optionbtn").live("mouseover", function () {
+            $(".option-content").css({ "visibility": "visible" });
+        });
+
+        $(".PopupWindow").dialog({
+            draggable: true,
+            autoOpen: false,
+            autoresize: true,
+            modal: true,
+            //dragable: true,
+            width: 1100,
+            left:260
+        });
+        $(".ui-dialog-titlebar-close").click(function () {
+            document.getElementById('PurchaseFrame').src = "";
+            //document.getElementById("PurchaseFrame").contentWindow.DialogClose();
+            //$("#btnrefresh").click();
+                
+        });
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('table#TblDistTotals').css("height", "580px");
+        }
+    });
+
+
+
+    function viewModel() {
+        var self = this;
+        var blurevent = false;
+        var dbclick = false;
+        var dbclickmfgupc = false;
+        var dbclickupc = false;
+
+        self.SalesDetailsGridList = ko.observableArray([]);
+        self.PurchaseDetailsGridList = ko.observableArray([]);
+        self.DistTotalsGridList = ko.observableArray([]);
+        // self.ExecutiveVerificationGridList = ko.observableArray([]);
+        self.ExecutiveVerificationGridHeader = ko.observableArray([]);
+        self.txtfrom = ko.observable('@ViewBag.YM1');
+        self.txtto = ko.observable('@ViewBag.YM2');
+        self.EditMode = ko.observable(true);
+
+        self.txtsearch = ko.observable("");
+        self.txthdnmfgno = ko.observable("");
+
+        self.txtmfgupcsearch = ko.observable("");
+        //self.txthdnmfgupc = ko.observable("");
+
+        //self.txthdnupc = ko.observable("");
+        self.txtupcsearch = ko.observable("");
+
+        self.selectedvalue = ko.observable("Company");
+        self.selectedmfgupcvalue = ko.observable("mfgupc");
+        self.selectedupcvalue = ko.observable("upc");
+        self.page = ko.observable(0);
+        self.firstenable = ko.observable(false);
+        self.lastenable = ko.observable(false);
+        self.enable = ko.observable(false);
+        self.txtDistno = ko.observable();
+        self.cmbDistno = ko.observableArray([]);
+        self.submenuopt = ko.observable();
+        self.submenuoptrptlist = ko.observableArray([]);
+        self.ExecutiveVerificationGridList = ko.observableArray([]);
+        self.ExecutiveVerificationGridHeader = ko.observableArray([]);
+
+        self.lblrows = ko.observable();
+        self.cmbclass = ko.observableArray([]);
+        self.txtclass = ko.observable("");
+        self.cmbreporttype = ko.observableArray([]);
+        self.txtreporttype = ko.observable("");
+        self.cmbsorder = ko.observableArray([]);
+        self.txtsorder = ko.observable("");
+        //self.lblreporttype = ko.observable();
+        //self.lblsorder = ko.observable();
+
+        self.lblrows("");
+        //self.lblMfgClass("V");
+        //self.lblreporttype("");
+        //self.lblsorder("");
+
+        $("#tab1").click(function () {
+            $('#TblSales thead th').removeClass("hide");
+            $('#TblSales tbody tr td').removeClass("hide");
+            $('#TblSales th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+            selecttab = "SalesTab";
+            $("#Lblpage").text(SGlobalLblpage);
+            Totalpagecount = SGlobalLblpage;
+            $("#Lblpageno").text(SGlobalLblpageno);
+            self.page(0);
+            pagesizes = SGlobalLblpageno;
+            $("#LblTotalRecords").text(SGlobalLblTotalRecords);
+            $("#pagno").css("display", "block");
+            $("#divdist").css("display", "block");
+            $("#divmfg").css("display", "block");
+            $("#divmfgupc").css("display", "block");
+            $("#divupc").css("display", "block");
+            $("#lblreport").hide();
+            self.lastenable(false);
+            self.firstenable(false);
+            self.btnsalesList();
+        });
+        $("#tab2").click(function () {
+            $('#TblPurchase thead th').removeClass("hide");
+            $('#TblPurchase tbody tr td').removeClass("hide");
+            $('#TblPurchase th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+            selecttab = "PurchaseTab";
+            $("#Lblpage").text(GlobalLblpage);
+            Totalpagecount = GlobalLblpage;
+            $("#Lblpageno").text(GlobalLblpageno);
+            self.page(0);
+            pagesizes = GlobalLblpageno;
+            $("#LblTotalRecords").text(GlobalLblTotalRecords);
+            $("#pagno").css("display", "block");
+            $("#divdist").css("display", "block");
+            $("#divmfg").css("display", "block");
+            $("#divmfgupc").css("display", "block");
+            $("#divupc").css("display", "block");
+            $("#lblreport").hide();
+            self.lastenable(false);
+            self.firstenable(false);
+            self.btnsalesList();
+        });
+        $("#tab3").click(function () {
+            $("#pagno").css("display", "none");
+            $("#divdist").css("display", "none");
+            $("#divmfg").css("display", "none");
+            $("#divmfgupc").css("display", "none");
+            $("#divupc").css("display", "none");
+        });
+        $("#tab4").click(function () {
+            $('#TblDistTotals thead th').removeClass("hide");
+            $('#TblDistTotals tbody tr td').removeClass("hide");
+            $('.tablesort tbody td').removeClass("hide");
+            $('#TblDistTotals th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+
+        /*********Export function code ***********/
+        self.menulist = ko.observableArray([]);
+
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    //if (evecount[i].className.includes("hide")) {
+                    //    $("#chk_" + [i]).attr('checked', false);
+                    //}
+                    //else {
+                    //    $("#chk_" + [i]).attr('checked', true);
+                    //}
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+
+        function sort(column) {
+            //$("#loading").fadeIn();
+            var findSortKey = function ($cell) {
+                return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+            };
+            //var sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+            var $rows = $("." + dyclass).find('tbody tr').get();
+            var bob = 0;
+            //loop through all the rows and find
+            $.each($rows, function (index, row) {
+                row.sortKey = findSortKey($(row).children('td').eq(column));
+            });
+            var self = this;
+            var $buttons = $('.sort');
+            idx = $buttons.index(this);
+            //compare and sort the rows alphabetically or numerically
+            $rows.sort(function (a, b) {
+                var $obj1 = $(a).find('td').eq(idx),
+                $obj2 = $(b).find('td').eq(idx),
+                value1, value2;
+                count++;
+                if (a.sortKey == b.sortKey) {
+                    no++;
+                    return 0;
+                }
+                else {
+                    if (a.sortKey.trim() == "" && b.sortKey.trim() == "") {
+                        return -sortDirection;
+                    }
+                    if ($.isNumeric((a.sortKey.replace(/\,/g, '').trim())) == true && $.isNumeric((b.sortKey.replace(/\,/g, '').trim())) == true) {
+                        //numeracy check
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) < parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return -sortDirection;
+                        }
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) > parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return sortDirection;
+                        }
+                    }
+                    else if ((a.sortKey).split(":").length - 1 == 1) {
+                        //time check
+                        var res = (a.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        var ser = (b.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        a = new Date('1970/01/01 ' + res);
+                        b = new Date('1970/01/01 ' + ser);
+                        return a < b ? -sortDirection : a > b ? sortDirection : 0;
+                    }
+                    else if ((a.sortKey).split(" ").length - 1 >= 90) {
+                        value1 = $obj1.find("input")[0].checked;
+                        value2 = $obj2.find("input")[0].checked;
+                        return value1 < value2 ? -sortDirection : value1 > value2 ? sortDirection : 0;
+                    }
+                    else {
+                        //alphabetic check
+                        if (a.sortKey.replace(/\,/g, '').trim() < b.sortKey.replace(/\,/g, '').trim()) {
+                            return -sortDirection;
+                        }
+                        if (a.sortKey.replace(/\,/g, '').trim() > b.sortKey.replace(/\,/g, '').trim()) {
+                            return sortDirection;
+                        }
+                    }
+                    return 0;
+                }
+            });
+
+            //add the rows in the correct order to the bottom of the table
+            $.each($rows, function (index, row) {
+                if (count == no) {
+                }
+                else {
+                    $('.' + dyclass + ' tbody').append(row);
+                    //$('.tablesorting tbody').append();
+                    row.sortKey = null;
+                }
+            });
+            //identify the collumn sort order
+            $('.' + dyclass + ' th').removeClass('sorted-asc sorted-desc');
+            $('.' + dyclass + ' th i').removeClass('icon-white icon-chevron-down icon-white icon-chevron-up');
+
+            var $sortHead = $('.' + dyclass + ' th').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')');
+            if (count != no) {
+                if (sortDirection == 1) {
+                    $sortHead.addClass('sorted-asc');
+                    $("." + parents).addClass('icon-white icon-chevron-up');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+                else {
+                    $sortHead.addClass('sorted-desc');
+                    $("." + parents).addClass('icon-white icon-chevron-down');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+            }
+            count = ""; no = "";
+            //$("#loading").fadeOut();
+            //identify the collum to be sorted by
+            $('.' + dyclass + ' td').removeClass('sorted').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')').addClass('sorted');
+        }
+
+        $('.stablesort th').each(function (column) {
+            $('.stablesort th').css({ "cursor": "pointer" });
+            $('.stablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        $('.ptablesort th').each(function (column) {
+            $('.ptablesort th').css({ "cursor": "pointer" });
+            $('.ptablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        $('.dtablesort th').each(function (column) {
+            $('.dtablesort th').css({ "cursor": "pointer" });
+            $('.dtablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+       
+
+        /*********End Export function code ***********/
+
+        $.ajax({
+            url: "GetDistSaleList",
+            type: "POST",
+            success: function (response) {
+                self.cmbDistno(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "FillSalesPurchaseRptOptions",
+            type: "POST",
+            success: function (response) {
+                self.submenuoptrptlist(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'CLCD' },
+            type: "POST",
+            success: function (response) {
+                self.cmbclass(response.Items);
+            }
+        });
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'ReportType' },
+            type: "POST",
+            success: function (response) {
+                self.cmbreporttype(response.Items);
+            }
+        });
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'SortOrder' },
+            type: "POST",
+            success: function (response) {
+                self.cmbsorder(response.Items);
+            }
+        });
+
+
+
+
+
+        self.TotPurchaseRows = ko.observable();
+        self.TotPurchase = ko.observable();
+        self.TotSalesRows = ko.observable();
+        self.TotSalesQty = ko.observable();
+        self.TotSales = ko.observable();
+        self.FillDistTotals = function () {
+            $("#pagno").css("display", "none");
+            $("#divdist").css("display", "none");
+            $("#divmfg").css("display", "none");
+            $("#divmfgupc").css("display", "none");
+            $("#divupc").css("display", "none");
+            LoadDistTotalsList();
+        }
+
+        function LoadDistTotalsList() {
+            var PurchaseRows = 0, Purchase = 0, SalesRows = 0, SalesQty = 0, Sales = 0;
+            var isdatecomplvalidate, isdatecomplvalidateto = "";
+            if (self.txtfrom() != null && self.txtfrom() != "") {
+                if (self.txtfrom().length == 6) {
+                    isdatecomplvalidate = true;
+                    isdatecomplvalidate = isValidPeriod(self.txtfrom());
+                }
+                else {
+                    isdatecomplvalidate = false;
+                }
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period from",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('from').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.txtto() != null && self.txtto() != "") {
+                if (self.txtto().length == 6) {
+                    isdatecomplvalidateto = true;
+                    isdatecomplvalidateto = isValidPeriod(self.txtto());
+                }
+                else {
+                    isdatecomplvalidateto = false;
+                }
+                if (isdatecomplvalidateto == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period to",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('to').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            $.ajax({
+                url: "FillDistTotalsList",
+                data: { ym1: self.txtfrom(), ym2: self.txtto() },
+                type: "POST",
+                success: function (response) {
+                    $('#TblDistTotals tbody tr').remove();
+                    $('#TblDistTotals th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.DistTotalsGridList(response.Items);
+                    for (i = 0; i < response.Items.length; i++) {
+                        if (response.Items[i].PurchaseRows != null && response.Items[i].PurchaseRows != "")
+                            PurchaseRows += parseFloat(response.Items[i].PurchaseRows);
+
+                        if (response.Items[i].Purchase != null && response.Items[i].Purchase != "")
+                            Purchase += parseFloat(response.Items[i].Purchase);
+
+                        if (response.Items[i].SalesRows != null && response.Items[i].SalesRows != "")
+                            SalesRows += parseFloat(response.Items[i].SalesRows);
+
+                        if (response.Items[i].SalesQty != null && response.Items[i].SalesQty != "")
+                            SalesQty += parseFloat(response.Items[i].SalesQty);
+
+                        if (response.Items[i].Sales != null && response.Items[i].Sales != "")
+                            Sales += parseFloat(response.Items[i].Sales);
+                    }
+
+                    self.TotPurchaseRows(numberWithCommas(PurchaseRows));
+                    self.TotPurchase(numberWithCommas(Purchase));
+                    self.TotSalesRows(numberWithCommas(SalesRows));
+                    self.TotSalesQty(numberWithCommas(SalesQty));
+                    self.TotSales(numberWithCommas(Sales));
+                    var THIndex = $('#TblDistTotals thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        //if ($('#TblDistTotals thead th')[i].className.includes("hide"))
+                        //    $('#TblDistTotals tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        var clsname = $('#TblDistTotals thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('#TblDistTotals tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                }
+            });
+        }
+
+        self.optionselect = function (item) {
+          
+            var Description = item.Description;
+            var sqlselect = item.SQLSelect;
+            var periodfrom = self.txtfrom();
+            var periodto = self.txtto();
+
+            var objfilter = [];
+            objfilter = {
+                cym: periodfrom, end: periodto, MfgClass: self.txtclass(), period1: periodfrom, period2: periodto, ReportType: self.txtreporttype(),
+                rows: self.lblrows(), SortOrder: self.txtsorder(), Start: periodfrom, ym: periodfrom
+            }
+
+            $.ajax({
+                url: "FillExecutiveVerifications",
+                type: "POST",
+                data: { Description: Description, sqlselect: sqlselect, Filter: JSON.stringify(objfilter) },
+                success: function (response) {
+                    if (response.msg != null && response.msg != "") {
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: response.msg,
+                            type: "info",
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                //document.getElementById('txtrows').focus();
+                            }
+                        });
+                        return false;
+                    }
+
+                    $("#lblreport").text(item.Description);
+                    $("#lblreport").show();
+                    self.ExecutiveVerificationGridHeader(response.Header);
+                    self.ExecutiveVerificationGridList(response.Items);
+                    $('#tabs').tabs({ active: 2 });
+                    $("#pagno").css("display", "none");
+                    $("#divdist").css("display", "none");
+                    $("#divmfg").css("display", "none");
+                    $("#divmfgupc").css("display", "none");
+                    $("#divupc").css("display", "none");
+                }
+            });
+
+        }
+
+        self.btnsalesList = function () {
+            var isdatecomplvalidate, isdatecomplvalidateto = "";
+            if (self.txtfrom() != null && self.txtfrom() != "") {
+                if (self.txtfrom().length == 6) {
+                    isdatecomplvalidate = true;
+                    isdatecomplvalidate = isValidPeriod(self.txtfrom());
+                }
+                else {
+                    isdatecomplvalidate = false;
+                }
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period from",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('from').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.txtto() != null && self.txtto() != "") {
+                if (self.txtto().length == 6) {
+                    isdatecomplvalidateto = true;
+                    isdatecomplvalidateto = isValidPeriod(self.txtto());
+                }
+                else {
+                    isdatecomplvalidateto = false;
+                }
+                if (isdatecomplvalidateto == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period to",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('to').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            $("#loading").fadeIn();
+            pagesizes = 1;
+            $.ajax({
+                url: "FillSalesPurchaseList",
+                type: "POST",
+                data: { pagecount: '0', distid: self.txtDistno(), periodfrom: self.txtfrom(), periodto: self.txtto(), mfgNo: self.txthdnmfgno(), Tab: selecttab, mfgupc: self.txtmfgupcsearch(), upc: self.txtupcsearch() },
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    if (response.SalesItemdetail.length > 0) {
+                        $('#TblSales tbody tr').remove();
+                        $('#TblSales th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                        self.SalesDetailsGridList(response.SalesItemdetail);
+                        self.enable(true);
+                        self.firstenable(true);
+                        self.lastenable(false);
+                        SGlobalLblpage = numberWithCommas(response.Salescount + 1);
+                        SGlobalLblpageno = 1;
+                        SGlobalLblTotalRecords = numberWithCommas(response.SalesTotalRecords) + " / " + numberWithCommas(response.TotalSales);
+                        $("#Lblpage").text(SGlobalLblpage);
+                        $("#Lblpageno").text(SGlobalLblpageno);
+                        $("#LblTotalRecords").text(SGlobalLblTotalRecords);
+                        var THIndex = $('#TblSales thead th').length;
+                        for (var i = 0; i < THIndex; i++) {
+                            //if ($('#TblSales thead th')[i].className.includes("hide"))
+                            //    $('#TblSales tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                            var clsname = $('#TblSales thead th')[i].className;
+                            var clsindex = clsname.indexOf("hide");
+                            if (clsindex >= 0) {
+                                $('#TblSales tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                            }
+                        }
+                    }
+                    else if (response.SalesItemdetail.length == 0) {
+                        self.SalesDetailsGridList(response.SalesItemdetail);
+                        SGlobalLblpage = numberWithCommas(response.Salescount+1);
+                        SGlobalLblpageno = 1;                 
+                        SGlobalLblTotalRecords = " 0 / 0 ";
+                        $("#Lblpage").text(SGlobalLblpage);
+                        $("#Lblpageno").text(SGlobalLblpageno);
+                        $("#LblTotalRecords").text(SGlobalLblTotalRecords);
+                    }
+                   
+
+                    if (selecttab == "PurchaseTab") {
+                        Totalpagecount = response.Purchasecount;
+                    }
+                    else if (selecttab == "SalesTab") {
+                        Totalpagecount = response.Salescount;
+                    }
+
+                    if (response.PurchaseItemdetail.length > 0) {
+                        $('#TblPurchase tbody tr').remove();
+                        $('#TblPurchase th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                        self.PurchaseDetailsGridList(response.PurchaseItemdetail);
+                        self.enable(true);
+                        self.firstenable(true);
+                        self.lastenable(false);
+                        GlobalLblpage = numberWithCommas(response.Purchasecount+1);
+                        GlobalLblpageno = 1;
+                        GlobalLblTotalRecords = numberWithCommas(response.PurchaseTotalRecords) + " / " + numberWithCommas(response.TotalPurchase);
+                        if (selecttab == "PurchaseTab") {
+                            $("#Lblpage").text(GlobalLblpage);
+                            $("#Lblpageno").text(GlobalLblpageno);
+                            $("#LblTotalRecords").text(GlobalLblTotalRecords);
+                        }
+                        var THIndex = $('#TblPurchase thead th').length;
+                        for (var i = 0; i < THIndex; i++) {
+                            //if ($('#TblPurchase thead th')[i].className.includes("hide"))
+                            //    $('#TblPurchase tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                            var clsname = $('#TblPurchase thead th')[i].className;
+                            var clsindex = clsname.indexOf("hide");
+                            if (clsindex >= 0) {
+                                $('#TblPurchase tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                            }
+                        }
+                    }
+                    else if (response.PurchaseItemdetail.length == 0) {
+                        self.PurchaseDetailsGridList(response.PurchaseItemdetail);
+                        GlobalLblpage = numberWithCommas(response.Purchasecount+1);
+                        GlobalLblpageno = 1;
+                        GlobalLblTotalRecords =  " 0 / 0 ";
+                       if (selecttab == "PurchaseTab") {
+                            $("#Lblpage").text(GlobalLblpage);
+                            $("#Lblpageno").text(GlobalLblpageno);
+                            $("#LblTotalRecords").text(GlobalLblTotalRecords);
+                        }
+                    }
+                    //else {
+                    //    self.enable(false);
+                    //    self.firstenable(false);
+                    //    self.lastenable(true);
+                    //}
+                },
+                error: function (request, status, error) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+
+            LoadDistTotalsList();
+        }
+
+        //self.btnsalesList();
+
+        //***Paging Start***//
+
+        self.PageFirst = function () {
+            self.page(0);
+            pagesizes = self.page();
+            pagesizes = pagesizes + 1;
+            $("#Lblpageno").text(pagesizes);
+            Paging();
+
+            self.firstenable(true);
+            self.lastenable(false);
+
+        }
+        self.PagePrevious = function () {
+            if (self.page() == 0) return;
+            self.page(self.page() - 1);
+            pagesizes = pagesizes;
+            if (pagesizes == 0) {
+                pagesizes = pagesizes + 1;
+            }
+            else {
+                pagesizes = pagesizes - 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            check = "Previous";
+            Paging();
+            if (pagesizes == 1) {
+                self.firstenable(true);
+                self.lastenable(false);
+            }
+            else {
+                self.lastenable(false);
+            }
+        }
+        self.PageNext = function () {
+            if (self.page() == Totalpagecount) return;
+            self.page(self.page() + 1);
+            pagesizes = pagesizes;
+            if (pagesizes == Totalpagecount+1) {
+                pagesizes = pagesizes;
+            }
+            else {
+                pagesizes = pagesizes + 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            check = "Next";
+            Paging();
+            if (pagesizes == Totalpagecount+1) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+            else {
+                self.firstenable(false);
+
+            }
+        }
+        self.PageLast = function () {
+            self.page(Totalpagecount);
+            pagesizes = Totalpagecount+1;
+            $("#Lblpageno").text(Totalpagecount+1);
+            Paging();
+            if (pagesizes == Totalpagecount+1) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+        }
+
+
+        self.Mfgsearchdbclick = function () {
+            if (blurevent == true) {
+                blurevent = false;
+                return false;
+            }
+            dbclick = true;
+            self.txtsearch(document.getElementById('mfgsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "")
+                self.txtsearch("%");
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.txthdnmfgno(response.Items[0].MfgNo);
+                        self.txtsearch(response.Items[0].company);
+                    }
+                    else {
+                        var searchtext = self.txtsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=mfgno,company&header=Mfg No,Company&text=" + searchtext + "&where=company&LabelDescription=MFG ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                }
+            });
+        }
+
+        self.txtMfgsearch = function () {
+            if (dbclick == true) {
+                dbclick = false;
+                return false;
+            }
+
+            blurevent = true;
+
+            self.txtsearch(document.getElementById('mfgsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "") {
+                self.txthdnmfgno("");
+                return false;
+            }
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.txthdnmfgno(response.Items[0].MfgNo);
+                        self.txtsearch(response.Items[0].company);
+                    }
+                    else {
+                        var searchtext = self.txtsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=mfgno,company&header=Mfg No,Company&text=" + searchtext + "&where=company&LabelDescription=MFG ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    blurevent = false;
+                }
+            });
+        }
+
+
+        self.Mfgupcsearch = function () {
+            if (dbclickmfgupc == true) {
+                dbclickmfgupc = false;
+                return false;
+            }
+            self.txtmfgupcsearch(document.getElementById('mfgupcsearch').value);
+            if (self.txtmfgupcsearch() == null || self.txtmfgupcsearch() == "") {
+                //self.txthdnmfgupc("");
+                return false;
+            }
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfgupc', searchtext: self.txtmfgupcsearch(), selectedvalue: self.selectedmfgupcvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.txthdnmfgupc(response.Items[0].mfgupc);
+                        self.txtmfgupcsearch(response.Items[0].mfgupc);
+                    }
+                    else {
+                        var searchtext = self.txtmfgupcsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgupcsrch&table=mfgupc&field=mfgupc,upcparent,refcomp&header=Mfg Upc,Upc Parent,Ref Comp&text=" + searchtext + "&where=mfgupc&LabelDescription=MFGUPC ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    blurevent = false;
+                }
+            });
+        }
+        self.Mfgupcdbclick = function () {
+            dbclickmfgupc = true;
+
+            self.txtmfgupcsearch(document.getElementById('mfgupcsearch').value);
+            if (self.txtmfgupcsearch() == null || self.txtmfgupcsearch() == "")
+                self.txtmfgupcsearch("%");
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfgupc', searchtext: self.txtmfgupcsearch(), selectedvalue: self.selectedmfgupcvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.txthdnmfgupc(response.Items[0].mfgupc);
+                        self.txtmfgupcsearch(response.Items[0].mfgupc);
+                    }
+                    else {
+                        var searchtext = self.txtmfgupcsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgupcsrch&table=mfgupc&field=mfgupc,upcparent,refcomp&header=Mfg Upc,Upc Parent,Ref Comp&text=" + searchtext + "&where=mfgupc&LabelDescription=MFGUPC ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    blurevent = false;
+                }
+            });
+
+
+        }
+        self.Upcsearch = function () {
+            if (dbclickupc == true) {
+                dbclickupc = false;
+                return false;
+            }
+            self.txtupcsearch(document.getElementById('upcsearch').value);
+            if (self.txtupcsearch() == null || self.txtupcsearch() == "") {
+                //self.txthdnupc("");
+                return false;
+            }
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'Product', searchtext: self.txtupcsearch(), selectedvalue: self.selectedupcvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.txthdnupc(response.Items[0].upc);
+                        self.txtupcsearch(response.Items[0].upc);
+                    }
+                    else {
+                        var searchtext = self.txtupcsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtupcsrch&table=Product&field=upc,proddesc&header=Upc,Prod_Desc&text=" + searchtext + "&where=upc&LabelDescription=UPC ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                }
+            });
+
+        }
+        self.Upcdbclick = function () {
+            dbclickupc = true;
+
+            self.txtupcsearch(document.getElementById('upcsearch').value);
+            if (self.txtupcsearch() == null || self.txtupcsearch() == "")
+                self.txtupcsearch("%");
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'Product', searchtext: self.txtupcsearch(), selectedvalue: self.selectedupcvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.txthdnupc(response.Items[0].upc);
+                        self.txtupcsearch(response.Items[0].upc);
+                    }
+                    else {
+                        var searchtext = self.txtupcsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtupcsrch&table=Product&field=upc,proddesc&header=Upc,Prod_Desc&text=" + searchtext + "&where=upc&LabelDescription=UPC ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                }
+            });
+
+        }
+
+
+        self.searchselecteditem = function (item, element) {
+            if (element == "txtmfgsrch") {
+                self.txthdnmfgno(item[0]);
+                self.txtsearch(item[1]);
+            }
+            if (element == "txtmfgupcsrch") {
+                //self.txthdnmfgupc(item[0]);
+                self.txtmfgupcsearch(item[0]);
+            }
+            if (element == "txtupcsrch") {
+                //self.txthdnupc(item[0]);
+                self.txtupcsearch(item[0]);
+            }
+        }
+
+        function Paging() {
+            //$("#loading").fadeIn();
+            $.ajax({
+                url: "FillSalesPurchaseList",
+                type: "POST",
+                data: { pagecount: self.page, distid: self.txtDistno(), periodfrom: self.txtfrom(), periodto: self.txtto(), mfgNo: self.txthdnmfgno(), Tab: selecttab, mfgupc: self.txtmfgupcsearch(), upc: self.txtupcsearch() },
+                success: function (response) {
+                    //$("#loading").fadeOut();
+                    $("#Lblpage").text(Totalpagecount);
+                    if (selecttab == "PurchaseTab") {
+                        $('#TblPurchase thead th').removeClass("hide");
+                        $('#TblPurchase tbody tr').remove();
+                        $('#TblPurchase tbody tr td').removeClass("hide");
+                        $('#TblPurchase th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                        self.PurchaseDetailsGridList(response.PurchaseItemdetail);
+                        $("#Lblpage").text(response.Purchasecount + 1);
+                        //Totalpagecount = response.Purchasecount+1;
+                    }
+                    else {
+                        $('#TblSales thead th').removeClass("hide");
+                        $('#TblSales tbody tr').remove();
+                        $('#TblSales tbody tr td').removeClass("hide");
+                        $('#TblSales th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                        self.SalesDetailsGridList(response.SalesItemdetail);
+                        $("#Lblpage").text(response.Salescount + 1);
+                        //Totalpagecount = response.Salescount+1;
+                    }
+
+                },
+                error: function (request, status, error) {
+                    //$("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+
+        }
+
+        //***Paging End ***//
+
+        $("#trsales").live("dblclick", function () {
+            var distId = "", ym = "", purchase = "", mfgname = "";
+            ym = $(this).context.cells[1].innerText;
+            var Oldupc = $(this).context.cells[2].innerText;
+            if (Oldupc == "") {
+                UpdateBlankToZeroes(ym);
+            }
+            else {
+
+                distId = $(this).context.cells[0].innerText;
+                
+                var purc = $(this).context.cells[3].innerText;
+                purchase = purc.replace(/\,/g, '');
+                var Repmfgname = $(this).context.cells[4].innerText;
+                mfgname = Repmfgname.replace(/&/g, "$***$");
+                //mfgname = mfgname.replace('&', "$***$");
+                //mfgname = mfgname.replace('&', "$***$");
+                //mfgname = mfgname.replace('&', "$***$");
+                //mfgname = mfgname.replace(/'/g, "$***!$");
+                //mfgname = mfgname.replace(/'/g, "$***!$");
+                mfgname = mfgname.replace(/'/g, "$***!$");
+                 //.replace('&', '');
+                //mfgname = Repmfgname.replace('&', '$$');
+                //mfgname = mfgname.replace('&', '$$');
+                var Nusername = '@ViewBag.Initials';
+                $("#PurchaseDailog").dialog("open");
+                document.getElementById('PurchaseFrame').src = "../Supervisor/ChangeUPC?Upc=" + Oldupc + "&Nusername=" + Nusername + "&distId=" + distId + "&ym=" + ym + "&purchase=" + purchase + "&mfgname=" + mfgname + "";
+                //document.getElementById('PurchaseFrame').src = "../Supervisor/ChangeUPC?Upc=" + Oldupc + "&Nusername=" + Nusername + "&distId=" + distId + "&ym=" + ym + "&purchase=" + purchase + "&mfgno=" + mfgNo + "";
+            }
+        });
+
+        self.CloseChangeUPCDialog = function () {
+            $("#PurchaseDailog").dialog("close");
+            self.btnsalesList();
+        }
+
+        function UpdateBlankToZeroes(ym) {
+            $.ajax({
+                url: "../Supervisor/GetUpdateUPCCountByYM",
+                data: { oldUPC: '', ym: ym },
+                type: "POST",
+                success: function (response) {
+                    if (response.UPCCount > 0) {
+                        alertconfirm("P&S UPC Change Blanks to Zeroes", response.UPCCount + " records found. Do you want to Replace Blank P&S UPC numbers with Zeroes?", ConfirmUPCChangeZeros, true, false);
+                    }
+                    else {
+                        alertinfo("P&S UPC Change Blanks to Zeroes", "No records to Replace Blank P&S UPC numbers with Zeroes", true, false);
+                    }
+                }
+            });
+        }
+
+        function ConfirmUPCChangeZeros() {
+            $.ajax({
+                url: "UPCChangeZeros",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("P&S UPC Change Blanks to Zeroes", "Completed updating UPCs with Zeroes", true, false);
+                    self.btnsalesList();
+                }
+
+            });
+        }
+
+    }
+
+    //Export function code 
+
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "Purchase and Sales", tablename + "_.csv", "Screen", tablename + "_");
+    }
+    
+</script>
+
+<div class="container divheight" style="max-width:1100px !important; text-align:left;">
+    <div class="row-fluid">
+        <div class="widgetbox">
+            <h4 class="widgettitle"> Purchase & Sales</h4>
+            <div class="widgetcontent">
+                <div class="row-fluid">
+                    <div style="border: solid 2px  #0866c6;padding-left:20px" class="span12">
+                        <div class="row-fluid" style="margin-top:20px;">
+                            <div class="span4">
+                                <div id="divmfg" class="span5">
+                                    <label class="span3 mob-span">Mfg</label>
+                                    <input class="input-medium" type="text" style="font-weight:normal;display:none" data-bind="value: txthdnmfgno" />
+                                    <input id="mfgsearch" class="input-small" type="text" placeholder="" style="font-weight:normal;background-color: #C7F3AD;" data-bind="value: txtsearch,event:{blur:txtMfgsearch,dblclick: Mfgsearchdbclick}" />
+                                </div>
+                            @*</div>
+    <div class="span2">*@
+                                <div id="divmfgupc" class="span7">
+                                    <label class="span4 mob-span">MfgUPC</label>
+                                    @*<input id="mfgupcsearch" class="input-small" type="text" placeholder="" style="font-weight:normal;background-color: #C7F3AD;margin-left:4px;" data-bind="value: txtmfgupcsearch,event:{blur:Mfgupcsearch,dblclick: Mfgupcdbclick}" />*@
+                                    <input id="mfgupcsearch" class="input-small" type="text" maxlength="6" placeholder="" style="font-weight:normal;margin-left:4px;" data-bind="value: txtmfgupcsearch" />
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div id="divupc" class="span6">
+                                    <label class="span3 mob-span">UPC</label>
+                                    @*<input id="upcsearch" class="input-small" type="text" placeholder="" style="font-weight:normal;background-color: #C7F3AD;" data-bind="value: txtupcsearch,event:{blur:Upcsearch,dblclick: Upcdbclick}" />*@
+                                    <input id="upcsearch" class="input-small" type="text" maxlength="15" placeholder="" style="font-weight:normal;" data-bind="value: txtupcsearch" />
+                                </div>
+                            @*</div>
+    <div class="span2 ">*@
+                                <div id="divdist" class="span6 mob-wd-full">
+                                    <label class="span5 mob-span">Distributor</label>                                       
+                                    <select id="Distno" class="select input-small PurDist" data-bind="options:cmbDistno,optionsText:'distid',optionsValue:'distid',value:txtDistno,event:{change:btnsalesList}"></select>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <label class="span3 mob-span">
+                                    Periods
+                                </label>
+                                <input id="from" type="text" style="width:60px" class="input-medium" data-bind="value:txtfrom" maxlength="6" placeholder="YYYYMM" onkeypress="return numbers(this, event, true);" />
+                                <input id="to" style="width:60px" type="text" class="input-medium" data-bind="value:txtto" maxlength="6" placeholder="YYYYMM" onkeypress="return numbers(this, event, true);" />
+                                <button id="btnrefresh" class="btn btn-primary" type="button" data-bind="click:btnsalesList">Refresh</button>
+                            </div>
+                            @*<div class="span1">
+                                <button class="btn btn-primary" type="button" data-bind="click:btnsalesList">Refresh</button>
+                            </div>*@
+                        </div>
+                    </div>
+                    <div id="pagno" class="row-fluid span-12" style="margin-top:10px">
+                        <div align="left" data-bind="visible:enable" class="span4">
+                            <label>
+                                Page Dispaly
+                            </label>
+                            <label class="label" id="Lblpageno" style="font-size: small; font-style:oblique">
+                            </label>
+                            <label>
+                                of
+                            </label>
+                            <label class="label" id="Lblpage" style="font-size: small; font-style: oblique;">
+                            </label>
+                        </div>
+                        <div align="left" class="span5" data-bind="visible:enable">
+                            <label style="color: blue;font-weight: bold;">
+                                Records/Total: &nbsp;
+                            </label>
+                            <label id="LblTotalRecords" style="font-size: small;color: blue;font-weight: bold;"></label>
+
+                        </div>
+                        <div align="center" class="span3">
+
+                            <button class="btn-mini" id="PageFirst" data-bind="visible:enable, disable:firstenable">
+                                <i class="icon-fast-backward">
+                                </i>
+                            </button>
+                            <button class="btn-mini" id="PagePrevious" data-bind="visible:enable, disable:firstenable">
+                                <i class="icon-backward"></i>
+                            </button>
+                            <button class="btn-mini" id="PageNext" data-bind="visible:enable, disable:lastenable">
+                                <i class="icon-forward"></i>
+                            </button>
+                            <button class="btn-mini" id="PageLast" data-bind="visible:enable, disable:lastenable">
+                                <i class="icon-fast-forward"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="tabs" class="tabbedwidget tab-primary">
+                        <div class="row-fluid" style="text-align:left;">
+                            <div class="span5">
+                                <ul>
+                                    <li><a href="#menu2" id="tab2">Purchase</a></li>
+                                    <li><a href="#menu1" id="tab1">Sales</a></li>
+                                    <li><a href="#menu4" id="tab4">Distributor Totals</a></li>
+                                    @*<li><a href="#menu3" id="tab3">Reports</a></li>*@
+
+                                </ul>
+                            </div>
+                            <div class="span3" style="padding-top: 1%;">
+                                <label id="lblreport" style="font-weight: 800;font-size: 13px;color: #333;"></label>
+                            </div>
+                        </div>
+                        <div id="menu1">
+                            <div style="width: 100%;" class="row-fluid">
+                                <table id="TblSales" class="dytable dytable table table-bordered table-hover tablesort stablesort" style="width: 100%;max-height:6000px;">
+                                    <thead style="width: 100%;">
+                                        <tr class="exportclass">
+                                            <th class="mob-wd-full" style="width:15%;">Distributor<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:13%;">Year/Month<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:18%;">UPC<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:7%;">Qty<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:10%;">Qty DC<i class="icon6" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:10%;">Sales<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:13%;">Sales DC<i class="icon7" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:14%;">Mfg Item<i class="icon8" style="float: right; margin-top: -4px;"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: $root.SalesDetailsGridList" style="overflow:overlay">
+                                        <tr class="clickableRow">
+                                            <td class="mob-wd-full" style="width:15%;" data-bind="text:distid"></td>
+                                            <td class="mob-wd-full" style="width:13%;" data-bind="text:yearmonth"></td>
+                                            <td class="mob-wd-full" style="width:18%;" data-bind="text:upc"></td>
+                                            <td class="mob-wd-full" style="width:7%;" data-bind="text:Qty"></td>
+                                            <td class="mob-wd-full" style="width:10%;" data-bind="text:qty_dc"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:10%;" data-bind="text: numberWithCommas(Sales)"></td>
+                                            <td class="mob-wd-full" style="width:13%;" data-bind="text:sales_dc"></td>
+                                            <td class="mob-wd-full" style="width:14%;" data-bind="text:mfg_item"></td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                        <div id="menu2">
+                            <div style="width: 100%;" class="row-fluid">
+                                <table id="TblPurchase" class="dytable1 dytable table table-bordered table-hover tablesort ptablesort" style="width: 100%;max-height:6000px;">
+                                    <thead style="width: 100%;">
+                                        <tr class="exportclass">
+                                            @*<th class="mob-wd-full" style="width:10%">mfgNo<i class="icon1" style="float: right; margin-top: -4px;"></i></th>*@
+                                            <th class="mob-wd-full" style="width:20%">Distributor<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:20%;">Year/Month<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:20%;">Mfg UPC<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:15%;">Purchase<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:25%;">Mfg Name<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: $root.PurchaseDetailsGridList" style="overflow:overlay">
+                                        <tr class="clickableRow" id="trsales">
+                                            @*<td class="mob-wd-full" style="width:10%;" data-bind="text: mfgno"></td>*@
+                                            <td class="mob-wd-full" style="width:20%;" data-bind="text:distid"></td>
+                                            <td class="mob-wd-full" style="width:20%;" data-bind="text:yearmonth"></td>
+                                            <td class="mob-wd-full" style="width:20%;" data-bind="text:mfgupc"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:15%;" data-bind="text: numberWithCommas(Purchase)"></td>
+                                            <td class="mob-wd-full" style="width:25%;" data-bind="text: mfgname"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="menu4">
+                            <div style="width: 100%;max-height:600px;" class="row-fluid">
+                                <table id="TblDistTotals" class="dytable2 dytable table table-bordered table-hover tablesort dtablesort" style="width: 100%;max-height:580px;">
+                                    <thead >
+                                        <tr class="exportclass">
+                                            <th class="mob-wd-full" style="width:20%">Distributor<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="width:15%;">Ddtlink<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:12%;">Purchase Rows<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:15%;">Purchase<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:10%;">Sales Rows<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right;width:15%;">Sales Qty<i class="icon6" style="float: right; margin-top: -4px;"></i></th>
+                                            <th class="mob-wd-full" style="text-align:right; width:13%;">Sales<i class="icon7" style="float: right; margin-top: -4px;"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: $root.DistTotalsGridList" style="overflow-y:scroll">
+                                        <tr class="clickableRow" id="trsales">
+                                            <td class="mob-wd-full" style="width:20%;" data-bind="text:Distributor"></td>
+                                            <td class="mob-wd-full" style="width:15%;" data-bind="text:Ddtlink"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:12%;" data-bind="text: numberWithCommas(PurchaseRows)"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:15%;" data-bind="text: numberWithCommas(Purchase)"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:10%;" data-bind="text: numberWithCommas(SalesRows)"></td>
+                                            <td class="mob-wd-full" style="text-align:right;width:15%;" data-bind="text: numberWithCommas(SalesQty)"></td>
+                                            <td class="mob-wd-full" style="text-align:right; width:13%;" data-bind="text: numberWithCommas(Sales)"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="dytable2 dytable table table-bordered table-hover tablesort" style="margin-top:-20px;width:100%">
+                                    <tbody id="TfootTotal" style="overflow:hidden !important;flex: none !important;width: calc(98.2% - -0.5em) !important;color:blue;font-size:13px;font-weight:bold;">
+                                        <tr style="cursor: pointer;background:white;border: none !important;">
+                                            <td class="mob-wd-full" style="border:none;width:20%"></td>
+                                            <td class="mob-wd-full" style="border:none;width:15%">Total </td>
+                                            <td class="mob-wd-full" style="text-align: right; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;width:12%" data-bind="text:TotPurchaseRows">Count</td>
+                                            <td class="mob-wd-full" style="text-align:right;border-right:1px solid #ddd;border-bottom:1px solid #ddd;width:15%" data-bind="text:TotPurchase"></td>
+                                            <td class="mob-wd-full" style="text-align:right;border-right:1px solid #ddd;border-bottom:1px solid #ddd;width:10%" data-bind="text:TotSalesRows"></td>
+                                            <td class="mob-wd-full" style="text-align:right;border-right:1px solid #ddd;border-bottom:1px solid #ddd;width:15%" data-bind="text:TotSalesQty"></td>
+                                            <td class="mob-wd-full" style="text-align:right;border-right:1px solid #ddd;border-bottom:1px solid #ddd;width:13%" data-bind="text:TotSales"></td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="PurchaseDailog" class="PopupWindow" style="width:1000px" title="P&S Change UPC on Purchase Table">
+    <iframe id="PurchaseFrame" width="98%"  frameborder="0" style="height: 200px !important"></iframe>
+</div>
+
+

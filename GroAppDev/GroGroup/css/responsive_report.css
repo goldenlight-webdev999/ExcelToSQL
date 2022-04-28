@@ -1,0 +1,44 @@
+﻿/* responcive codes */
+@media (min-width: 0px) and (max-width: 767px) {
+
+     .MainContent div iframe{
+        /*width:500px!important;
+        height:470px!important;*/
+         width:103%!important;
+        height:85%!important;
+    }
+
+
+}
+@media (min-width: 768px) and (max-width: 1025px) {
+
+     .MainContent div iframe{
+        /*width:800px!important;
+        height:600px!important;*/
+         width:103%!important;
+        height:100%!important;
+    }
+
+
+}
+@media (min-width: 1026px) and (max-width: 2000px) {
+
+     .MainContent div iframe{
+        /*width:900px!important;
+        height:700px!important;*/
+         width:103%!important;
+        height:100%!important;
+    }
+
+
+}
+
+
+ .dxm-ltr .dxm-main, .dxm-ltr .dxm-horizontal ul.dx {
+        float: none !important;
+    }
+    .stuck {
+         top: 0px;
+    position: fixed;
+    overflow-y: auto;
+}

@@ -1,0 +1,103 @@
+﻿@Html.DevExpress().GridView(settings =>
+{
+    settings.Name = "dxGridView";
+    if (Session["KeyNameMfgNo" + @ViewBag.GUID].ToString().ToUpper().Trim() == "YES")
+    {
+        settings.KeyFieldName = "MFGNO";
+    }
+    else
+    {
+        if (Session["KeyNameDistNo" + @ViewBag.GUID].ToString().ToUpper().Trim() == "YES")
+        {
+            settings.KeyFieldName = "DISTNO";
+        }
+    }
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+    settings.SettingsText.Title = " Rows = " + Session["ReportCount" + @ViewBag.GUID];  // + ViewBag.Description; ;
+    settings.Styles.Cell.Wrap = DefaultBoolean.False;
+    settings.Styles.TitlePanel.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+    settings.Styles.TitlePanel.BackColor = System.Drawing.Color.DarkBlue;
+    settings.Styles.TitlePanel.ForeColor = System.Drawing.Color.White;
+
+    settings.Styles.FocusedRow.BackColor = System.Drawing.ColorTranslator.FromHtml("#1796b0");
+
+    settings.Styles.Header.BackColor = System.Drawing.ColorTranslator.FromHtml("#333");
+    settings.Styles.Header.ForeColor = System.Drawing.Color.White;
+
+    settings.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+    settings.Settings.VerticalScrollableHeight = 500;
+
+
+    settings.Styles.SelectedRow.BackColor = System.Drawing.Color.White;
+    settings.Styles.SelectedRow.ForeColor = System.Drawing.Color.Black;
+
+
+    settings.Settings.ShowTitlePanel = true;
+    /*****for header filter*****/
+    settings.Settings.ShowHeaderFilterButton = true;
+    settings.SettingsPopup.HeaderFilter.Height = 200;
+    /**** for grouping coloumn******/
+    settings.Settings.ShowGroupPanel = true;
+    /*** for resizeing the grid column***/
+    settings.SettingsBehavior.ColumnResizeMode = ColumnResizeMode.Control;
+
+
+    settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+    //settings.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+    //settings.Settings.VerticalScrollableHeight = 680;
+    settings.SettingsPager.FirstPageButton.Visible = true;
+    settings.SettingsPager.LastPageButton.Visible = true;
+    settings.SettingsPager.PageSizeItemSettings.Visible = true;
+    settings.SettingsPager.PageSize = 20;
+    settings.SettingsPager.PageSizeItemSettings.Items = new string[] { "20", "40", "60" };
+    if (Session["KeyNameMfgNo" + @ViewBag.GUID].ToString().ToUpper().Trim() == "YES" || Session["KeyNameDistNo" + @ViewBag.GUID].ToString().ToUpper().Trim() == "YES")
+    {
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowSelectCheckbox = true;
+
+        settings.CommandColumn.Width = 30;
+        settings.CommandColumn.SelectAllCheckboxMode = GridViewSelectAllCheckBoxMode.AllPages;
+        settings.CommandColumn.SetHeaderTemplateContent(c =>
+        {
+            Html.DevExpress().CheckBox(settingsCheckBox =>
+            {
+                settingsCheckBox.Name = "SELECT";
+                settingsCheckBox.Text = "";
+                settingsCheckBox.Properties.ClientSideEvents.CheckedChanged = string.Format("function(s, e) {{ CheckedChanged(s.GetChecked()); if(s.GetChecked()) {0}.SelectRows(); else {0}.UnselectRows(); }}", settings.Name);
+                settingsCheckBox.Checked = IsAllSelectedGridView(c.Grid);
+            }).Render();
+        });
+        settings.SettingsBehavior.AllowSelectByRowClick = false;
+        string[] colnames = (string[])Session["CLNAME" + @ViewBag.GUID];
+        foreach (string colname in colnames)
+        {
+            if (colname.ToUpper() == "SELECT")
+                continue;
+            if (colname == "DISTNO")
+                settings.Columns.Add("DISTNO");
+            else
+                settings.Columns.Add(colname);
+        }
+
+        settings.SettingsBehavior.AllowFocusedRow = true;
+        settings.ClientSideEvents.FocusedRowChanged = "OnGridFocusedRowChanged";
+        settings.ClientSideEvents.SelectionChanged = "SelectionChanged";
+        settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+    }
+    settings.CallbackRouteValues = new { Controller = "Reports", Action = "GridViewPartial", GuId = @ViewBag.GUID };
+
+    //settings.Theme = "MetropolisBlue";
+
+}).Bind(Model).GetHtml()
+
+@functions{
+    bool IsAllSelectedGridView(ASPxGridView gridView)
+    {
+        for (var i = 0; i < gridView.VisibleRowCount; i++)
+        {
+            if (!gridView.Selection.IsRowSelected(i))
+                return false;
+        }
+        return true;
+    }
+}

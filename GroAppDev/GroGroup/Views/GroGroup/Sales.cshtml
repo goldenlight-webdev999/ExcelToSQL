@@ -1,0 +1,494 @@
+﻿
+@{
+    ViewBag.Title = "Sales";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:881px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;text-align:left ! important}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(5){width:auto !important;text-align:left ! important}
+                      .dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}
+                      .dytable tr td:nth-child(2){width:auto !important;text-align:left !important;}
+                      .dytable tr td:nth-child(3){width:auto !important;text-align:left !important;}
+                      .dytable tr td:nth-child(4){width:auto !important;text-align:left !important;}
+                      .dytable tr td:nth-child(5){width:auto !important;text-align:left !important;}
+
+                    .dytable tr td:nth-of-type(1):before{content:'Distributor';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'TY Quantity';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'TY Sales';font-weight: bold;text-align:left !important}
+                    .dytable tr td:nth-of-type(4):before{content:'LY Quantity';font-weight: bold;text-align:left !important}
+                    .dytable tr td:nth-of-type(5):before{content:'LY Sales';font-weight: bold;text-align:left !important}
+
+                    .dytable1 tr td:nth-of-type(1):before{content:'Distributor';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(2):before{content:'Mfr. UPC';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(3):before{content:'Year/Month';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(4):before{content:'TY Quantity';font-weight: bold;text-align:left !important}
+                    .dytable1 tr td:nth-of-type(5):before{content:'TY Sales';font-weight: bold;text-align:left !important}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+<style type="text/css">
+    .table-container {
+        height: 30em;
+    }
+</style>
+
+<script type="text/javascript">
+    var search;
+    var tablename = "";
+    var screenname = "";
+    var dyclass = "", parents = "", sortDirection="";
+    $(document).ready(function () {
+        sales = new viewModel();
+        search = sales;
+        ko.applyBindings(sales);
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('table#TblDetails tbody').css("overflow-y", "scroll");
+            $('table#TblDetails tbody').css("height", "300px");
+            $('table#TblDetails thead').css("width", "98.5%");
+
+            $('table#TblSummary tbody').css("overflow-y", "scroll");
+            $('table#TblSummary tbody').css("height", "300px");
+            $('table#TblSummary thead').css("width", "98.5%");
+        }
+    });
+
+
+
+    function viewModel() {
+        var self = this;
+        var Upc = '@ViewBag.UPC';
+        self.txtupc = ko.observable();
+        self.SalesGridList = ko.observableArray([]);
+        self.DetailsGridList = ko.observableArray([]);
+        self.txtfrom = ko.observable('@ViewBag.YM1');
+        self.txtto = ko.observable('@ViewBag.YM2');
+        self.txtupc(Upc);
+
+        self.totsales = ko.observable();
+        self.totlysales = ko.observable();
+        self.Qty = ko.observable();
+        self.LyQty = ko.observable();
+        self.SalesTitle = ko.observable();
+        self.cnt = ko.observable();
+        self.menulist = ko.observableArray([]);
+        self.totalsales = ko.observable();
+        self.count = ko.observable();
+        self.chkAllProducts = ko.observable(false);
+        self.companyname = ko.observable();
+        
+        screenname = '@ViewBag.ScreenName';
+        if (screenname == "Manufacturers") {
+            SalesUPCHeadTitle = " Sales Details for MfgUPC: " + Upc + "";
+            self.companyname("Mfr. Name: " + window.parent.parent.document.getElementById('company').value + "");
+        }
+        else {
+            self.companyname("Mfr. Name: " + window.parent.document.getElementById('company').value + "");
+            SalesUPCHeadTitle = " Sales Details for Parent UPC: " + Upc + "";
+        }
+        self.SalesTitle(SalesUPCHeadTitle);
+
+        $("#Summarytab").click(function () {
+            $('#TblSummary thead th').removeClass("hide");
+            $('#TblSummary tbody td').removeClass("hide");
+            $('.tablesort tbody td').removeClass("hide");
+            $('#TblSummary th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+
+        $("#Detailstab").click(function () {
+            $('#TblDetails thead th').removeClass("hide");
+            $('#TblDetails tbody td').removeClass("hide");
+            $('.tablesort tbody td').removeClass("hide");
+            $('#TblDetails th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+
+        function sort(column)
+        {
+            //$("#loading").fadeIn();
+            var findSortKey = function ($cell) {
+                return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+            };
+            //var sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+            var $rows = $("."+dyclass).find('tbody tr').get();
+            var bob = 0;
+            //loop through all the rows and find
+            $.each($rows, function (index, row) {
+                row.sortKey = findSortKey($(row).children('td').eq(column));
+            });
+            var self = this;
+            var $buttons = $('.sort');
+            idx = $buttons.index(this);
+            //compare and sort the rows alphabetically or numerically
+            $rows.sort(function (a, b) {
+                var $obj1 = $(a).find('td').eq(idx),
+                $obj2 = $(b).find('td').eq(idx),
+                value1, value2;
+                count++;
+                if (a.sortKey == b.sortKey) {
+                    no++;
+                    return 0;
+                }
+                else {
+                    if (a.sortKey.trim() == "" && b.sortKey.trim() == "") {
+                        return -sortDirection;
+                    }
+                    if ($.isNumeric((a.sortKey.replace(/\,/g, '').trim())) == true && $.isNumeric((b.sortKey.replace(/\,/g, '').trim())) == true) {
+                        //numeracy check
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) < parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return -sortDirection;
+                        }
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) > parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return sortDirection;
+                        }
+                    }
+                    else if ((a.sortKey).split(":").length - 1 == 1) {
+                        //time check
+                        var res = (a.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        var ser = (b.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        a = new Date('1970/01/01 ' + res);
+                        b = new Date('1970/01/01 ' + ser);
+                        return a < b ? -sortDirection : a > b ? sortDirection : 0;
+                    }
+                    else if ((a.sortKey).split(" ").length - 1 >= 90) {
+                        value1 = $obj1.find("input")[0].checked;
+                        value2 = $obj2.find("input")[0].checked;
+                        return value1 < value2 ? -sortDirection : value1 > value2 ? sortDirection : 0;
+                    }
+                    else {
+                        //alphabetic check
+                        if (a.sortKey.replace(/\,/g, '').trim() < b.sortKey.replace(/\,/g, '').trim()) {
+                            return -sortDirection;
+                        }
+                        if (a.sortKey.replace(/\,/g, '').trim() > b.sortKey.replace(/\,/g, '').trim()) {
+                            return sortDirection;
+                        }
+                    }
+                    return 0;
+                }
+            });
+
+            //add the rows in the correct order to the bottom of the table
+            $.each($rows, function (index, row) {
+                if (count == no) {
+                }
+                else {
+                    $('.'+dyclass+' tbody').append(row);
+                    //$('.tablesorting tbody').append();
+                    row.sortKey = null;
+                }
+            });
+            //identify the collumn sort order
+            $('.'+dyclass+' th').removeClass('sorted-asc sorted-desc');
+            $('.' + dyclass + ' th i').removeClass('icon-white icon-chevron-down icon-white icon-chevron-up');
+
+            var $sortHead = $('.' + dyclass + ' th').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')');
+            if (count != no) {
+                if (sortDirection == 1) {
+                    $sortHead.addClass('sorted-asc');
+                    $("." + parents).addClass('icon-white icon-chevron-up');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+                else {
+                    $sortHead.addClass('sorted-desc');
+                    $("." + parents).addClass('icon-white icon-chevron-down');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+            }
+            count = ""; no = "";
+            //$("#loading").fadeOut();
+            //identify the collum to be sorted by
+            $('.' + dyclass + ' td').removeClass('sorted').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')').addClass('sorted');
+        }
+
+        $('.stablesort th').each(function (column) {
+            $('.stablesort th').css({ "cursor": "pointer" });
+            $('.stablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        $('.dtablesort th').each(function (column) {
+            $('.dtablesort th').css({ "cursor": "pointer" });
+            $('.dtablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        self.btnsalesList = function () {
+            var totalsales = 0, totallysales = 0, count = 0;
+            var totsales = 0, cnt = 0;
+            var qty = 0, lyqty = 0;
+
+            var isdatecomplvalidate, isdatecomplvalidateto = "";
+            if (self.txtfrom() != null && self.txtfrom() != "") {
+                if (self.txtfrom().length == 6)
+                {
+                    isdatecomplvalidate = true;
+                    isdatecomplvalidate = isValidPeriod(self.txtfrom());
+                }
+                else
+                {
+                    isdatecomplvalidate = false;
+                }
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period from",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('from').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.txtto() != null && self.txtto() != "") {
+                if (self.txtto().length == 6) {
+                    isdatecomplvalidateto = true;
+                    isdatecomplvalidateto = isValidPeriod(self.txtto());
+                }
+                else {
+                    isdatecomplvalidateto = false;
+                }
+                if (isdatecomplvalidateto == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period to",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('to').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            $("#loading").fadeIn();
+            $.ajax({
+                url: "FillSalesInfo",
+                type: "POST",
+                data: { Upc: self.txtupc(), periodfrom: self.txtfrom(), periodto: self.txtto(), ProductAll: self.chkAllProducts() },
+                success: function (response) {
+                    //alert('test sales');
+                    $("#loading").fadeOut();
+                    $('#TblSummary tbody tr').remove();
+                    $('#TblDetails tbody tr').remove();
+                    $('#TblSummary th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    $('#TblDetails th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.SalesGridList(response.Items);
+                    self.DetailsGridList(response.Itemdetail);
+                    for (i = 0; i < response.Items.length; i++)
+                    {
+                        totalsales += parseFloat(response.Items[i].Sales);
+                        totallysales += parseFloat(response.Items[i].LYSales);
+                        qty += parseFloat(response.Items[i].Qty);
+                        lyqty += parseFloat(response.Items[i].LYQty);
+                        count++;
+                    }
+                    self.totsales(numberWithCommas(totalsales));
+                    self.totlysales(numberWithCommas(totallysales));
+                    self.Qty(numberWithCommas(qty));
+                    self.LyQty(numberWithCommas(lyqty));
+                    self.cnt('Count: '+ count);
+
+                    for (i = 0; i < response.Itemdetail.length; i++) {
+                        totsales += parseFloat(response.Itemdetail[i].Sales);
+                        cnt++;
+                    }
+                    self.totalsales(numberWithCommas(totsales));
+                    self.count('Count: ' + cnt);
+                    var THIndex = $('#TblSummary thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        if ($('#TblSummary thead th')[i].className == "hide")
+                            $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    }
+                    var THIndex = $('#TblDetails thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        if ($('#TblDetails thead th')[i].className == "hide")
+                            $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    }
+                    //$("#loading").fadeOut();
+                },
+                error: function (request, status, error) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+        }
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    //if (evecount[i].className.includes("hide")) {
+                    //    $("#chk_" + [i]).attr('checked', false);
+                    //}
+                    //else {
+                    //    $("#chk_" + [i]).attr('checked', true);
+                    //}
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+        self.btnsalesList();
+    }
+
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "Sales", tablename + "_.csv", "Screen", tablename + "_");
+    }
+
+
+
+</script>
+
+<center>
+    <div class="divheight" style="max-width:1200px !important; text-align:left;">
+        <h4 style="text-align:center" data-bind="text: companyname"></h4>
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle" data-bind="text: SalesTitle"></h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">
+                        <div style="border: solid 2px  #0866c6;padding-left:20px" class="span12">
+                            <div class="row-fluid" data-bind="">
+                                <div class="row-fluid" style="margin-top:20px;">
+                                    <div class="span5">
+                                    </div>
+                                    <div class="span7" style="text-align:right">
+                                        <input id="AllProducts" type="checkbox" data-bind="checked: chkAllProducts" style="margin: 0px;" />
+                                        <label>All Products</label>&nbsp;&nbsp;
+                                        <label>
+                                            Periods
+                                        </label>
+                                        <input id="from" type="text" style="width:60px" class="input-medium" data-bind="value: txtfrom" maxlength="6" placeholder="YYYYMM" onkeypress="return numbers(this, event, true);" />
+                                        <input id="to" style="width:60px" type="text" class="input-medium" data-bind="value: txtto" maxlength="6" placeholder="YYYYMM" onkeypress="return numbers(this, event, true);"/>
+                                        <button class="btn btn-primary" type="button" data-bind="click:btnsalesList">Refresh</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tabs" class="tabbedwidget tab-primary">
+                            <ul>
+                                <li><a href="#tab1" id="Summarytab">Summary</a></li>
+                                <li><a href="#tab2" id="Detailstab">Detail</a></li>
+                            </ul>
+                            <div id="tab1" class="row-fluid" style="margin-left:-15px">
+                                <div style="width: 100%;" >
+                                    <table id="TblSummary" class="dytable table table-bordered table-hover tablesort stablesort" style="width: 100%;max-height:600px;overflow-y:auto">
+                                        <thead style="width:100%;">
+                                            <tr class="exportclass">
+                                                <th>Distributor<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                                <th>TY Quantity<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="text-align:right">TY Sales<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="text-align:right">LY Quantity<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="text-align:right;padding-right:20px">LY Sales<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="overflow: overlay; max-height: 400px;width:100%;" data-bind="foreach:SalesGridList">
+                                            <tr style="cursor:pointer;" class="clickableRow">
+                                                <td data-bind="text:distid"></td>
+                                                <td data-bind="text:Qty"></td>
+                                                <td style="text-align:right" data-bind="text:numberWithCommas(Sales)"></td>
+                                                <td style="text-align:right" data-bind="text:LYQty"></td>
+                                                <td style="text-align:right;padding-right:20px" data-bind="text:numberWithCommas(LYSales)"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="dytable table table-bordered table-hover tablesort"  style="margin-top:-20px">
+                                        <tbody id="TfootTotal" style="overflow:hidden !important;flex: none !important;width: 100%;color:blue;font-size:13px;font-weight:bold;">
+                                            <tr style="cursor: pointer;background:white;border: none !important;">
+                                                <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:cnt">Count</td>
+                                                <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:Qty"></td>
+                                                <td style="text-align:right;border-right:1px solid #ddd;border-bottom:1px solid #ddd;" data-bind="text:totsales"></td>
+                                                <td style="text-align:right;border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:LyQty"></td>
+                                                <td style="text-align:right;padding-right:20px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;" data-bind="text:totlysales"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="tab2" class="row-fluid" style="margin-left:-15px">
+                                <div style="width: 100%;">
+                                    <table id="TblDetails" class="dytable dytable1 table table-bordered table-hover tablesort dtablesort" style="width: 100%;max-height:600px;overflow-y:auto">
+                                        <thead style="width:100%;">
+                                            <tr class="exportclass">
+                                                <th>Distributor<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                                <th>Mfr. UPC<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                                <th>Year/Month<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                                <th>TY Quantity<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="text-align:right;padding-right:20px">TY Sales<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="overflow: overlay; max-height: 400px;width:100%;" data-bind="foreach: $root.DetailsGridList">
+                                            <tr class="clickableRow">
+                                                <td data-bind="text:distid"></td>
+                                                <td data-bind="text:upc"></td>
+                                                <td data-bind="text:yearmonth"></td>
+                                                <td data-bind="text:Qty"></td>
+                                                <td style="text-align:right;padding-right:20px" data-bind="text: numberWithCommas(Sales)"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="dytable dytable1 table table-bordered table-hover tablesort" style="margin-top:-20px">
+                                        <tbody id="TfootTot" style="overflow:hidden !important;flex: none !important;width:100%;color:blue;font-size:13px;font-weight:bold;">
+                                            <tr style="cursor: pointer;background:white;border: none !important;">
+                                                <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:count">Count</td>
+                                                <td style="border:none;"></td>
+                                                <td style="border:none;"></td>
+                                                <td style="border:none;"></td>
+                                                <td style="text-align:right;padding-right:20px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;" data-bind="text:totalsales"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</center>

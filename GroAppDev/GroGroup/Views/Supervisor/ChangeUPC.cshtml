@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "ChangeUPC";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<style type="text/css">
+    .correctborder {
+        padding: 15px 12px;
+        margin-bottom: 5px;
+    }
+</style>
+<style type="text/css">
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width: 223px;
+    }
+
+    .textbox_size {
+        width: 30%;
+    }
+
+    .combobox_size {
+        width: 32%;
+    }
+</style>
+<script type="text/javascript">
+    var mfg;
+    var search;
+    var distId = "", ym = "", purchase = "", mfgname = "";
+
+    $(document).ready(function () {
+        mfg = new viewModel();
+        search = mfg;
+        ko.applyBindings(mfg);
+        $("#btnupdate").click({ handler: mfg.ChangeUPCclick });
+        $("#txtym").datepicker({ dateFormat: 'yymm', changeMonth: true, changeYear: true });
+    });
+
+    function viewModel() {
+        var self = this;
+        var Upc = '@ViewBag.Upc';
+        var Nusername = '@ViewBag.Initials';
+        var chk = '@ViewBag.check';
+
+        document.getElementById('oldUPC').focus();
+        self.EnableDisableMode = ko.observable(false);
+        self.txtoldUPC = ko.observable(Upc);
+        self.txtuser = ko.observable(Nusername);
+        self.txtNewUPC = ko.observable();
+        self.txtYearmonth = ko.observable();
+        self.txtMFGNO = ko.observable();
+
+        var distno = '@ViewBag.distId';
+        distId = distno.replace(/\amp;/g, '');
+
+        ym = '@ViewBag.ym';
+        purchase = '@ViewBag.purchase';
+        mfgname = '@ViewBag.mfgname';
+
+        if (ym != null && ym != "") {
+            self.txtYearmonth(ym);
+            self.EnableDisableMode(true);
+        }
+        if (self.txtoldUPC() != "") {
+            self.EnableDisableMode(true);
+            document.getElementById('NewUPC').focus();
+        }
+
+        if (chk.trim().toUpperCase() == "TRUE") {
+            $("#divthisrow").css("display", "block");
+            $("#divthismfg").css("display", "block");
+            //
+        }
+
+        self.ChangeUPCclick = function () {
+            if (self.txtoldUPC() == null || self.txtoldUPC() == "") {
+                alertinfo("Gro Group", "Please enter the old UPC", true, false);
+                document.getElementById('oldUPC').focus();
+                return false;
+            }
+            if (self.txtNewUPC() == null || self.txtNewUPC() == "") {
+                alertinfo("Gro Group", "Please enter the New UPC", true, false);
+                document.getElementById('NewUPC').focus();
+                return false;
+            }
+            if (self.txtuser() == null || self.txtuser() == "") {
+                alertinfo("Gro Group", "Please enter the User", true, false);
+                document.getElementById('User').focus();
+                return false;
+            }
+
+            if (chk.trim().toUpperCase() == "TRUE") {
+                alertconfirm("P&S Change UPC on Purchase Table", "Do you want to Change UPC on Purchase Table?", self.ConfirmChangeUPCOneRow, true, false);
+            }
+            else {
+                $.ajax({
+                    url: "GetUpdateUPCCountByYM",
+                    data: { oldUPC: self.txtoldUPC(), ym: self.txtYearmonth() },
+                    type: "POST",
+                    success: function (response) {
+                        if (response.UPCCount > 0) {
+                            alertconfirm("P&S Change UPC on Purchase Table", response.UPCCount + " records found. Do you want to Change UPC on Purchase Table?", self.ConfirmChangeUPC, true, false);
+                        }
+                        else {
+                            alertinfo("P&S Change UPC on Purchase Table", "No records for updating UPC Purchase Table", true, false);
+                        }
+                    }
+                });
+            }
+
+        }
+
+        self.ConfirmChangeUPCOneRow = function () {
+
+            var thisRecordOnly = false;
+            if (document.getElementById('chkthisrow').checked == true)
+                thisRecordOnly = true;
+            else
+                thisRecordOnly = false;
+
+            $.ajax({
+                url: "UpdateParticularUPC",
+                data: { oldUPC: self.txtoldUPC(), NewUPC: self.txtNewUPC(), distId: distId, ym: ym, purchase: purchase, mfgname: mfgname, user: self.txtuser(), thisRecordOnly: thisRecordOnly },
+                type: "POST",
+                success: function (response) {
+                    //alertinfo("P&S Change UPC on Purchase Table", "Completed updating UPC Purchase Table", true, false);
+
+                    $.msgBox({
+                        title: "P&S Change UPC on Purchase Table",
+                        content: "Completed updating UPC Purchase Table",
+                        type: "info",
+                        parent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            //window.parent.document.getElementById('PurchaseDailog').close
+
+                            var schIframe = window.parent.document.getElementById('PurchaseFrame');
+                            if (schIframe != null) {
+                                window.parent.search.CloseChangeUPCDialog(); 
+                                //var parentdiv = window.parent.document.getElementById('PurchaseDailog');
+                                //window.parent.DialogClose();
+                            }
+
+                        }
+                    });
+
+                }
+            });
+
+        }
+
+        self.ConfirmChangeUPC = function () {
+
+            $.ajax({
+                url: "updatingUPCs",
+                data: { oldUPC: self.txtoldUPC(), NewUPC: self.txtNewUPC(), ym: self.txtYearmonth(), user: self.txtuser() },
+                type: "POST",
+                success: function (response) {
+                    alertinfo("P&S Change UPC on Purchase Table", "Completed updating UPC Purchase Table", true, false);
+                    
+                }
+            });
+
+        }
+
+
+
+    }
+</script>
+
+
+<div class="container" style="max-width:1000px !important; text-align:left;">
+    <div class="widgetbox">
+        <h4 class="widgettitle">P&S Change UPC on Purchase Table</h4>
+        <div class="widgetcontent">
+            <div class="correctborder" style="border:1px#BCD8F3 solid;">
+                <div class="row-fluid">
+                    <div id="divthisrow" class="span3" style="display:none;">
+                        <input type="radio" name="rbcheck" class="checkreport" checked="checked" id="chkthisrow" title="This Record Only" />
+                        <label for="chkthisrow" class="span8 mob-span">This Record Only</label>
+                    </div>
+                    <div id="divthismfg" class="span4" style="display:none;">
+                        <input type="radio" name="rbcheck" class="checkreport"  id="chkthismfg" title="This Mfg Only" />
+                        <label for="chkthismfg" class="span6 mob-span">This Mfg Only</label>
+                    </div>
+                   
+                </div>
+                <div class="row-fluid">
+                    <div class="span3">
+                        <label class="span4 mob-span">Old UPC</label>
+                        <input type="text" id="oldUPC" class="input-small" data-bind="disable:EnableDisableMode,value:txtoldUPC" />
+                    </div>
+                    <div class="span3">
+                        <label class="span4 mob-span">New UPC</label>
+                        <input type="text" id="NewUPC" class="input-small" data-bind="value:txtNewUPC" />
+                    </div>
+                    <div class="span3">
+                        <label class="span6 mob-span">Year Month</label>
+                        <input type="text" id="txtym" class="input-small" maxlength="15" data-bind="disable:EnableDisableMode,value:txtYearmonth" />
+                    </div>
+                    <div class="span3">
+                        <label class="span3 mob-span">User</label>
+                        <input type="text" id="User" class="input-small" data-bind="value:txtuser" readonly="readonly" />
+                        <a data-placement="bottom" data-rel="tooltip" data-original-title="Update" title="Update" class="btn btn-warning" id="btnupdate"><i class="icon-list-alt icon-white"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

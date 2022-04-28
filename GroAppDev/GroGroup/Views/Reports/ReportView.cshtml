@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "ReportView";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<link href="~/css/responsive_report.css" rel="stylesheet" />
+<style>
+    .dxm-ltr .dxm-main, .dxm-ltr .dxm-horizontal ul.dx {
+        float: none !important;
+    }
+
+    .dxmLite, .dxmLite .dxm-item a.dx {
+        position: fixed;
+    }
+
+    #reportViewer1_ContentFrame {
+        height: 1080px !important;
+    }
+</style>
+<script type="text/javascript">
+    function OnBeginCallback(s, e) {
+        e.customArgs["GUID"] = '@ViewBag.GUID';
+    }
+</script>
+<center>
+    <div class="stuck">
+        @Html.DevExpress().ReportToolbar(settings =>
+{
+    settings.Name = "ReportToolbar";
+    settings.ReportViewerName = "reportViewer1";
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(50);
+
+}).GetHtml()
+    </div>
+    <div style="margin-top:33px!important">
+        @{Html.RenderPartial("ReportViewerPartial");}
+    </div>
+</center>

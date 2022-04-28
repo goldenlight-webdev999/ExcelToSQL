@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+
+<style>
+    .dxm-ltr .dxm-main, .dxm-ltr .dxm-horizontal ul.dx {
+        float: none !important;
+    }
+
+  .dxmLite, .dxmLite .dxm-item a.dx{
+        position: fixed;
+    } 
+    #reportViewer1_Div
+    {
+        padding-top: 50px;
+    }
+    /*#reportViewer1_ContentFrame
+    {
+         height:1080px !important;
+    }*/
+  
+</style>
+<script>
+    function OnBeginCallback(s, e) {
+        e.customArgs["GUID"] = '@ViewBag.GUID';
+    }
+</script>
+<center>
+@Html.DevExpress().ReportToolbar(settings => {
+    // The following settings are necessary for a Report Toolbar.
+    settings.Name = "ReportToolbar";
+    settings.ReportViewerName = "reportViewer1";
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(60);
+    }).GetHtml()
+
+@{Html.RenderPartial("FormReportViewerPartial");}
+</center>
+

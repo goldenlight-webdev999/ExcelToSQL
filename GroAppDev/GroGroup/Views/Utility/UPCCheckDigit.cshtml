@@ -1,0 +1,121 @@
+﻿
+@{
+    ViewBag.Title = "UpdateData";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(10){width:auto !important;}
+                    .dytable tr td:nth-of-type(1):before{content:'Refcomp';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'Mfgupc';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'Upcparent';font-weight: bold;}
+                    .dytable tr td:nth-of-type(4):before{content:'Mcodea';font-weight: bold;}
+                    .dytable tr td:nth-of-type(5):before{content:'Mcodeb';font-weight: bold;}
+                    .dytable tr td:nth-of-type(6):before{content:'Sty_dists';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(7):before{content:'Sty_tot';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(8):before{content:'Pty_dists';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(9):before{content:'Pty_tot';font-weight: bold;text-align:left}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+<script type="text/javascript">
+
+    var UpdPS;
+   
+    $(document).ready(function () {
+
+        UpdPS = new viewModel();
+        ko.applyBindings(UpdPS);
+
+        $("#btnCheck").click({ handler: UpdPS.CheckDigit });
+
+        document.getElementById('txtUPC').focus();
+
+    });
+
+    function viewModel() {
+        var self = this;
+        
+
+        self.CheckDigit = function () {
+            var cod = document.getElementById('txtUPC').value;
+            if (cod == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter UPC #",
+                    type: "info",
+                    parent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('txtUPC').focus();
+                    }
+                });
+                return false;
+            }
+
+            $.ajax({
+                url: "UPCCheckDigitValidate",
+                data: { code: cod },
+                type: "POST",
+                success: function (response) {
+                    if (response.Items != null && response.Items != "") {
+                        var msg = "";
+                        if (response.Items == "Invalid") {
+                            msg = "Invalid character found in UPC";
+                        }
+                        else {
+                            if (response.Status == "Check digit failed")
+                                msg = "UPC check digit failed. Correct check digit is " + response.Items;
+                            else
+                                msg = "UPC check digit [" + response.Items + "] is correct.";
+                        }
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: msg,
+                            type: "info",
+                            parent: true,
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                document.getElementById('txtUPC').focus();
+                            }
+                        });
+                        $(".msgButton").focus();
+                    }
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    alert("Gro Group", Request.responseText, true, false);
+                }
+            });
+
+        }
+
+    }
+
+</script>
+
+<center>
+    <div style="max-width:1200px !important; text-align:left;">
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle">UPC Check Digit</h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <label class="span4"></label>
+                            <label class="span1 mob-span">
+                                UPC #
+                            </label>
+                            <input id="txtUPC" type="text" class="input-large mob-text"   />
+                            <input id="btnCheck" class="btn btn-primary" type="button" value="Check Digit" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</center>

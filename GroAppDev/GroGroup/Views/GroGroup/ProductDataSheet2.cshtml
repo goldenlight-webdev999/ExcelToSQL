@@ -1,0 +1,400 @@
+﻿
+@{
+    ViewBag.Title = "ProductDataSheet2";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<script type="text/javascript">
+    var companyname = "", desc2 = "";
+    var tblname = "", mfgno = "";
+    $(document).ready(function () {
+        PDS = new viewModel();
+        search = PDS;
+        ko.applyBindings(PDS);
+
+
+        $("#btnEdit").click({ handler: PDS.Edit });
+        $("#btnSave").click({ handler: PDS.Save });
+        $("#btnCancel").click({ handler: PDS.Cancel });
+
+
+    });
+
+    function viewModel() {
+       
+        var self = this;
+        var dblclic = false;
+
+        self.EnableDisableControls = ko.observable(false);
+        self.EnableDisableMode = ko.observable(true);
+        self.EditEnableDisable = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+        var Upc = '@ViewBag.PDSUPC';
+
+        self.PdsNo = ko.observable();
+        self.txtmfgname = ko.observable();
+        self.txtdesc1 = ko.observable();
+        self.txtdesc2 = ko.observable();
+        self.txtmfgitem = ko.observable();
+        self.txtupc = ko.observable();
+
+        self.txtcp_upc = ko.observable();
+        self.txtmp_upc = ko.observable();
+        self.txtcp_dpth = ko.observable();
+        self.txtmp_dpth = ko.observable();
+        self.txtcp_qty = ko.observable();
+        self.txtmp_qty = ko.observable();
+
+        self.txtcp_cube = ko.observable();
+        self.txtmp_cube = ko.observable();
+
+        self.txtcp_wt = ko.observable();
+        self.txtmp_wt = ko.observable();
+
+        self.txtmp_palqty = ko.observable();
+        self.txtcp_palqty = ko.observable();
+
+        self.txtcp_ht = ko.observable();
+        self.txtmp_ht = ko.observable();
+
+        self.txtcp_wth = ko.observable();
+        self.txtmp_wth = ko.observable();
+
+        self.txth_hazmat = ko.observable(false);
+        self.txth_importc = ko.observable();
+        self.txth_msdsreq = ko.observable(false);
+        self.txth_eparegs = ko.observable();
+        self.txth_nmfc = ko.observable();
+        self.txth_st_rstr = ko.observable();
+        companyname = window.parent.document.getElementById('company').value;
+        desc2 = window.parent.document.getElementById('desc2').value;
+
+        self.Selecteditems = ko.observableArray([]);
+
+        window.parent.CallEnableTabs();
+
+        self.Selecteditems = function (Item) {
+            if (tblname == "product") {
+                self.PdsNo(0);
+                self.txtmfgname(companyname);
+                self.txtdesc1(Item.proddesc.trim());
+                self.txtdesc2(desc2);
+                self.txtmfgitem(Item.mfgpartno.trim());
+                self.txtupc(Item.upc);
+                mfgno = Item.MfgNo;
+            }
+            else {
+                self.PdsNo(Item.PdsNo);
+                mfgno = Item.mfgno;
+                self.txtmfgname(companyname);
+                self.txtdesc1(Item.prod_desc.trim());
+                self.txtdesc2(desc2);
+                self.txtmfgitem(Item.mfgitem.trim());
+                self.txtupc(Item.upc);
+                self.txtcp_upc(Item.cp_upc.trim());
+                self.txtmp_upc(Item.mp_upc.trim());
+                self.txtcp_dpth(Item.cp_dpth);
+                self.txtmp_dpth(Item.mp_dpth);
+                self.txtcp_qty(Item.cp_qty);
+                self.txtmp_qty(Item.mp_qty);
+
+                cpcube = "";
+
+                if (Item.cp_cube != "" && !isNaN(Item.cp_cube)) {
+                    cpcube = parseFloat(Item.cp_cube).toFixed(2);
+                }
+
+                self.txtcp_cube(cpcube);
+
+                mpcube = "";
+
+                if (Item.mp_cube != "" && !isNaN(Item.mp_cube)) {
+                    mpcube = parseFloat(Item.mp_cube).toFixed(2);
+                }
+                self.txtmp_cube(mpcube);
+
+
+                self.txtmp_palqty(Item.mp_palqty);
+                self.txtcp_palqty(Item.cp_palqty);
+
+                self.txtcp_wt(Item.cp_wt);
+                self.txtmp_wt(Item.mp_wt);
+
+                self.txtcp_ht(Item.cp_ht);
+                self.txtmp_ht(Item.mp_ht);
+                
+                self.txtcp_wth(Item.cp_wth);
+                self.txtmp_wth(Item.mp_wth);
+                
+                if (Item.h_hazmat == null || Item.h_hazmat == "" || Item.h_hazmat.trim() == 'False') {
+                    self.txth_hazmat(false);
+                }
+                else {
+                    self.txth_hazmat(true);
+                }
+
+                self.txth_importc(Item.h_importc.trim());
+
+                if (Item.h_msdsreq == null || Item.h_msdsreq == "" || Item.h_msdsreq.trim() == 'False') {
+                    self.txth_msdsreq(false);
+                }
+                else {
+                    self.txth_msdsreq(true);
+                }
+                self.txth_eparegs(Item.h_eparegs.trim());
+                self.txth_nmfc(Item.h_nmfc.trim());
+                self.txth_st_rstr(Item.h_st_rstr.trim());
+            }
+
+        }
+
+        function FillPDS() {
+            $.ajax({
+                url: "FillPds",
+                type: "POST",
+                data: { Upc: Upc },
+                success: function (response) {
+                    var pars = response.Items;
+                    tblname = response.tablename;
+                    self.Selecteditems(response.Items[0]);
+                }
+            });
+        }
+        FillPDS();
+
+        self.Edit = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EditEnableDisable(true);
+            self.EnableDisableControls(true);
+            $('#UPCNum').prop('readonly', true);
+            $("#Manufname2").focus();
+        }
+
+        self.Save = function () {
+
+            var objpds = [];
+            objpds = {
+                PdsNo: self.PdsNo(),
+                mfgno: mfgno,
+                mfgname: self.txtmfgname().trim(),
+                prod_desc: self.txtdesc1().trim(),
+                mfgitem: self.txtmfgitem().trim(),
+                upc: self.txtupc().trim(),
+                cp_upc: self.txtcp_upc().trim(),
+                mp_upc: self.txtmp_upc().trim(),
+                cp_dpth: self.txtcp_dpth().trim(),
+                mp_dpth: self.txtmp_dpth().trim(),
+                cp_qty: self.txtcp_qty().trim(),
+                mp_qty: self.txtmp_qty().trim(),
+               
+                cp_cube: self.txtcp_cube().trim(),
+                mp_cube: self.txtmp_cube(),
+
+                cp_palqty: self.txtcp_palqty(),
+                mp_palqty: self.txtmp_palqty(),
+
+                cp_wt: self.txtcp_wt(),
+                mp_wt: self.txtmp_wt(),
+                
+                cp_ht: self.txtcp_ht().trim(),
+                mp_ht: self.txtmp_ht().trim(),
+                cp_wth: self.txtcp_wth().trim(),
+                mp_wth: self.txtmp_wth().trim(),
+                
+                h_hazmat: self.txth_hazmat(),
+                h_importc: self.txth_importc().trim(),
+                h_msdsreq: self.txth_msdsreq(),
+                h_eparegs: self.txth_eparegs().trim(),
+                h_nmfc: self.txth_nmfc().trim(),
+                h_st_rstr: self.txth_st_rstr().trim()
+            }
+
+
+            $.ajax({
+                url: "Savepds",
+                data: { objpds: JSON.stringify(objpds), Scrname: "ProductDataSheet2" },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg);
+                    }
+                    else {
+                        self.AddMode(false);
+                        self.EditMode(true);
+                        self.SaveMode(false);
+                        self.EnableDisableMode(true);
+                        self.EditEnableDisable(true);
+                        self.EnableDisableControls(false);
+                        FillPDS();
+                    }
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+        }
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+            self.EditEnableDisable(true);
+            self.EnableDisableControls(false);
+
+            FillPDS();
+        }
+
+
+    }
+</script>
+<div class="widgetbox container" style="height: 780px;max-width:950px !important; text-align:left;overflow: auto;">
+    <div class="row-fluid ">
+        <div class="span3">
+            <ul class="list-nostyle list-inline tooltipsample mob-top">
+                <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+            </ul>
+        </div>
+    </div>
+    <h4 class="widgettitle">Product Data Sheet2</h4>
+    <div class="widgetcontent">
+        <div class="widgetcontent" style="border:1px#BCD8F3 solid;">
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span3 mob-span">Mfr. Name</label>
+                    <input id="Manufname2" tabindex="1" maxlength="35" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtmfgname" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span3 mob-span">Mfr. Item #</label>
+                    <input id="mgfritemid" tabindex="3" maxlength="15" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtmfgitem" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span3 mob-span">Description 1</label>
+                    <input id="Productdesc" tabindex="2" maxlength="40" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtdesc1,attr:{title:txtdesc1}" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span3 mob-span">Description 2</label>
+                    <input id="Productdesc" tabindex="2" maxlength="40" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtdesc2,attr:{title:txtdesc2}" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span3 mob-span">UPC #</label>
+                    <input id="UPCNum" tabindex="4" maxlength="14" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtupc" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row-fluid">
+            <h4 class="widgettitle">UPC DETAILS</h4>
+            <div class="widgetcontent">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="row-fluid mob-folat-left">
+                            <div class="span6 mob-wd-50 mob-folat-left"></div>
+                            <label class="span3 mob-wd-20 mob-folat-left" style="font-weight:bold;width:110px;margin:0px;" >Case</label>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Code Number</label>
+                                <input id="cp_upc" tabindex="5" style="width:110px;" maxlength="14" type="text" class="input-medium mob-wd-20" data-bind="disable: EnableDisableMode, value: txtcp_upc" />
+                            </div>
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Master/Case Pack Qty/Ea.</label>
+                                <input tabindex="9" style="width:110px;" maxlength="5" type="text" onkeypress="return numbers(this)" class="input-medium mob-wd-20" data-bind="disable: EnableDisableMode, value: txtcp_qty" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Pack Cubic Feet</label>
+                                <input tabindex="13" style="width:110px;" maxlength="9" type="text" onkeypress="return numberswithdot(this, event, true,6);" class="input-medium mob-wd-20" data-bind="    disable: EnableDisableMode, value: txtcp_cube" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Pack Weight/lbs.</label>
+                                <input tabindex="17" style="width:110px;" maxlength="10" type="text" onkeypress="return numberswithdot(this, event, true,7);" class="input-medium mob-wd-20" data-bind="    disable: EnableDisableMode, value: txtcp_wt" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Pack Height/Inches</label>
+                                <input tabindex="21" style="width:110px;" maxlength="7" type="text" onkeypress="return numberswithdot(this, event, true, 5);" class="input-medium mob-wd-20" data-bind="    disable: EnableDisableMode, value: txtcp_ht" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Pack Width/Inches</label>
+                                <input tabindex="25" style="width:110px;" maxlength="6" type="text" onkeypress="return numberswithdot(this, event, true,4);" class="input-medium mob-wd-20" data-bind="    disable: EnableDisableMode, value: txtcp_wth" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Case Pack Depth/Inches</label>
+                                <input tabindex="29" style="width:110px;" maxlength="6" type="text" onkeypress="return numberswithdot(this, event, true,4);" class="input-medium mob-wd-20" data-bind="    disable: EnableDisableMode, value: txtcp_dpth" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span6 mob-span">Pallet Quantity</label>
+                                <input tabindex="33" style="width:110px;" maxlength="4" type="text" onkeypress="return numbers(this)" class="input-medium mob-wd-20" data-bind="disable: EnableDisableMode, value: txtcp_palqty" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle">General Information</h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <label class="span8 mob-span">SDS Required</label>
+                            <input tabindex="37" type="checkbox" class="input-medium" data-bind="disable: EnableDisableMode, checked: txth_msdsreq" />
+                        </div>
+                        <div class="span7">
+                            <label class="span4 mob-span">Country of Origin</label>
+                            <input tabindex="38" maxlength="6" type="text" class="input-medium mob-cmb" data-bind="disable: EnableDisableMode, value: txth_importc" />
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="height: 800px">
+    <iframe id="iPDS2" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+</div>
+
+

@@ -1,0 +1,911 @@
+﻿
+@{
+    ViewBag.Title = "Products";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+
+<style type="text/css">
+    /* Style The Dropdown Button */
+    .searchmenubtn {
+        color: white;
+        padding: 13px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border: 1px !important;
+        border-color: black !important;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .searchmenu {
+        position: relative;
+        display: inline-block;
+        border: 1px !important;
+        border-color: black !important;
+        z-index: 100;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .searchmenu-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        top: 2.8em;
+    }
+
+        /* Links inside the dropdown */
+        .searchmenu-content a {
+            top: 1em;
+            height: 20px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            color: black;
+            text-decoration: none !important;
+            display: block;
+        }
+
+            /* Change color of dropdown links on hover */
+            .searchmenu-content a:hover {
+                top: -5px;
+                background-color: #BCD8F3 !important;
+                color: #800909 !important;
+            }
+
+    /* Show the dropdown menu on hover */
+    .searchmenu:hover .searchmenu-content {
+        display: block;
+        margin-top: -10px;
+    }
+
+    .searchmenu-content:after {
+        top: -7px;
+        content: " ";
+        left: 6%;
+        position: absolute;
+        width: 10px;
+        height: 9px;
+        border-right: 2px solid #0866c6;
+        border-bottom: 2px solid #0866c6;
+        background: white;
+        transform: rotate(222deg);
+    }
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .searchmenu:hover .searchmenubtn {
+    }
+
+
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+     .nallowed {
+        cursor: not-allowed;
+    }
+
+    .event-none {
+        pointer-events: none;
+    }
+
+</style>
+<script type="text/javascript">
+   var MainMfgfield_header = "";
+   var MainMfgfield = "";
+   
+
+    var MainMfgnofield_header = "";
+    var MainMfgnofield = "";
+    var search;
+    var Gupc;
+    var partno;
+    var blurevent = false;
+    var dbclick = false;
+    var dblclic = false;
+    var catcodedbclic = false;
+    $(document).ready(function () {
+        prdct = new viewModel();
+        search = prdct;
+        ko.applyBindings(prdct);
+
+        $("#btnAdd").click({ handler: prdct.Add });
+        $("#btnEdit").click({ handler: prdct.Edit });
+        $("#btnSave").click({ handler: prdct.Save });
+        $("#btnDelete").click({ handler: prdct.Delete });
+        $("#btnCancel").click({ handler: prdct.Cancel });
+        $("#pds_date").datepicker({ changeMonth: true, changeYear: true })
+
+        //Contacts Screen
+        $("#Sales").click(function () {
+            $("#iSales").contents().find("body").html('');
+            document.getElementById('iSales').src = "Sales?Upc=" + search.txtupc() + "";
+        });
+        
+        $("#DataSheet1").click(function () {
+            $("#iDataSheet1").contents().find("body").html('');
+            document.getElementById('iDataSheet1').src = "ProductDataSheet1?Upc=" + search.txtupc() + "";
+        });
+        //Notes Screen
+        $("#DataSheet2").click(function () {
+            $("#iDataSheet2").contents().find("body").html('');
+            document.getElementById('iDataSheet2').src = "ProductDataSheet2?Upc=" + search.txtupc() + "";
+        });
+
+        $("#DataSheet3").click(function () {
+            $("#iDataSheet3").contents().find("body").html('');
+            document.getElementById('iDataSheet3').src = "ProductDataSheet3?Upc=" + search.txtupc() + "";
+        });
+
+
+
+    });
+
+    function viewModel() {
+        var self = this;
+        self.EnableDisableControls = ko.observable(false);
+        self.EnableDisableMode = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+
+        self.CmbUpc = ko.observableArray([]);
+        self.ProductNo = ko.observable();
+        self.selectedvalue = ko.observable("");
+        self.selectedvalue_mfg = ko.observable();
+        self.txtname = ko.observable();
+        self.txtsearch = ko.observable();
+        self.txtmfgno = ko.observable();
+        self.txtupc = ko.observable();
+        self.txtadcrline = ko.observable();
+        self.txtnew_up = ko.observable();
+        self.txtoldname = ko.observable();
+        self.txtmfgpartno = ko.observable();
+        self.txtpack = ko.observable();
+        self.um_desc = ko.observable();
+        self.txtproddesc = ko.observable();
+        self.txtproddesc2 = ko.observable();
+        self.txcatcode = ko.observable();
+        self.txtggdist = ko.observable();
+        self.txtpds_date = ko.observable();
+        self.productsgrid = ko.observableArray([]);
+        self.hdnPrdList = ko.observableArray([]);
+
+        //============================================
+        self.f01J_prodcDesc2=ko.observable();
+        self.cp_qty = ko.observable();
+        self.txtitemType = ko.observable();
+
+        $('#company').prop('readonly', true);
+        self.selectedvalue_mfg("mfgno");
+
+        CallEnableTabs();
+
+        self.selectedvalue("company");
+        self.txtname("Mfr.Name");
+
+        $.ajax({
+            url: "FillSearchComboList",
+            type: "POST",
+            data: { ScreenFrom: 'Products', FormClass: 'Products' },
+            success: function (response) {
+                MainMfgfield_header = "", MainMfgfield = "";
+                var fld = "", desc = "";
+
+                if (response.Items.length > 0) {
+                    self.CmbUpc(response.Items);
+                    for (var i = 0; i < response.Items.length; i++) {
+                        desc += response.Items[i].Display_FName + ",";
+                        fld += response.Items[i].Field_Name + ",";
+                    }
+                    MainMfgfield_header = desc.replace(/,\s*$/, "");
+                    MainMfgfield = fld.replace(/,\s*$/, "");
+                }
+                else {
+                    MainMfgfield_header = "UPC,PartNo";
+                    Distfield_header = "UPC,PartNo";
+
+                    var StaticHeadercmbo = "UPC-UPC,PartNo-PartNo";
+                    var Comboheadsplit = StaticHeadercmbo.split(",");
+                    var ComboArray = []
+                    for (var i = 0; i < Comboheadsplit.length; i++) {
+                        var Splitdesc = "";
+                        Splitdesc = Comboheadsplit[i].split("-");
+                        ComboArray.push({
+                            Field_Name: Splitdesc[0],
+                            Display_FName: Splitdesc[1]
+                        });
+                    }
+                    self.CmbUpc(ComboArray);
+                }
+            }
+        });
+
+        $.ajax({
+            url: "FillSearchComboList",
+            type: "POST",
+            data: { ScreenFrom: 'Products', FormClass: 'Manufacturers' },
+            success: function (response) {
+                MainMfgnofield_header = "", MainMfgnofield = "";
+                var fld = "", desc = "";
+
+                if (response.Items.length > 0) {
+                    for (var i = 0; i < response.Items.length; i++) {
+                        desc += response.Items[i].Display_FName + ",";
+                        fld += response.Items[i].Field_Name + ",";
+                    }
+                    MainMfgnofield_header = desc.replace(/,\s*$/, "");
+                    MainMfgnofield = fld.replace(/,\s*$/, "");
+                }
+                else {
+                    MainMfgnofield = "MfgNo,company";
+                    MainMfgnofield_header = "MfgNo,Company";
+                }
+            }
+        });
+
+        self.productsgrid = function (Item) {
+
+            Gupc = Item.upc;
+            self.ProductNo(Item.ProductNo);
+            self.txtmfgno(Item.MfgNo);
+            self.txtupc(Item.upc);
+            self.txtmfgpartno(Item.mfgpartno);
+            self.txtoldname(Item.company);
+            self.txtnew_up(Item.new_up.trim());
+            self.txtpack(Item.pack);
+            self.um_desc(Item.um_desc);
+            self.txtproddesc(Item.proddesc);
+            self.txtproddesc2(Item.proddesc2);
+            self.txcatcode(Item.catcode);
+            self.txtggdist(Item.ggdist);
+            var clsindex = Item.pds_date.toString().indexOf("/");
+            if ((Item.pds_date == "  -   -") || (clsindex >= 0)) //if ((Item.pds_date == "  -   -") || (Item.pds_date.toString().includes("/")))
+                self.txtpds_date(DateBind(Item.pds_date));
+            else
+                self.txtpds_date(DateBind(Item.pds_date));
+
+            //============================================================ ADD BY bekingo@gmail.com
+
+            self.txtproddesc2(Item.proddesc2);
+            self.cp_qty(Item.cp_qty);
+            self.txtitemType(Item.f01A_itemType);
+            
+           // alert(self.txtproddesc2);
+
+        }
+
+        self.products = function (item) {
+            $.ajax({
+                url: "Fillproducts",
+                type: "POST",
+                async:false,
+                data: { Upc: self.txtupc() },
+                success: function (response) {
+                    self.productsgrid(response.Items[0]);
+                    self.hdnPrdList(response.Items[0]);
+                   
+                }
+
+            });
+           
+        }
+        self.products();
+        Gupc = self.txtupc();
+
+
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+            
+            CallDisableTabs();
+
+            self.txtmfgno("");
+            self.txtupc("");
+            self.txtmfgpartno("");
+            self.txtnew_up("");
+            self.txtoldname("");
+            self.txtpack("");
+            self.um_desc("");
+            self.txtproddesc("");
+            self.txtproddesc2("");
+            self.txcatcode("");
+            self.txtggdist("");
+            self.txtpds_date("");
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            $('#mfgno').css("background-color", "#C7F3AD");
+            $('#txtcatcode').css("background-color", "#C7F3AD");
+            //$('#UPC').prop('readonly', false);
+            $("#UPC").focus();
+        }
+
+        self.Edit = function () {
+
+            CallDisableTabs();
+
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            //$('#UPC').prop('readonly', true);
+
+            $('#mfgno').css("background-color", "#C7F3AD");
+            $('#txtcatcode').css("background-color", "#C7F3AD");
+
+            $("#partno").focus();
+        }
+
+        self.Upcsearchdbclick = function () {
+            if (blurevent == true) {
+                blurevent = false;
+                return false;
+            }
+            dbclick = true;
+            self.txtsearch(document.getElementById('Upcsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "")
+                self.txtsearch("%");
+
+            $.ajax({
+                url: "ProductsearchList",
+                type: "POST",
+                data: { searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.productsgrid(response.Items[0]);
+                    }
+                    else {
+                        //window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtUpcsrch&table=product,mfg&field=upc,mfgpartno,company&header=UPC,Mfr.Item No,Mfr.Name&text=" + self.txtsearch() + "&where=" + self.selectedvalue() + "&LabelDescription=Product";
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtUpcsrch&table=product,mfg&field=company,mfgpartno,upc,proddesc,catcode&header=Mfr.Name,Mfr.Item No,UPC,Description,Category Code&text=" + self.txtsearch() + "&where=" + self.selectedvalue() + "&LabelDescription=Product";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    self.txtsearch("");
+                }
+            });
+        }
+
+        self.txtUpcsearch = function () {
+            if (dbclick == true) {
+                dbclick = false;
+                return false;
+            }
+
+            blurevent = true;
+
+            self.txtsearch(document.getElementById('Upcsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "") {
+                return false;
+            }
+            $("#loading").fadeIn();
+
+            $.ajax({
+                url: "ProductsearchList",
+                type: "POST",
+                data: { searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    if (response.Items.length == 1) {
+                        self.productsgrid(response.Items[0]);
+                    }
+                    else {
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtUpcsrch&table=product,mfg&field=company,mfgpartno,upc,proddesc,catcode&header=Mfr.Name,Mfr.Item No,UPC,Description,Category Code&text=" + self.txtsearch() + "&where=" + self.selectedvalue() + "&LabelDescription=Product";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    self.txtsearch("");
+                    blurevent = false;
+                },
+                error: function (request, status, error) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+        }
+
+        self.Mfgsearchdbclick = function () {
+            if (blurevent == true) {
+                blurevent = false;
+                return false;
+            }
+            dblclic = true;
+            self.txtmfgno(document.getElementById('mfgno').value);
+            if (self.txtmfgno() == null || self.txtmfgno() == "")
+                self.txtmfgno("%");
+            self.selectedvalue_mfg("mfgno");
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtmfgno(), selectedvalue: self.selectedvalue_mfg() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.SelectedItem(response.Items[0]);
+                    }
+                    else {
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=" + MainMfgnofield + "&header=" + MainMfgnofield_header + "&text=" + self.txtmfgno() + "&where=" + self.selectedvalue_mfg() + "&LabelDescription=MFG ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                }
+            });
+        }
+
+        self.txtMfgsearch = function () {
+            if (dblclic == true) {
+                dblclic = false;
+                return false;
+            }
+
+            blurevent = true;
+
+            self.txtmfgno(document.getElementById('mfgno').value);
+            if (self.txtmfgno() == null || self.txtmfgno() == "") {
+                return false;
+            }
+            self.selectedvalue_mfg("mfgno");
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtmfgno(), selectedvalue: self.selectedvalue_mfg() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        //self.SelectedItem(response.Items[0]);
+                        self.txtmfgno(response.Items[0].MfgNo);
+                        self.txtoldname(response.Items[0].company);
+                    }
+                    else {
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=" + MainMfgnofield + "&header=" + MainMfgnofield_header + "&text=" + self.txtmfgno() + "&where=" + self.selectedvalue_mfg() + "&LabelDescription=MFG";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    blurevent = false;
+                }
+            });
+        }
+
+        self.txtcatcodesearch = function () {
+            if (catcodedbclic == true) {
+                catcodedbclic = false;
+                return false;
+            }
+            self.txcatcode(document.getElementById('txtcatcode').value);
+            if (self.txcatcode() == null || self.txcatcode() == "") {
+                return false;
+            }
+
+            self.selectedvalue_mfg("entry");
+
+            var fields = "entry,descript,code_a,code_b";
+            var headers = "Entry,Descript,Code_a,Code_b";
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'OPCATCODE', searchtext: self.txcatcode(), selectedvalue: self.selectedvalue_mfg() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.txcatcode(response.Items[0].entry);
+                    }
+                    else {
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtcatcodesrch&table=OPCATCODE&field=" + fields + "&header=" + headers + "&text=" + self.txcatcode() + "&where=" + self.selectedvalue_mfg() + "&LabelDescription=CATCODE";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                   
+                }
+            });
+
+        }
+        self.catcodebclick = function () {
+
+            self.txcatcode(document.getElementById('txtcatcode').value);
+            if (self.txcatcode() == null || self.txcatcode() == "")
+                self.txcatcode("%");
+
+            catcodedbclic = true;
+            self.selectedvalue_mfg("entry");
+            var fields = "entry,descript,code_a,code_b";
+            var headers = "Entry,Descript,Code_a,Code_b";
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'OPCATCODE', searchtext: self.txcatcode(), selectedvalue: self.selectedvalue_mfg() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.txcatcode(response.Items[0].entry);
+                    }
+                    else {
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtcatcodesrch&table=OPCATCODE&field=" + fields + "&header=" + headers + "&text=" + self.txcatcode() + "&where=" + self.selectedvalue_mfg() + "&LabelDescription=CATCODE";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+
+                }
+            });
+
+        }
+
+        self.Save = function () {
+
+            if (self.txtupc() == null || self.txtupc() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "You must enter the upc",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('UPC').focus();
+                    }
+                });
+                
+                $(".msgButton").focus();
+                return false;
+            }
+
+            if (self.txtpds_date() != null && self.txtpds_date() != "") {
+                var isdatecomplvalidate = isValidDate(self.txtpds_date());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid PDS Update on",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('pds_date').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            var Objproducts = [];
+            Objproducts = {
+               ProductNo: self.ProductNo(),
+                mfgno: self.txtmfgno(),
+                upc: self.txtupc(),
+                mfgpartno: self.txtmfgpartno(),
+                pack: self.txtpack(),
+                um_desc: self.um_desc(),
+                proddesc: self.txtproddesc(),
+                proddesc2: self.txtproddesc2(),
+                catcode: self.txcatcode(),
+                ggdist: self.txtggdist(),
+                new_up: self.txtnew_up(),
+                pds_date: self.txtpds_date()
+            }
+
+            if (self.txtupc() != null && self.txtupc() != "") {
+                $.ajax({
+                    url: "CheckDigit",
+                    data: { Upc: self.txtupc() },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        if (response.Items == "") {
+                            $.ajax({
+                                url: "ExistUPC",
+                                data: { Upc: self.txtupc(), IsAddMode: self.AddMode(), ProductNo: self.ProductNo() },
+                                type: "POST",
+                                async: false,
+                                success: function (response) {
+                                    if (response.Items == false) {
+                                        $.ajax({
+                                            url: "SaveProducts",
+                                            data: { ObjproductList: JSON.stringify(Objproducts), IsAddMode: self.AddMode() },
+                                            type: "POST",
+                                            success: function (response) {
+                                                self.products();
+                                                self.AddMode(false);
+                                                self.EditMode(true);
+                                                self.SaveMode(false);
+                                                self.EnableDisableMode(true);
+                                                self.EnableDisableControls(false);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $.msgBox({
+                                            title: "Gro Group",
+                                            content: "Upc # is already exist",
+                                            type: "info",
+                                            buttons: [{ value: "Ok" }],
+                                            afterClose: function (result) {
+                                                document.getElementById("UPC").focus();
+                                            }
+                                        });
+                                        $(".msgButton").focus();
+                                    }
+                                }
+                            });
+
+                        }
+                        else {
+
+                            if (response.Items == "Invalid character") {
+                                msg = "Invalid character found in UPC";
+                            }
+                            else {
+                                if (response.Items == "Check digit failed")
+                                    msg = "UPC check digit failed."; //Correct check digit is " + response.checkdigit;
+                            }
+
+                            $.msgBox({
+                                title: "Gro Group",
+                                content: msg,
+                                type: "info",
+                                buttons: [{ value: "Ok" }],
+                                afterClose: function (result) {
+                                    document.getElementById("UPC").focus();
+                                }
+                            });
+                            $(".msgButton").focus();
+                        }
+                    }
+                });
+            }
+            CallEnableTabs();
+        }
+
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+           
+            CallEnableTabs();
+
+            self.productsgrid(self.hdnPrdList());
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+            self.EnableDisableControls(false);
+            $('#mfgno').css("background-color", "white");
+            $('#txtcatcode').css("background-color", "white");
+        }
+        //self.Delete = function () {
+        //    if (self.SaveMode() == true)
+        //        return false;
+        //    alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdelete, false, true);
+        //}
+        //self.confirmdelete = function () {
+        //    $.ajax({
+        //        url: "DeleteProducts",
+        //        type: "POST",
+        //        data: { Upc: Gupc },
+        //        success: function (response) {
+        //            self.products();
+        //        }
+        //    });
+        //}
+        self.Delete = function () {
+            if (self.SaveMode() == true)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+        }
+
+        self.btnsalesList = function () {
+            $("#iSales").contents().find("body").html('');
+            document.getElementById('iSales').src = "Sales";
+        }
+
+        self.btnpdsList = function () {
+            $("#iPDS").contents().find("body").html('');
+            document.getElementById('iPDS').src = "ProductDataSheet";
+        }
+
+        self.optionselect = function (item, element) {
+            var obj = element.currentTarget.childNodes[0];
+            self.selectedvalue(obj.value);
+            self.txtname(element.currentTarget.childNodes[0].innerHTML);
+            document.getElementById('Upcsearch').focus();
+        }
+
+        self.searchselecteditem = function (item, element) {
+            if (element == "txtUpcsrch") {
+                self.txtoldname(item[0]);
+                self.txtmfgpartno(item[1]);
+                self.txtupc(item[2]);
+                self.txtproddesc(item[3]);
+                self.txcatcode(item[4]);
+               
+                self.products(item[2]);
+                self.txtsearch("");
+              
+            }
+            else if (element=="txtcatcodesrch") {
+                self.txcatcode(item[0]);
+            }
+            else {
+                self.txtmfgno(item[0]);
+                self.txtoldname(item[1]);
+            }
+        }
+
+        
+    }
+
+    function CallDisableTabs() {
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            if (list[0].childNodes[0].id != lis[i].childNodes[0].id) {
+                $('#' + tablist[0].id + '').addClass("nallowed");
+                $('#' + lis[i].childNodes[0].id + '').addClass("event-none");
+            }
+        }
+
+    }
+
+    function CallEnableTabs() {
+
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            $('#' + tablist[0].id + '').removeClass("nallowed");
+            $('#' + lis[i].childNodes[0].id + '').removeClass("event-none");
+        }
+    }
+
+
+</script>
+
+<div id="tabs" class="tabbedwidget tab-primary">
+    <ul id="tabevent">
+        <li><a href="#tab1" id="CompanyProfiles">Product</a></li>
+        <li><a href="#tab2" id="DataSheet1">PDS 1</a></li>
+        <li><a href="#tab3" id="DataSheet2">PDS 2</a></li>
+        <li><a href="#tab4" id="DataSheet3">PDS 3</a></li>
+        <li><a href="#tab5" id="Sales">Sales</a></li>
+    </ul>
+    <div id="tab1">
+        <div class="container" style="max-width:1100px !important; text-align:left;">
+            <div class="row-fluid">
+                <div class="span3 mob-div-span">
+                    <ul class="list-nostyle list-inline tooltipsample mob-top">
+                        <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd"><i class="icon-file icon-white"></i></a></li>
+                        <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete"><i class="icon-remove icon-white"></i></a></li>
+                        <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                <div class="span4">
+                    <div class="searchmenu">
+                        <a href="#" class="btn btn-primary searchmenubtn" style="width:3px !important; height:1px; float: none !important;" id="btnsearch"><i style="margin-top:-8px; margin-left:-5px;" class="iconsweets-magnifying iconsweets-white"></i></a>
+                        <ul class="searchmenu-content" data-bind="foreach: $root.CmbUpc">
+                            <li style="cursor: pointer; list-style-type:none;" data-bind="click: $root.optionselect"><a data-bind="text: Display_FName,value:Field_Name"></a></li>
+                        </ul>
+                    </div>
+                    <input type="text" placeholder="" class="input-medium" id="Upcsearch" style="font-weight:normal" data-bind="disable:EnableDisableControls,value: txtsearch,event:{blur:txtUpcsearch,dblclick:Upcsearchdbclick},attr:{placeholder:txtname}" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <h4 class="widgettitle">Products</h4>
+                <div class="widgetcontent">
+                    <div class="correctborder">
+                        <div class="row-fluid">
+                            <div class="span4 mob-div-span">
+                                <label class="span6 mob-span">MfgNo</label>
+                                <input id="mfgno" class="input-small mob-text prd-margin-left" type="text" data-bind="disable: EnableDisableMode, value: txtmfgno,event:{blur:txtMfgsearch,dblclick: Mfgsearchdbclick}">
+                            </div>
+                            <div class="span4 mob-div-span">
+                                <label class="span4 mob-span">Mfr.Name</label>
+                                <input id="company" class="input-large mob-text" type="text" maxlength="30" data-bind="disable: EnableDisableMode, value: txtoldname" required>
+                            </div>
+
+                            <div class="span4">
+                                <label class="span4 mob-span">UPC #</label>
+                                <input id="UPC" type="text" class="mob-text" maxlength="14" data-bind="disable: EnableDisableMode, value: txtupc">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="correctborder">
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">Mfr.Item #</label>
+                                <input id="partno" class="input-medium mob-text" type="text" maxlength="15" data-bind="disable: EnableDisableMode, value: txtmfgpartno">
+
+                            </div>
+
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">Description 1</label>
+                                <input class="mob-text" type="text" style="width:30%" maxlength="40" data-bind="disable: EnableDisableMode, value: txtproddesc">
+
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">Description 2</label>
+                                <input id="desc2" class="mob-text" type="text" style="width:30%" maxlength="40" data-bind="disable: EnableDisableMode, value: txtproddesc2">
+
+                            </div>
+
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">Pack</label>
+                                <input class="input-small  mob-text" type="text" maxlength="6" data-bind="disable: EnableDisableMode, value: cp_qty">
+
+                            </div>
+
+                        </div>
+
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span2 mob-span">Category Code</label>
+                                <input id="txtcatcode" class="input-small mob-text" type="text" maxlength="7" data-bind="disable: EnableDisableMode, value: txcatcode,event:{blur:txtcatcodesearch,dblclick: catcodebclick}">
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">P&S Link</label>
+                                <input class="input-small mob-text" type="text" maxlength="6" data-bind="disable: EnableDisableMode, value: txtggdist">
+
+                            </div>
+
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">
+                                    Item Type
+                                </label>
+
+
+                                <input class="mob-text" type="text" style="width: 2%;" maxlength="1" data-bind="disable: EnableDisableMode, value: txtitemType">
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+
+                                <label class="span2 mob-span">PDS Update on:</label>
+                                <input id="pds_date" class="input-small mob-text" type="text" maxlength="10" data-bind="disable: EnableDisableMode, value: txtpds_date">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="tab2">
+        <div style="height: 800px">
+            <iframe id="iDataSheet1" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab3">
+        <div style="height: 800px">
+            <iframe id="iDataSheet2" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="tab4">
+        <div style="height: 800px">
+            <iframe id="iDataSheet3" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="tab5">
+        <div style="height: 800px">
+            <iframe id="iSales" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>

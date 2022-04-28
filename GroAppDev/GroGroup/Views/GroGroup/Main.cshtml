@@ -1,0 +1,1139 @@
+﻿@using System.Web.Optimization;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gro Group</title>
+    <script>
+        window.onscroll = function () {
+            frames.ifr.document.documentElement.scrollTop = window.pageYOffset;
+            frames.ifr.document.body.scrollTop = window.pageYOffset; // Google Chrome, Safari, documents without valid doctype
+        }
+    </script>
+
+    <script>
+        window.onresize = function () {
+            document.body.style.height = frames.ifr.document.body.offsetHeight + parseInt(document.getElementById('maincontentinner').style.top) + parseInt(document.getElementById('maincontentinner').style.bottom) + 'px'
+        }
+    </script>
+    <style>
+        body {
+            /*overflow-y: scroll;
+            overflow-x: auto;*/
+            overflow:auto;
+        }
+
+        iframe.noScrolling {
+            overflow: hidden !important;
+        }
+
+        /* Style The Dropdown Button */
+        .searchmenubtn {
+            color: white;
+            padding: 13px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border: 1px !important;
+            border-color: black !important;
+        }
+
+        /* The container <div> - needed to position the dropdown content */
+        .searchmenu {
+            position: relative;
+            display: inline-block;
+            border: 1px !important;
+            border-color: black !important;
+            z-index: 1000;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .searchmenu-content {
+            display: none;
+            position: fixed;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            top: 2.8em;
+        }
+
+            /* Links inside the dropdown */
+            .searchmenu-content a {
+                top: 1em;
+                height: 20px !important;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                font-size: 13px !important;
+                font-weight: normal !important;
+                color: black;
+                text-decoration: none !important;
+                display: block;
+            }
+
+                /* Change color of dropdown links on hover */
+                .searchmenu-content a:hover {
+                    top: -5px;
+                    background-color: #BCD8F3 !important;
+                    color: #800909 !important;
+                }
+
+        /* Show the dropdown menu on hover */
+        .searchmenu:hover .searchmenu-content {
+            display: block;
+            margin-top: -10px;
+        }
+
+        .searchmenu-content:after {
+            top: -7px;
+            content: " ";
+            left: 6%;
+            position: absolute;
+            width: 10px;
+            height: 9px;
+            border-right: 2px solid #0866c6;
+            border-bottom: 2px solid #0866c6;
+            background: white;
+            transform: rotate(222deg);
+        }
+
+        /* Change the background color of the dropdown button when the dropdown content is shown */
+        .searchmenu:hover .searchmenubtn {
+        }
+
+        .SearchOption-menu {
+            position: absolute;
+            z-index: 1000;
+            float: right;
+            min-width: 100px;
+            padding: 5px 8px;
+            text-align: left;
+            list-style: none;
+            background-color: #FFF;
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+            border: 2px solid #0866c6;
+            border-radius: 4px;
+            -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+            box-shadow: 0 6px 12px rgba(0,0,0,.175);
+            margin-left: -1%;
+            color: black;
+        }
+
+            .SearchOption-menu:after {
+                top: -7px;
+                content: " ";
+                left: 6%;
+                position: absolute;
+                width: 10px;
+                height: 9px;
+                border-right: 2px solid #0866c6;
+                border-bottom: 2px solid #0866c6;
+                background: white;
+                transform: rotate(222deg);
+            }
+
+        .limouseover:hover {
+            top: -5px;
+            background-color: #BCD8F3 !important;
+            color: #800909 !important;
+            list-style: none;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body onbeforeunload="BrowserCloseEvent();">
+
+    <link rel="stylesheet" href="@Url.Content("~/css/style.default.css")" type="text/css" />
+    <link href="@Url.Content("~/css/jquery.ui.css")" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive-tables.css")" type="text/css" />
+    @*<link rel="stylesheet" href="@Url.Content("~/css/responsive_report.css")" type="text/css" />*@
+    <link rel="stylesheet" href="@Url.Content("~/css/msgBoxLight.css")" type="text/css" />
+    @Scripts.Render("~/bundles/lOGINjquery")
+    @Scripts.Render("~/bundles/jquery")
+
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js/excanvas.min.js"></script><![endif]-->
+    <style type="text/css">
+        ul#nav {
+            color: #000020;
+            display: block;
+            float: left;
+        }
+
+            ul#nav, ul#nav ul {
+                list-style: none;
+                float: left;
+                position: absolute;
+            }
+
+                ul#nav .subs {
+                    /*//background-color: #0866c6; rgba(121,160,160,0.8);*/
+                    background-color: #152d54;
+                    border: 1px solid #887963;
+                    display: none;
+                    float: left;
+                    left: 0;
+                    padding: 10px;
+                    position: absolute;
+                    top: 100%;
+                    color: white;
+                }
+
+
+        #navigation li:hover > * {
+            display: block;
+            color: #2A2; /*color: #222;*/
+            text-shadow: 0px 2px 3px #555;
+        }
+
+        ul#nav ul .subs {
+            left: 100%;
+            position: absolute;
+            top: 0;
+            z-index: 10;
+        }
+
+        ul#nav ul {
+            padding: 0 5px 5px;
+            float: left;
+            z-index: 10;
+        }
+
+        ul#nav li {
+            position: relative;
+            display: inline;
+            float: left;
+            z-index: 10;
+        }
+
+        ul#nav a {
+            color: #353435;
+            float: left;
+            font-size: 15px;
+            letter-spacing: 1px;
+            line-height: 14px;
+            min-width: 160px;
+            text-align: center;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+
+        ul#nav li a.current, ul#nav li a.current:hover {
+            background: url("../images/nav_current.png") no-repeat scroll center top transparent;
+            border: medium none;
+            color: #fff;
+            padding-top: 60px;
+            text-shadow: none;
+        }
+
+        ul#nav ul a {
+            color: white; /*#000;*/
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px;
+            text-shadow: #fff 0 0 0;
+            border-radius: 0;
+            -moz-border-radius: 0;
+            -webkit-border-radius: 0;
+            text-align: left;
+        }
+
+        ul#nav ul li:hover > a {
+            /*letter-spacing: 2px;*/
+        }
+
+        .headmenu .dropdown-menu {
+            position: fixed !important;
+        }
+
+        .bgSizeContain {
+            background-image: url(../images/menuheader.png);
+            width: 100%;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+    </style>
+
+    <script>
+        @*function BrowserCloseEvent() {
+            var cluburl = window.location.origin;
+
+            $.ajax({
+                url: '@Url.Action("Logout", "Gro Group")',
+                type: "POST",
+                data: { URL: cluburl, Location: document.getElementById('location').value, name: self.empfullname() },
+                success: function (response) {
+                    localStorage.removeItem('SessionParams');
+                    localStorage.removeItem('TimeSlot');
+                    localStorage.removeItem('DatepickerDate');
+                }
+            });
+        }*@
+
+        
+        $(document).ready(function () {
+            initSession();
+            $(this).click(function () {
+                ReInitiallizeSession();
+            });
+
+            $(this).keypress(function () {
+                ReInitiallizeSession();
+            });
+        });
+
+        var sess_pollInterval = 60000;
+        var sess_warningMinutes = 719;
+        var sess_intervalID;
+        var sess_lastActivity;
+        var timer = 60;
+        var clearTimer;
+        function initSession() {
+            sess_lastActivity = new Date();
+            sessSetInterval();
+            $(document).bind('keypress.session', function (ed, e) {
+                sessKeyPressed(ed, e);
+            });
+        }
+        function sessSetInterval() {
+            sess_intervalID = clearInterval(sess_intervalID);
+            sess_intervalID = setInterval('sessInterval()', sess_pollInterval);
+        }
+        function sessClearInterval() {
+            clearInterval(sess_intervalID);
+        }
+        function sessKeyPressed(ed, e) {
+            sess_lastActivity = new Date();
+        }
+        function ReInitiallizeSession() {
+            initSession();
+            $.ajax({
+                url: "../GroGroup/ReIniSession",
+                type: "POST",
+                success: function (response) {
+
+                }
+            });
+        }
+
+        function sessInterval() {
+            var now = new Date();
+            //get milliseconds of differneces
+            var diff = now - sess_lastActivity;
+            //get minutes between differences
+            var diffMins = (diff / 1000 / 60);
+            if (diffMins >= sess_warningMinutes) {
+                //wran before expiring
+                //stop the timer
+                sessClearInterval();
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Your session has timed out after a long time of inactivity. Please click ok and Sign In again.",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    success: function (result) {
+                        if (result == "Ok") {
+                            document.getElementById("sess_logout").click();
+                        }
+                    }
+                });
+
+            }
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        var ClubId = "";
+        var Parent;
+        var dblclic = false;
+        var blurevent = false;
+
+        var login = "", nuser = "";
+
+        var opsearchfield = "AcctNo,lastname,firstname,middlename,locationid,memtype,status,resphone,cellphone,scancode,email,clubid";
+        var opsearchfield_header = "Member ID,Last Name,First Name,MI,Location ID,Mem Type,Status,Home Phone,Cell Phone,Scan Code,Email,Former ID";
+        var HeaderMemberSearch = false;
+        var mainchk;
+        var chkmainsearch = "";
+
+        jQuery(document).ready(function ($) {
+
+            Parent = new viewModel();
+            ko.applyBindings(Parent);
+
+            $("#txtsearch").blur({ handler: Parent.membersearch });
+            $("#sess_logout").click({ handler: Parent.LogOut });
+
+            $("#Dialog").dialog({
+                draggable: true,
+                autoOpen: false,
+                autoresize: false,
+                modal: true,
+                width: 1000,
+                height: 700
+            });
+
+            $("#close1").click(function () {
+                if (typeof document.getElementById("ifr").contentWindow.DialogClose == 'function')
+                    document.getElementById("ifr").contentWindow.DialogClose();
+            });
+
+
+            $("#reportclose").click(function () {
+                if (typeof document.getElementById("ifr").contentWindow.DialogClose == 'function') {
+                    document.getElementById("ifr").contentWindow.DialogClose();
+                }
+            });
+
+            $("#popupclose").click(function () {
+                if (typeof document.getElementById("ifr").contentWindow.DialogClose == 'function')
+                    document.getElementById("ifr").contentWindow.DialogClose();
+            });
+
+
+            $("#lblempname").click(function () {
+                document.getElementById('sess_logout').click();
+            });
+
+            $("#txtsearch").click(function () {
+                $("#txtsearch").css("width", "300");
+                $("#txtsearch").val("");
+                $("#txtsearch").css("background-color", "#fff !important");
+                $("#txtsearch").css("color", "#333 !important");
+                Parent.txthndMainmem("");
+            });
+
+
+            $("#txtsearch").mouseover(function () {
+                $("#txtsearch").css("visibility", "visible");
+                $("#txtsearch").css("width", "300");
+                $("#txtsearch").css("background-color", "#fff !important");
+                $("#txtsearch").css("color", "#333 !important");
+                $("#txtsearch").css("padding-left", "30");
+                $("#txtsearch").css("margin-top", "2");
+                Parent.txthndMainmem($("#txtsearch").val());
+                $("#txtsearch").val(Parent.txtMemHeader());
+                if (Parent.txtMemHeader() != "" && Parent.txtMemHeader() != undefined)
+                    mainchk = Parent.txtMemHeader().length;
+            });
+
+            $(".userloggedinfo").mouseleave(function () {
+                $("#txtsearch").css("font-weight", "800");
+                $("#txtsearch").css("padding-left", "30");
+                $("#txtsearch").css("margin-top", "2");
+                $("#txtsearch").css("background-color", "#0866c6 !important");
+                $('#txtsearch').css("color", "#fff !important");
+                Parent.txthndMainmem($("#txtsearch").val());
+                //$("#txtsearch").val(Parent.txtMemHeader());
+                if (Parent.txtMemHeader() != "" && Parent.txtMemHeader() != undefined)
+                    mainchk = Parent.txtMemHeader().length;
+            });
+
+
+            $("#ImgReports").click(function () {
+                reportSelected = true;
+                document.getElementById('ifr').src = "../Reports/OPfrmNewRepWizard";
+                document.getElementById('ifr').click();
+            });
+
+            $("#ImgBizStat").click(function () {
+                reportSelected = false;
+                document.getElementById('ifr').src = "../Utility/Dashboard";
+                document.getElementById('ifr').click();
+            });
+
+            $("#ImgManufacturers").click(function () {
+                document.getElementById('ifr').src = "../GroGroup/Manufacturers";
+                document.getElementById('ifr').click();
+            });
+
+            $("#ImgDistributors").click(function () {
+                document.getElementById('ifr').src = "../GroGroup/Distributors";
+                document.getElementById('ifr').click();
+            });
+
+            $("#ImgRetailers").click(function () {
+                document.getElementById('ifr').src = "../GroGroup/Retailers";
+                document.getElementById('ifr').click();
+            });
+
+            $("#navigation > li").live("click", function () {
+            });
+
+
+
+            //$("#searchscreen").css('height', ($(window).height() - 100 + "px"));
+            //$(window).resize(function () {
+                //$("#searchscreen").css('height', ($(window).height() - 100 + "px"));
+            //});
+            
+        });
+
+        function viewModel() {
+
+            var self = this;
+            var count;
+            var resp;
+            self.submenu = ko.observable();
+            self.secmenu = ko.observable();
+            self.menulist = ko.observable();
+            self.selectedmenu = ko.observable();
+            self.nuser = ko.observable();
+            self.initials = ko.observable();
+            self.empfullname = ko.observable();
+            self.empemail = ko.observable();
+            
+            self.txthdnsearch = ko.observable();
+            self.txtMemHeader = ko.observable();
+            self.txtMemHeaderStatus = ko.observable();
+            self.AcctNoId = ko.observable('');
+            self.selectedvalue = ko.observableArray([]);
+            self.txtsearch = ko.observableArray([]);
+            self.EnableDisableLocation = ko.observable(false);
+            self.txthndMainmem = ko.observable("");
+            self.txtname = ko.observable();
+            self.selectedvalue("lastname");
+
+            self.initials('@ViewBag.Initials');
+            self.empfullname('@ViewBag.UserName');
+
+            if (self.AcctNoId() != undefined && self.AcctNoId() != null && self.AcctNoId() != "")
+                Showmem(self.AcctNoId(), true);
+
+
+
+            $("#mainmenu").live("click", function () {
+                if ($('#navigation').css('display') == 'none') {
+                    $('#navigation').show();
+                }
+                else {
+                    $('#navigation').hide();
+                }
+            });
+
+            $("#search").live("click", function () {
+                if ($('#menusearchhide').css('display') == 'block') {
+                    $('#menusearchhide').hide();
+                }
+                else {
+                    $('#menusearchhide').show();
+                }
+            });
+
+
+            $("#headerpnl").live("click", function () {
+                $('#navigation').hide();
+                $('#menusearchhide').hide();
+            });
+
+            $(".subs").live("click", function () {
+                $('#navigation').hide();
+            });
+
+            //$.ajax({
+            //    url: "GetEmployeeDetails",
+            //    type: "POST",
+            //    async: false,
+            //    success: function (response) {
+            //        if (response.Name != "") {
+            //            self.empemail(response.Email);
+            //            self.nuser(response.nuser);
+            //            nuser = response.nuser;
+            //        }
+            //    }
+            //});
+
+            self.getlist = function (item, element) {
+
+                var um = "OP";
+                self.selectedmenu('Operation');
+
+                $.ajax({
+                    url: "GetList",
+                    type: "POST",
+                    data: { selection: um },
+                    async: false,
+                    success: function (response) {
+                        self.menulist(response.Items);
+                        if (response.Preference != null && response.Preference != "") {
+                            document.getElementById('ifr').scrolling = "no";
+                            document.getElementById('ifr').src = "../GroGroup/HomePage";
+                            document.getElementById('Logo').style.display = 'none';
+                        }
+                    }
+                });
+            }
+
+            self.MemHeaderClick = function () {
+                //if (document.getElementById('ifr').src.indexOf("frmMM_Members") == -1) {
+                //    document.getElementById("description").value = "Members";
+                //    document.getElementById("usermodule").value = "MB";
+                //    document.getElementById('ifr').src = "../Members/frmMM_Members?isProspect=false";
+                //}
+            }
+
+            self.getlist('', '');
+
+            self.ClickMainMenu = function (element, index, data) {
+                if (element.userModule.toUpperCase() == "RP") {
+                    document.getElementById('ifr').src = "../Reports/OPfrmNewRepWizard";
+                    document.getElementById('ifr').click();
+                }
+            }
+
+            self.fillsub = function (element, index, data) {
+                var ind = element[7].id;
+                var um = element[7].getAttribute('usermodule');
+                var con = element[7].getAttribute('controller');
+                var sub = document.getElementById('submenu' + ind);
+
+                $.ajax({
+                    url: "FillSubMenu",
+                    type: "POST",
+                    data: { usermodule: um },
+                    async: false,
+                    success: function (response) {
+
+                        for (var j = 0; j < response.Items.length; j++) {
+                            if (response.Items.length > 0) {
+                                if ((response.Items[j].UserModule == "Files" || response.Items[j].UserModule == "Utility") && response.Items[j].Description == "-")
+                                    response.Items[j].Description = "______________________";
+                                if (response.Items[j].UserModule == "SP" && response.Items[j].Description == "-")
+                                    response.Items[j].Description = "__________________________________________";
+
+                                $(sub).append('<li><a id="sub' + ind + '' + j + '" onclick="openscreen(this)" style="cursor:pointer;"">' + response.Items[j].Description + '</a></li><br>');
+                                var li = document.getElementById('sub' + ind + j);
+                                li.setAttribute('filename', '../' + con + '/' + response.Items[j].FileName);
+                                li.setAttribute('description', response.Items[j].Description);
+                                li.setAttribute('usermodule', response.Items[j].UserModule);
+                            }
+                            else {
+                                $(sub).hide();
+                                var li = document.getElementById(ind);
+                                li.setAttribute('onclick', 'openscreen(this)');
+                                li.setAttribute('filename', '../' + con + '/' + response.Items[j].FileName);
+                                li.setAttribute('description', response.Items[j].Description);
+                                li.setAttribute('usermodule', response.Items[j].UserModule);
+                            }
+                        }
+
+                    }
+                });
+            }
+
+            $("#SearchOption").hide();
+            self.optionselect = function (item, element) {
+                var obj = element.currentTarget.childNodes[0];
+                self.selectedvalue(obj.value);
+                document.getElementById('txtsearch').title = obj.text + " Search";
+                self.txtname(element.currentTarget.childNodes[0].innerHTML);
+                document.getElementById('txtsearch').value = "";
+                document.getElementById('txtsearch').focus();
+            }
+
+            self.searchimgin = function () {
+                $("#SearchOption").show();
+            }
+
+            self.searchimgout = function () {
+                $("#SearchOption").hide();
+            }
+
+            self.LogOut = function () {
+                //document.getElementById('sess_logout').href = window.location.origin;
+
+                $.ajax({
+                    url: "@Url.Content("~/GroGroup/Logout")",
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        document.getElementById('sess_logout').href = "@Url.Content("~/GroGroup/Login")";
+                    }
+                });
+            }
+        }
+
+        function searchmodalclose() {
+            document.getElementById('searchscreen').src = "";
+        }
+
+        function reportmodalclose() {
+            document.getElementById('reportscreen').src = "";
+        }
+
+        function openscreen(obj) {
+
+            if (obj.getAttribute('description') == "______________________" || obj.getAttribute('description') == "__________________________________________") {
+                return;
+            }
+
+            document.getElementById("description").value = obj.getAttribute('description');
+            document.getElementById("usermodule").value = obj.getAttribute('usermodule');
+
+
+            document.getElementById('ifr').scrolling = "No";
+
+            if (obj.getAttribute('filename') == "../Reports/OPfrmNewRepWizard" || obj.getAttribute('filename') == "../Reports/OPfrmRepWizard") {
+                document.getElementById('ifr').src = "../Reports/OPfrmNewRepWizard";
+                reportSelected = true;
+            }
+            else {
+                if (obj.getAttribute('description') == "Update PDS from Excel") { 
+                    document.getElementById('ifr').src = "../Utility/UpdatePDS";
+                }
+                else {
+
+                    switch (obj.getAttribute('description')) {
+                        case "Benefit Update Batch Number":
+                            document.getElementById('ifr').src = "../Supervisor/BenifitBatchNoUpdate";
+                            break;
+                        case "Reset Hardware Show Booth Number":
+                            alertconfirm("Reset Hardware Show Booth Number", "Clear the Hardware Show Booth Number?", ConfirmResetHardware, true, false);
+                            break;
+                        case "Reset IGC Chicago Show Booth Number":
+                            alertconfirm("Reset IGC Chicago Show Booth Number", "Clear the IGC Chicago Show Booth Number?", ConfirmResetChicago, true, false);
+                            break;
+                        case "Reset Mfg Query Filter":
+                            alertconfirm("Reset Mfg Query Filter", "Clear the Mfg Query Filter - Set to spaces?", ConfirmResetCodeA, true, false);
+                            break;
+                        case "Reset Mfg.CodeC":
+                            alertconfirm("Reset Mfg.CodeC", "Clear the CodeC - set to spaces?", ConfirmResetCodeC, true, false);
+                            break;
+                        case "Roll PDS and Program CY to LY":
+                            alertconfirm("Roll PDS and Program CY to LY", "Roll the PDS and Program Received - CY to LY then space out CY", ConfirmRollPDSProgram, true, false);
+                            break;
+                        case "Products - Update all MFG.No.":
+                            alertconfirm("Products - Update all MFG.No.", "Have you taken a backup of the DB from Utility menu?", UpdateAllProducts, true, false);
+                            break;
+                        case "Products - Purged Unused UPCs - Read SOP first":
+                            document.getElementById('ifr').src = "../Supervisor/PurgedUnusedUPC";
+                            //alertconfirm("Products - Purged Unused UPCs - Read SOP first", "PURGE the Product and PDS  -  Read SOP before running?", ConfirmProductsPurged, true, false);
+                            break;
+                        case "Products - Annual Clear New Change Delete code":
+                            //alertconfirm("Products - Annual Clear New Change Delete code", "Clear All Products New/Change/ Code begin PDS season?", ConfirmProductsAnnualClear, true, false);
+                            alertconfirm("Products - Annual Clear New Change Delete code", "Have you taken a backup of the DB from Utility menu?", UpdateProductsAnnualClear, true, false);
+                            break;
+                        case "P&S UPC Change Blanks to Zeroes":
+                            UpdateBlankToZeroes();
+                            break;
+                        case "Reset Kickoff":
+                            ResetKickoffRollover();
+                            break;
+                        case "Category Update":
+                            document.getElementById('ifr').src = "../Utility/CategoryUpdate";
+                            break;
+                        case "Retailers-Corporate":
+                            document.getElementById('ifr').src = "../GroGroup/RetailerCorporate";
+                            break;
+                        default:
+                            document.getElementById('ifr').src = obj.getAttribute('filename');
+                            break;
+                    }
+
+                    //document.getElementById('ifr').scrolling = "yes";
+                    //document.getElementById('ifr').src = obj.getAttribute('filename');
+                }
+            }
+
+        }
+
+        function UpdateBlankToZeroes() {
+            $.ajax({
+                url: "../Supervisor/GetUpdateUPCCount",
+                data: { oldUPC: '' },
+                type: "POST",
+                success: function (response) {
+                    if (response.UPCCount > 0) {
+                        alertconfirm("P&S UPC Change Blanks to Zeroes", response.UPCCount + " records found. Do you want to Replace Blank P&S UPC numbers with Zeroes?", ConfirmUPCChangeZeros, true, false);
+                    }
+                    else {
+                        alertinfo("P&S UPC Change Blanks to Zeroes", "No records to Replace Blank P&S UPC numbers with Zeroes", true, false);
+                    }
+                }
+            });
+        }
+
+       
+
+        function ConfirmResetHardware() {
+            $.ajax({
+                url: "FillResetHardware",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Reset Hardware Show Booth Number", "Hardware Show Booth Number Update is Completed - Restart the GG System", true, false);
+                }
+
+            });
+        }
+        function ConfirmResetChicago() {
+            $.ajax({
+                url: "ResetIGCChicago",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Reset IGC Chicago Show Booth Number", "IGC Chicago - Booth Number Update is Completed - Restart the GG System", true, false);
+                }
+
+            });
+        }
+
+        function ConfirmResetCodeA() {
+            $.ajax({
+                url: "ResetCodeA",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Reset Mfg Query Filter", "Mfg Query Filter Update is Completed", true, false);
+                }
+
+            });
+        }
+        function ConfirmResetCodeC() {
+            $.ajax({
+                url: "ResetCodeC",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Reset Mfg. CodeC", "CodeC Update is Completed", true, false);
+                }
+
+            });
+        }
+        function ConfirmRollPDSProgram() {
+            $.ajax({
+                url: "RollPDSProgram",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Roll PDS and Program CY to LY", "Rollover of PDS and Program CY to LY then Space CY  Update is Completed", true, false);
+                }
+
+            });
+        }
+
+        function UpdateAllProducts() {
+            alertconfirm("Products - Update all MFG.No.", "All MfgNo in Product will be replaced with what is MfgUpc table. Are you Sure?", ConfirmProductsUpdate, true, false);
+        }
+
+        function ConfirmProductsUpdate() {
+            $.ajax({
+                url: "ProductsUpdate",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Products - Update all MFG.No.", "Products Update is Completed", true, false);
+                }
+
+            });
+        }
+
+        function ConfirmProductsPurged() {
+            $.ajax({
+                url: "ProductsPurgeUnused",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Products - Purge Unused UPCs - Read SOP first", "PRODUCT & PDS files purged - Restart the GG System", true, false);
+                }
+
+            });
+        }
+
+        function UpdateProductsAnnualClear() {
+            alertconfirm("Products - Annual Clear New Change Delete code", "Clear All Products New/Change/ Code begin PDS season?", ConfirmProductsAnnualClear, true, false);
+        }
+
+        function ConfirmProductsAnnualClear() {
+            $.ajax({
+                url: "ProductsAnnualClear",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Products - Annual Clear New Change Delete code", "Products New/Change/M Clear is Completed", true, false);
+                }
+
+            });
+        }
+
+        function ConfirmUPCChangeZeros() {
+            $.ajax({
+                url: "UPCChangeZeros",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("P&S UPC Change Blanks to Zeroes", "Completed updating UPCs with Zeroes", true, false);
+                }
+
+            });
+        }
+
+        function ResetKickoffRollover() {
+            $.ajax({
+                url: "RevisionRollover",
+                type: "POST",
+                success: function (response) {
+                    if (response.Items[0].rollcnt == "0")
+                        alertinfo("Reset Kickoff", "The Kick-Off Rollover is already Completed.", true, false);
+                    else
+                        alertconfirm("Reset Kickoff", "Are you sure you want to Rollover Kick-Off data?", ConfirmRolloverPrgRev, true, false);
+                }
+
+            });
+        }
+        function ConfirmRolloverPrgRev() {
+
+            alertconfirm("Reset Kickoff", "Confirm Rollover Kick-Off Data!", ConfirmationPrgRevData, true, false);
+        }
+        function ConfirmationPrgRevData() {
+            $.ajax({
+                url: "ResetKickoff",
+                type: "POST",
+                success: function (response) {
+                    alertinfo("Reset Kickoff", "Kick-Off Rollover is Completed", true, false);
+                }
+
+            });
+        }
+
+        function DialogClose() {
+            document.getElementById('close1').click();
+        }
+
+        function onloadheight() {
+            document.body.style.height = "1000px";
+        }
+
+        //function onresize() {
+        //    document.body.style.height = frames.ifr.document.body.offsetHeight + parseInt(document.getElementById('maincontentinner').style.top) + parseInt(document.getElementById('maincontentinner').style.bottom) + 'px'
+        //}
+
+        function onresize() {
+            document.body.style.height = frames.ifr.document.body.offsetHeight + parseInt(document.getElementById('maincontentinner').style.top) + parseInt(document.getElementById('maincontentinner').style.bottom) + 70 + 'px'
+        }
+
+        function MemberTabClick() 
+        {
+            if (window.parent.document.getElementById("ifr").contentWindow.search != undefined)
+                window.parent.document.getElementById("ifr").contentWindow.search.MemberTabClick();
+        }
+
+        function MenuHide() {
+            $('#navigation').hide();
+            $('#menusearchhide').hide();
+        }
+
+
+
+    </script>
+
+    <div id="Dialog" title="">
+        <iframe id="viewscreen" src="" style="width:100%; height:100%" scrolling="yes" frameborder="0"></iframe>
+    </div>
+
+    <div class="mainwrapper">
+        <div class="header bgSizeContain" id="headerpnl">
+            <div>
+                <ul class="headmenu" id="nav">
+                    <li>
+                        <a id="mainmenu" class="dropdown-toggle menuhover" data-toggle="dropdown" style="min-width:0px;">
+                            <center>
+                                <i class="icon-list-bullet" style="color:#fff"> </i>
+                            </center>
+                        </a>
+
+                        <ul id="navigation" class="subs" data-bind="foreach:  { data: $root.menulist, afterRender : $root.fillsub }" style="margin-top:-4px;">
+                            <!-- ko if: $index() == 0 -->
+                            <li></li>
+                            <!--/ko-->
+                            <li data-bind="attr:{id:$index(),'usermodule':userModule,'controller':ControllerName}">
+                                <a href="#" style="width:190px;">
+                                    <span class="iconsweets-windows iconsweets-white"></span>
+                                    <span data-bind="text:Description, click : $root.ClickMainMenu">
+                                    </span>
+                                </a>
+                                <!-- ko if: Description != 'Reports' -->
+                                <ul data-bind="attr:{id:'submenu'+$index()}" class="subs"></ul>
+                                <!--/ko-->
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="headmenu" style="margin-left:45%">
+                    <li style="border: none;">
+                        <center>
+                            @*<span style="color: white; font-weight:bold; vertical-align:middle;width:100%;">Gro Group</span>*@
+                            <img src="../images/GrogroupRep.png" id="Logo" title="Logo" style="width:100px;height:30px;cursor:pointer;display:none;" />
+                        </center>
+                    </li>
+                </ul>
+                <ul class="headmenu" style="float:right">
+                    <li class="listclass" style="float:left;margin-right:10px; border:none;">
+                        <div class="userloggedinfo">
+                            <img src="../images/manufacturers-icon.png" style="width:32px;height:22px;cursor:pointer;" id="ImgManufacturers" title="Manufacturers" />
+                            <img src="../images/distributors-icon.png" style="width:32px;height:22px;cursor:pointer;" id="ImgDistributors" title="Distributors" />
+                            <img src="../images/retailers-icon.png" style="width:32px;height:22px;cursor:pointer;" id="ImgRetailers" title="Retailers" />
+                            <img src="../images/report-icon.png" style="width:32px;height:22px;cursor:pointer;" id="ImgReports" title="Reports" />
+                            <img src="../images/bizstat1.png" style="width:32px;height:22px;cursor:pointer;display:none;" id="ImgBizStat" title="Dashboard" />
+                        </div>
+                    </li>
+                    <li style="float:right; border:none;">
+                        <div class="userinfo wheeloption" style="width:80px;">
+                            <label class="userinformation" data-toggle="dropdown" data-bind="text: initials,attr:{title:empfullname}" style="cursor: pointer; margin-right: 5px; color:white"></label><b class="caret" data-toggle="dropdown" style="cursor: pointer; margin-top: 10px; margin-right: 17px;"></b>
+                            <ul class="dropdown-menu" style="top:35px;">
+
+                                <li title="Click here to Sign out"><a id="lblempname" style="cursor: pointer; color: black">Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <!--headmenu-->
+            </div>
+        </div>
+        <!-- leftpanel -->
+        <!-- leftpanel -->
+        <div style="width:100%;">
+            <!--pageheader-->
+            <div id="maincontentinner" style="position: fixed; left: 1%; top: 50px; right: 1%; bottom: 0px; background: white; ">
+                <iframe class="noScrolling" name="ifr" id="ifr" scrolling="no" frameborder="0" style="position: absolute; height:98%; width:100%; overflow: hidden;" onload="document.body.style.height = frames.ifr.document.body.offsetHeight + parseInt(document.getElementById('maincontentinner').style.top) + parseInt(document.getElementById('maincontentinner').style.bottom) + 'px'"></iframe>
+            </div>
+            <!--maincontent-->
+        </div>
+        <!--rightpanel-->
+    </div>
+
+    <a id="sess_logout" style="cursor:pointer;width: 80PX;float: right;display:none; ">Sign Out</a>
+    <a href="#myModal" id="sc1" data-toggle="modal"></a>
+    <div aria-hidden="false" aria-labelledby="myModalLabel" role="dialog" tabindex="-1"
+         class="modal hide fade in" id="myModal" style="overflow:hidden;">
+        <div class="modal-body">
+            <button aria-hidden="true" id="close1" data-dismiss="modal" class="close" type="button" onclick="searchmodalclose();">
+                &times;
+            </button>
+            <h3 id="myModalLabel"></h3>
+            <iframe id="searchscreen" width="98%" height="100%" scrolling="no" frameborder="0"> </iframe>
+        </div>
+    </div>
+
+    <a href="#popup" id="PopupWindow" data-toggle="modal"></a>
+    <div aria-hidden="false" aria-labelledby="popupModalLabel" role="dialog" tabindex="-1"
+         class="modal hide fade in" id="popup" style="overflow:hidden">
+        <div class="modal-header">
+            <button aria-hidden="true" id="popupclose" data-dismiss="modal" class="close" type="button">
+                &times;
+            </button>
+            <h3 id="popupModalLabel"></h3>
+        </div>
+        <div class="modal-body">
+            <iframe id="popupscreen" width="98%" height="95%" scrolling="yes" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <a href="#receiptpopup" id="receiptwindow" data-toggle="modal"></a>
+    <div aria-hidden="false" aria-labelledby="receiptModalLabel" role="dialog" tabindex="-1"
+         class="modal hide fade in" id="receiptpopup">
+        <div class="modal-header">
+            <button aria-hidden="true" id="receiptclose" data-dismiss="modal" class="close" type="button">
+                &times;
+            </button>
+            <h3 id="receiptModalLabel"></h3>
+        </div>
+        <div class="modal-body">
+            <iframe id="receiptscreen" width="98%" height="100%" scrolling="yes" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <a href="#modalreport" id="openreport" data-toggle="modal"></a>
+    <div aria-hidden="false" aria-labelledby="modalreportLabel" role="dialog" tabindex="-1"
+         class="modal hide fade in" id="modalreport" style="overflow:hidden">
+        <div class="modal-header">
+            <button aria-hidden="true" id="reportclose" data-dismiss="modal" class="close" type="button" onclick="reportmodalclose();">
+                &times;
+            </button>
+            <h3 id="modalreportLabel"></h3>
+        </div>
+        <div class="modal-body">
+            <iframe id="reportscreen" width="98%" height="95%" scrolling="yes" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script src="@Url.Content("~/js/HTML5Webcam.js")" type="text/javascript"></script>
+    <!--#myModal-->
+    <!--mainwrapper-->
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+
+            // simple chart
+            var flash = [[0, 11], [1, 9], [2, 12], [3, 8], [4, 7], [5, 3], [6, 1]];
+            var html5 = [[0, 5], [1, 4], [2, 4], [3, 1], [4, 9], [5, 10], [6, 13]];
+            var css3 = [[0, 6], [1, 1], [2, 9], [3, 12], [4, 10], [5, 12], [6, 11]];
+
+            function showTooltip(x, y, contents) {
+                jQuery('<div id="tooltip" class="tooltipflot">' + contents + '</div>').css({
+                    position: 'absolute',
+                    display: 'none',
+                    top: y + 5,
+                    left: x + 5
+                }).appendTo("body").fadeIn(200);
+            }
+
+
+            var plot = jQuery.plot(jQuery("#chartplace"),
+			   [{ data: flash, label: "Flash(x)", color: "#6fad04" },
+              { data: html5, label: "HTML5(x)", color: "#06c" },
+              { data: css3, label: "CSS3", color: "#666" }], {
+                  series: {
+                      lines: { show: true, fill: true, fillColor: { colors: [{ opacity: 0.05 }, { opacity: 0.15 }] } },
+                      points: { show: true }
+                  },
+                  legend: { position: 'nw' },
+                  grid: { hoverable: true, clickable: true, borderColor: '#666', borderWidth: 2, labelMargin: 10 },
+                  yaxis: { min: 0, max: 15 }
+              });
+
+            var previousPoint = null;
+            jQuery("#chartplace").bind("plothover", function (event, pos, item) {
+                jQuery("#x").text(pos.x.toFixed(2));
+                jQuery("#y").text(pos.y.toFixed(2));
+
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
+                        previousPoint = item.dataIndex;
+
+                        jQuery("#tooltip").remove();
+                        var x = item.datapoint[0].toFixed(2),
+					y = item.datapoint[1].toFixed(2);
+
+                        showTooltip(item.pageX, item.pageY,
+									item.series.label + " of " + x + " = " + y);
+                    }
+
+                } else {
+                    jQuery("#tooltip").remove();
+                    previousPoint = null;
+                }
+
+            });
+
+            jQuery("#chartplace").bind("plotclick", function (event, pos, item) {
+                if (item) {
+                    jQuery("#clickdata").text("You clicked point " + item.dataIndex + " in " + item.series.label + ".");
+                    plot.highlight(item.series, item.datapoint);
+                }
+            });
+
+
+            //datepicker
+            jQuery('#datepicker').datepicker();
+
+            // tabbed widget
+            jQuery('.tabbedwidget').tabs();
+
+
+
+        });
+    </script>
+</body>
+
+</html>
+<a id="underdev" href="@Url.Content("UnderDevelop")" style="display:none;">Under Develop</a>
+<a id="NewMem" href="#" target="_blank" style="display:none"></a>
+<a id="MemPortal" href="#" target="_blank" style="display:none"></a>
+<a id="WebsiteLinks" href="#" target="_blank" style="display:none"></a>
+<input type="hidden" id="description" />
+<input type="hidden" id="usermodule" />
+

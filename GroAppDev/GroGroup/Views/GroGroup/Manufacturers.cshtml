@@ -1,0 +1,1725 @@
+﻿@{
+    ViewBag.Title = "Manufacturers";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<style type="text/css">
+    /* Style The Dropdown Button */
+    .searchmenubtn {
+        color: white;
+        padding: 13px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border: 1px !important;
+        border-color: black !important;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .searchmenu {
+        position: relative;
+        display: inline-block;
+        border: 1px !important;
+        border-color: black !important;
+        z-index: 999;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .searchmenu-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        top: 2.8em;
+    }
+
+        /* Links inside the dropdown */
+        .searchmenu-content a {
+            top: 1em;
+            height: 20px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            color: black;
+            text-decoration: none !important;
+            display: block;
+        }
+
+            /* Change color of dropdown links on hover */
+            .searchmenu-content a:hover {
+                top: -5px;
+                background-color: #BCD8F3 !important;
+                color: #800909 !important;
+            }
+
+    /* Show the dropdown menu on hover */
+    .searchmenu:hover .searchmenu-content {
+        display: block;
+        margin-top: -10px;
+    }
+
+    .searchmenu-content:after {
+        top: -7px;
+        content: " ";
+        left: 6%;
+        position: absolute;
+        width: 10px;
+        height: 9px;
+        border-right: 2px solid #0866c6;
+        border-bottom: 2px solid #0866c6;
+        background: white;
+        transform: rotate(222deg);
+    }
+
+
+
+
+    .thisdropdown-menu {
+        position: absolute;
+        z-index: 1000;
+        float: right;
+        min-width: 100px;
+        width: 210px;
+        padding: 7px 8px;
+        font-size: 14px;
+        text-align: left;
+        list-style: none;
+        background-color: #FFF;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 2px solid #0866c6;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        color: black;
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+
+        .thisdropdown-menu:after {
+            top: -7px;
+            content: " ";
+            left: 89%;
+            position: absolute;
+            width: 10px;
+            height: 9px;
+            border-right: 2px solid #0866c6;
+            border-bottom: 2px solid #0866c6;
+            background: white;
+            transform: rotate(222deg);
+        }
+
+    .limouseover {
+        padding: 5px;
+        cursor: pointer;
+        height: 10px;
+    }
+
+        .limouseover:hover {
+            /*background-color: #555 !important;
+        color: white !important;*/
+            background-color: #BCD8F3 !important;
+            color: #800909 !important;
+            list-style: none;
+            cursor: pointer;
+        }
+
+    #products___livespell_proxy{
+        height:37px !important;
+        width:365px !important;
+        position:inherit !important;
+    }
+
+    .nallowed {
+        cursor: not-allowed;
+    }
+
+    .event-none {
+        pointer-events: none;
+    }
+
+</style>
+
+<style type="text/css">
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width: 223px;
+    }
+
+    .textbox_size {
+        width: 30%;
+    }
+
+    .combobox_size {
+        width: 32%;
+    }
+
+    /*center {
+        content: "";
+        background-image: url(../images/Grogroup.png);
+         background-repeat: no-repeat;
+            background-size: cover;
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }*/
+
+</style>
+
+<script type="text/javascript">
+    var search;
+    var MainMfgfield = "";
+    var MainMfgfield_header = "";
+    var GmfgNo = "";
+    var blurevent = false;
+    var clicked = "";
+    var IsSignMfr = false;
+    $(document).ready(function () {
+        mfg = new viewModel();
+        search = mfg;
+        ko.applyBindings(mfg);
+        //mfg.txtcodec("C");
+        $("#btnAdd").click({ handler: mfg.Add });
+        $("#btnEdit").click({ handler: mfg.Edit });
+        $("#btnSave").click({ handler: mfg.Save });
+        $("#btnDelete").click({ handler: mfg.Delete });
+        $("#btnCancel").click({ handler: mfg.Cancel });
+
+        $("#primary").change({ handler: mfg.cmbchange });
+        $("#secondary").change({ handler: mfg.cmbchange });
+        $("#classcd").change({ handler: mfg.cmbchange });
+        $("#status").change({ handler: mfg.cmbchange });
+
+        //Contacts Screen
+        $("#Contacts").click(function () {
+            $("#iContacts").contents().find("body").html('');
+            document.getElementById('iContacts').src = "Contacts";
+        });
+
+        //Notes Screen
+        $("#Notes").click(function () {
+            $("#iNotes").contents().find("body").html('');
+            document.getElementById('iNotes').src = "Notes?No=" + document.getElementById('mfgno').value + "&ScreenName=Manufacturer";
+        });
+
+        //Benefits Screen
+        $("#Benefits").click(function () {
+            $("#iBenefits").contents().find("body").html('');
+            document.getElementById('iBenefits').src = "Benefits";
+        });
+
+        //ProgInfo Screen
+        $("#ProgInfo").click(function () {
+            $("#iProgInfo").contents().find("body").html('');
+            document.getElementById('iProgInfo').src = "ProgInfo";
+        });
+
+        //UPC Screen
+        $("#UPC").click(function () {
+            $("#iUPC").contents().find("body").html('');
+            document.getElementById('iUPC').src = "UPC?No=" + document.getElementById('mfgno').value + "&ScreenName=Manufacturer";
+        });
+
+        $("#roomlist").click(function () {
+            $("#iroomlist").contents().find("body").html('');
+            //document.getElementById('iroomlist').src = "Roomlist?Company=" + $("#company").val() + "";
+            document.getElementById('iroomlist').src = "Roomlist?No=" + document.getElementById('mfgno').value + "&ScreenName=Manufacturer";
+        });
+
+        $("#ngpeffdt").datepicker({ dateFormat: 'mm/dd/y', changeMonth: true, changeYear: true });
+        $("#ngpmoddt").datepicker({ dateFormat: 'mm/dd/y', changeMonth: true, changeYear: true });
+        $("#mrevdesc").datepicker({ dateFormat: 'mm/dd', changeMonth: true, changeYear: false });
+        //
+
+    });
+
+    function viewModel() {
+        var self = this;
+        var blurevent = false;
+        var dbclick = false;
+        var dblclic = false;
+
+
+        self.EnableDisableMode = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+        self.EnableDisableControls = ko.observable(false);
+
+        self.txtOldmfgno = ko.observable("");
+        self.txtname = ko.observable("");
+        self.txtsearch = ko.observable("");
+        self.selectedvalue = ko.observable("");
+        self.Cmbmfg = ko.observableArray([]);
+        self.txtwebpageLink = ko.observable("");
+        self.txtwebpageLink2 = ko.observable("");
+        self.txtmfgno = ko.observable("");
+        self.txtcompany = ko.observable("");
+        self.txtmailadd = ko.observable("");
+        self.txtcity = ko.observable("");
+        self.txtstate = ko.observable("");
+        self.txtzip = ko.observable("");
+        self.cmbcountry = ko.observableArray([]);
+        self.txtcountry = ko.observable("");
+        self.txtphone = ko.observable("");
+        self.txtphone2 = ko.observable("");
+        self.txtfax = ko.observable("");
+        self.txtvoicemail = ko.observable(false);
+        self.txtemail = ko.observable();
+
+        self.txtwebpage = ko.observable("");
+        self.txtwebpage2 = ko.observable("");
+
+        self.txtcorpname = ko.observable("");
+        self.txtshipadd = ko.observable("");
+        self.txtscity = ko.observable("");
+        self.txtsstate = ko.observable("");
+        self.txtnszip = ko.observable("");
+        self.cmbscountry = ko.observableArray([]);
+        self.txtscountry = ko.observable("");
+        self.txtngpeffdt = ko.observable("");
+        self.txtngp_xcpt = ko.observable(false);
+        self.txtngpmoddt = ko.observable("");
+        self.txtvpc = ko.observable(false);
+        self.txtvpc_rmks = ko.observable(false);
+        self.txtcanprog = ko.observable(false);
+
+        self.cmbprimary = ko.observableArray([]);
+        self.txtprimary = ko.observable("");
+        self.cmbsecondary = ko.observableArray([]);
+        self.txtsecondary = ko.observable("");
+        self.cmbclasscd = ko.observableArray([]);
+        self.cmbcodec = ko.observableArray([]);
+        self.txtclasscd = ko.observable("");
+        self.txtcodec = ko.observable("");
+        self.cmbstatus = ko.observableArray([]);
+        self.txtstatus = ko.observable("");
+        self.txttermyr = ko.observable("");
+        self.codea = ko.observable("");
+        self.txtofficehrs = ko.observable("");
+
+        self.txtmrevdesc = ko.observable("");
+        self.txtmds_stat = ko.observable("");
+        self.txtmdsrevyr = ko.observable("");
+        self.txtprog_ly = ko.observable(false);
+        self.txtprog_cy = ko.observable(false);
+        self.pds_ly = ko.observable(false);
+        self.pds_cy = ko.observable(false);
+        self.txtprgrevty = ko.observable("");
+        self.txtprgrevly = ko.observable("");
+        self.txtprgrevpy = ko.observable("");
+
+        self.txthwsb = ko.observable("");
+        self.txtigc_chi = ko.observable("");
+        self.txtref_by = ko.observable("");
+        self.txtproducts = ko.observable("");
+
+        self.primary = ko.observable("");
+
+        self.selectedvalue("company");
+        self.txtname("Company");
+
+        self.hdnMfgList = ko.observableArray([]);
+
+        CallEnableTabs();
+
+        $("#ulist").hide();
+
+        self.reportimgin = function () {
+            if (self.SaveMode() == false)
+                $("#ulist").show();
+        }
+
+        self.reportimgout = function () {
+            $("#ulist").hide();
+        }
+
+        $(".checkreport").live("click", function () {
+            if (document.getElementById('chkbpo').checked == true) {
+                $("#chkbpo").attr('title', 'Exclude Signature Block');
+            }
+            else {
+                $("#chkbpo").attr('title', 'Include Signature Block');
+            }
+
+            if (document.getElementById('chkmds').checked == true) {
+                $("#chkmds").attr('title', 'Exclude Signature Block');
+            }
+            else {
+                $("#chkmds").attr('title', 'Include Signature Block');
+            }
+
+            if (document.getElementById('chkprg').checked == true) {
+                $("#chkprg").attr('title', 'Exclude Signature Block');
+            }
+            else {
+                $("#chkprg").attr('title', 'Include Signature Block');
+            }
+        });
+
+        $.ajax({
+            url: "FillSearchComboList",
+            type: "POST",
+            data: { ScreenFrom: 'Manufacturers', FormClass: 'Manufacturers' },
+            success: function (response) {
+                var srchfield = []; var srchdesc = [];
+                MainMfgfield_header = "", MainMfgfield = "";
+                var fld = "", desc = "";
+
+                if (response.Items.length > 0) {
+                    self.Cmbmfg(response.Items);
+                    for (var i = 0; i < response.Items.length; i++) {
+                        desc += response.Items[i].Display_FName + ",";
+                        fld += response.Items[i].Field_Name + ",";
+                    }
+                    MainMfgfield_header = desc.replace(/,\s*$/, "");
+                    MainMfgfield = fld.replace(/,\s*$/, "");
+                }
+                else {
+                    MainMfgfield = "company,Oldmfgno,MfgNo,city,state,country,zip,phone,email,codea,classcd";
+                    MainMfgfield_header = "Company,Old MfgNo,MfgNo,City,State,Country,Zip,Phone,Email,Query Filter,Class Code";
+
+                    var StaticHeadercmbo = "company-Company,Oldmfgno-Old MfgNo,MfgNo-MfgNo,city-City,state-State,country-Country,zip-Zip,phone-Phone,email-Email,codea-Query Filter,classcd-Class Code";
+                    var Comboheadsplit = StaticHeadercmbo.split(",");
+                    var ComboArray = []
+                    for (var i = 0; i < Comboheadsplit.length; i++) {
+                        var Splitdesc = "";
+                        Splitdesc = Comboheadsplit[i].split("-");
+                        ComboArray.push({
+                            Field_Name: Splitdesc[0],
+                            Display_FName: Splitdesc[1]
+                        });
+                    }
+                    self.Cmbmfg(ComboArray);
+                }
+            }
+        });
+
+
+        $("#lblemail").live("click", function () {
+            send_email(self.txtemail());
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'PRIM' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbprimary(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'SECO' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbsecondary(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'CLCD', includeEmpty: false },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbclasscd(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'PayType' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbcodec(response.Items);
+            }
+        });
+
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'STATUS', includeEmpty: false },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbstatus(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'CNTRY' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbcountry(response.Items);
+                self.cmbscountry(response.Items);
+
+            }
+        });
+
+        function zipsearch(item) {
+            $.ajax({
+                url: "searchzip",
+                data: { getzip: item },
+                type: "POST",
+                success: function (response) {
+                    if (response.Items.length > 0) {
+                        if (clicked == "zip") {
+                            if ((self.txtzip() != null && self.txtzip() != "") || (self.txtnszip() != null && self.txtnszip() != "")) {
+                                self.txtcity(response.Items[0].City);
+                                self.txtstate(response.Items[0].State);
+                            }
+                            else {
+                                self.txtcity("");
+                                self.txtstate("");
+                            }
+                        }
+                        else if (clicked == "nszip") {
+                            if ((self.txtnszip() != null && self.txtnszip() != "") || (self.txtzip() != null && self.txtzip() != "")) {
+
+                                self.txtscity(response.Items[0].City);
+                                self.txtsstate(response.Items[0].State);
+                            }
+                            else {
+                                self.txtscity("");
+                                self.txtsstate("");
+                            }
+                        }
+                        else if (clicked == "sizip1") {
+                            if (self.txtsizip1() != null && self.txtsizip1() != "") {
+
+                                self.txtsicity1(response.Items[0].City);
+                                self.txtsistate1(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity1("");
+                                self.txtsistate1("");
+                            }
+                        }
+                        else if (clicked == "sizip2") {
+                            if (self.txtsizip2() != null && self.txtsizip2() != "") {
+
+                                self.txtsicity2(response.Items[0].City);
+                                self.txtsistate2(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity2("");
+                                self.txtsistate2("");
+                            }
+                        }
+                        else if (clicked == "sizip3") {
+                            if (self.txtsizip3() != null && self.txtsizip3() != "") {
+
+                                self.txtsicity3(response.Items[0].City);
+                                self.txtsistate3(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity3("");
+                                self.txtsistate3("");
+                            }
+                        }
+                        else if (clicked == "sizip4") {
+                            if (self.txtsizip4() != null && self.txtsizip4() != "") {
+
+                                self.txtsicity4(response.Items[0].City);
+                                self.txtsistate4(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity4("");
+                                self.txtsistate4("");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        self.txtzipsearch = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtstate().trim() == "" && self.txtcity().trim() == "") {
+                    blurevent = true;
+                    self.txtzip(document.getElementById('zip').value);
+                    if (self.txtzip() == null || self.txtzip() == "") {
+                        return false;
+                    }
+                    clicked = "zip";
+                    zipsearch(self.txtzip());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtszipsearch = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtsstate().trim() == "" && self.txtscity().trim() == "") {
+                    blurevent = true;
+                    self.txtnszip(document.getElementById('nszip').value);
+                    if (self.txtnszip() == null || self.txtnszip() == "") {
+                        return false;
+                    }
+                    clicked = "nszip";
+                    zipsearch(self.txtnszip());
+
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtsizip1search = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtsistate1().trim() == "" && self.txtsicity1().trim() == "") {
+                    blurevent = true;
+                    self.txtsizip1(document.getElementById('sizip1').value);
+                    if (self.txtsizip1() == null || self.txtsizip1() == "") {
+                        return false;
+                    }
+                    clicked = "sizip1";
+                    zipsearch(self.txtsizip1());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtsizip2search = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtsistate2().trim() == "" && self.txtsicity2().trim() == "") {
+                    blurevent = true;
+                    self.txtsizip2(document.getElementById('sizip2').value);
+                    if (self.txtsizip2() == null || self.txtsizip2() == "") {
+                        return false;
+                    }
+                    clicked = "sizip2";
+                    zipsearch(self.txtsizip2());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtsizip3search = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtsistate3().trim() == "" && self.txtsicity3().trim() == "") {
+                    blurevent = true;
+                    self.txtsizip3(document.getElementById('sizip3').value);
+                    if (self.txtsizip3() == null || self.txtsizip3() == "") {
+                        return false;
+                    }
+                    clicked = "sizip3";
+                    zipsearch(self.txtsizip3());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+
+        self.txtsizip4search = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtsistate4().trim() == "" && self.txtsicity4().trim() == "") {
+                    blurevent = true;
+                    self.txtsizip4(document.getElementById('sizip4').value);
+                    if (self.txtsizip4() == null || self.txtsizip4() == "") {
+                        return false;
+                    }
+                    clicked = "sizip4";
+                    zipsearch(self.txtsizip4());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+
+
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+
+            //$(".Disable").css("pointer-events", "none");
+            //$("#tabs").tabs({ disabled: [1, 2, 3, 4, 5, 6] });
+            //$(".Disable").css("cursor", "not-allowed");
+
+            CallDisableTabs();
+
+            self.txtmfgno(""); self.txtOldmfgno("");
+            self.txtcompany(""); self.txtmailadd(""); self.txtcity(""); self.txtstate(""); self.txtzip(""); self.txtcountry(""); self.txtphone(""); self.txtphone2(""); self.txtfax("");
+            self.txtvoicemail(false);
+            self.txtemail("");
+            self.txtwebpage(""); self.txtwebpage2(""); self.txtcorpname(""); self.txtshipadd(""); self.txtscity(""); self.txtsstate(""); self.txtnszip("");
+            self.txtscountry(""); self.txtngpeffdt(""); self.txtngp_xcpt(false); self.txtngpmoddt(""); self.txtvpc(false); self.txtvpc_rmks(false); self.txtcanprog(false); self.txtprimary("");
+            self.txtsecondary(""); self.txtclasscd(""); self.txtcodec(""); self.txtstatus(""); self.txttermyr("");
+            self.codea("");
+            self.txtofficehrs(""); self.txtmrevdesc(""); self.txtmds_stat(""); self.txtmdsrevyr("");
+            self.txtprog_ly(false); self.txtprog_cy(false); self.pds_ly(false); self.pds_cy(false); self.txtprgrevty(""); self.txtprgrevly(""); self.txtprgrevpy("");
+            self.txthwsb("");
+            self.txtigc_chi(""); self.txtref_by(""); self.txtproducts("");
+            self.txthwsb(""); self.txtigc_chi(""); self.txtref_by("");
+           
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            document.getElementById('company').focus();
+
+            document.getElementById("WebpageLink").style.display = "none";
+            document.getElementById("webpage").style.display = "block";
+            document.getElementById("WebpageLink2").style.display = "none";
+            document.getElementById("webpage2").style.display = "block";
+            //$("#products___livespell_proxy").css("height", "36px");
+
+            $("#lblemail").css("color", "#333333");
+            $("#lblemail").css("cursor", "default");
+            $("#lblemail").css("text-decoration", "none");
+
+           
+        }
+
+        self.Edit = function () {
+            //$(".Disable").css("pointer-events", "none");
+
+            //$("#tabs").tabs({ disabled: [1, 2, 3, 4, 5, 6] });
+            //$(".Disable").css("cursor", "not-allowed");
+
+            CallDisableTabs();
+
+            document.getElementById("WebpageLink").style.display = "none";
+            document.getElementById("webpage").style.display = "block";
+            document.getElementById("WebpageLink2").style.display = "none";
+            document.getElementById("webpage2").style.display = "block";
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            document.getElementById('company').focus();
+            //$("#products___livespell_proxy").css("height", "36px");
+            
+        }
+
+
+        function mfgList() {
+            $.ajax({
+                url: "ShowMfgList",
+                data: { Mfgno: self.txtmfgno() },
+                type: "POST",
+                success: function (response) {
+                    self.SelectedItem(response.Items[0]);
+                }
+            });
+        }
+
+
+
+        self.SelectedItem = function (Item) {
+
+            var SItem; GmfgNo = Item.MfgNo; self.txtmfgno(Item.MfgNo), self.txtOldmfgno(Item.Oldmfgno);
+            self.txtcompany(Item.company); self.txtmailadd(Item.mailadd); self.txtcity(Item.city); self.txtstate(Item.state.trim());
+            self.txtcountry(Item.country.trim()); self.txtzip(Item.zip); self.txtphone(Item.phone); self.txtphone2(Item.phone2); self.txtfax(Item.fax);
+            self.txtcorpname(Item.corpname); self.txtshipadd(Item.shipadd); self.txtscity(Item.scity);
+            self.txtsstate(Item.sstate.trim()); self.txtnszip(Item.nszip); self.txtscountry(Item.scountry.trim()); self.txtngpeffdt(Item.ngpeffdt);
+            self.txtemail(Item.email);
+            if (Item.email != null && Item.email != "") {
+                $("#lblemail").css("color", "blue");
+                $("#lblemail").css("cursor", "pointer");
+                $("#lblemail").css("text-decoration", "underline");
+
+            }
+            else {
+                $("#lblemail").css("color", "#333333");
+                $("#lblemail").css("cursor", "default");
+                $("#lblemail").css("text-decoration", "none");
+            }
+            self.txtwebpage(Item.webpage);
+            self.txtwebpageLink("http://" + Item.webpage);
+            //self.txtwebpage(Item.webpage);
+            self.txtwebpage2(Item.webpage2);
+            self.txtwebpageLink2("http://" + Item.webpage2);
+            if (Item.webpage != "") {
+                document.getElementById("WebpageLink").style.display = "block";
+                document.getElementById("webpage").style.display = "none";
+                self.txtwebpageLink("http://" + Item.webpage);
+            } else {
+                document.getElementById("WebpageLink").style.display = "none";
+                document.getElementById("webpage").style.display = "block";
+                self.txtwebpage(Item.webpage);
+            }
+            if (Item.webpage2 != "") {
+                document.getElementById("WebpageLink2").style.display = "block";
+                document.getElementById("webpage2").style.display = "none";
+                self.txtwebpageLink2("http://" + Item.webpage2);
+            } else {
+                document.getElementById("WebpageLink2").style.display = "none";
+                document.getElementById("webpage2").style.display = "block";
+                self.txtwebpage2(Item.webpage2);
+            }
+
+            if (Item.voicemail == "True" || Item.voicemail == true)
+                self.txtvoicemail(true);
+            else
+                self.txtvoicemail(false);
+            if (Item.ngp_xcpt == "True" || Item.ngp_xcpt == true)
+                self.txtngp_xcpt(true);
+            else
+                self.txtngp_xcpt(false);
+            if (Item.vpc == "True" || Item.vpc == true)
+                self.txtvpc(true);
+            else
+                self.txtvpc(false);
+            if (Item.vpc_rmks == "True" || Item.vpc_rmks == true)
+                self.txtvpc_rmks(true);
+            else
+                self.txtvpc_rmks(false);
+            if (Item.canprog == "True" || Item.canprog == true)
+                self.txtcanprog(true);
+            else
+                self.txtcanprog(false);
+            if (Item.prog_ly == "True" || Item.prog_ly == true)
+                self.txtprog_ly(true);
+            else
+                self.txtprog_ly(false);
+            if (Item.prog_cy == "True" || Item.prog_cy == true)
+                self.txtprog_cy(true);
+            else
+                self.txtprog_cy(false);
+            if (Item.pds_ly == "True" || Item.pds_ly == true)
+                self.pds_ly(true);
+            else
+                self.pds_ly(false);
+            if (Item.pds_cy == "True" || Item.pds_cy == true)
+                self.pds_cy(true);
+            else
+                self.pds_cy(false);
+            
+            self.txtngpmoddt(Item.ngpmoddt); self.txtprimary(Item.primary.trim());
+            self.txtsecondary(Item.secondary.trim()); self.txtclasscd(Item.classcd.trim());
+
+            document.getElementById('primary').title = $("#primary option:selected").text();
+            document.getElementById('secondary').title = $("#secondary option:selected").text();
+            document.getElementById('classcd').title = $("#classcd option:selected").text();
+            document.getElementById('status').title = $("#status option:selected").text();
+
+            self.txtcodec(Item.codec.trim()); self.txtstatus(Item.status.trim()); self.txttermyr(Item.termyr.trim()); self.codea(Item.codea.trim()); self.txtofficehrs(Item.officehrs);
+            self.txtmrevdesc(Item.mrevdesc); self.txtmds_stat(Item.mds_stat.trim()); self.txtmdsrevyr(Item.mdsrevyr.trim());
+            self.txtprgrevty(Item.prgrevty.trim()); self.txtprgrevly(Item.prgrevly.trim()); self.txtprgrevpy(Item.prgrevpy.trim());
+            self.txthwsb(Item.hwsb); self.txtigc_chi(Item.igc_chi); self.txtref_by(Item.ref_by);
+            self.txtproducts(Item.products);
+
+            if (self.txtmfgno() != undefined && self.txtmfgno() != null && self.txtmfgno() != "") {
+                $.ajax({
+                    url: "ShowshipinfoList",
+                    data: { MfgNo: self.txtmfgno() },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        SItem = response.Items[0];
+                    }
+                });
+               
+            }
+        }
+
+        self.cmbchange = function () {
+            document.getElementById('primary').title = $("#primary option:selected").text();
+            document.getElementById('secondary').title = $("#secondary option:selected").text();
+            document.getElementById('classcd').title = $("#classcd option:selected").text();
+            document.getElementById('status').title = $("#status option:selected").text();
+
+        }
+
+        mfgList();
+
+        self.Mfgsearchdbclick = function () {
+            if (blurevent == true) {
+                blurevent = false;
+                return false;
+            }
+            dbclick = true;
+            self.txtsearch(document.getElementById('mfgsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "")
+                self.txtsearch("%");
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.SelectedItem(response.Items[0]);
+                    }
+                    else {
+                        var searchtext = self.txtsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=" + MainMfgfield + "&header=" + MainMfgfield_header + "&text=" + searchtext + "&where=" + self.selectedvalue() + "&LabelDescription=MFG ";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    self.txtsearch("");
+                }
+            });
+        }
+
+        self.txtMfgsearch = function () {
+            if (dbclick == true) {
+                dbclick = false;
+                return false;
+            }
+
+            blurevent = true;
+
+            self.txtsearch(document.getElementById('mfgsearch').value);
+            if (self.txtsearch() == null || self.txtsearch() == "") {
+                return false;
+            }
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'mfg', searchtext: self.txtsearch(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.SelectedItem(response.Items[0]);
+                    }
+                    else {
+                        var searchtext = self.txtsearch();
+                        if (searchtext.indexOf('&') >= 0) { searchtext = searchtext.replace(/\&/g, 'amp;'); }
+                        window.parent.document.getElementById('searchscreen').src = "../GroGroup/SearchScreen?element=txtmfgsrch&table=mfg&field=" + MainMfgfield + "&header=" + MainMfgfield_header + "&text=" + searchtext + "&where=" + self.selectedvalue() + "&LabelDescription=MFG";
+                        fireEvent(window.parent.document.getElementById('sc1'), 'click');
+                    }
+                    self.txtsearch("");
+                    blurevent = false;
+                }
+            });
+        }
+
+        self.Save = function () {
+
+            if (self.txtcompany() == null || self.txtcompany() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the company",
+                    type: "info",
+                    parent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('company').focus();
+                    }
+                });
+                return false;
+            }
+             if (self.txtphone().length < 12 && self.txtphone().length != 0) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid phone number",
+                        type: "info",
+                        parent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('phone').focus();
+                        }
+                    });
+                    return false;
+                }
+             if (self.txtphone2().length < 12 && self.txtphone2().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid phone number",
+                    type: "info",
+                    parent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('phone2').focus();
+                    }
+                });
+                return false;
+            }
+             if (self.txtfax().length < 12 && self.txtfax().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid fax number",
+                    type: "info",
+                    parent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('fax').focus();
+                    }
+                });
+                return false;
+             }
+             if (self.txtemail() != null && self.txtemail() != "") {
+                 if (!ValidateEmail(self.txtemail().trim())) {
+                     $.msgBox({
+                         title: "Gro Group", content: "Invalid Email", parent: true,
+                         afterClose: function (result) {
+                             document.getElementById('txtemail').select();
+                         }
+                     });
+                     return false;
+                 }
+             }
+
+             if (self.txtngpeffdt() != null && self.txtngpeffdt() != "") {
+                 var isdatecomplvalidate = isValidDate(self.txtngpeffdt());
+                 if (isdatecomplvalidate == false) {
+                     $.msgBox({
+                         title: "Gro Group",
+                         content: "Please enter the Valid Effective Date",
+                         type: "info",
+                         parent: true,
+                         buttons: [{ value: "Ok" }],
+                         afterClose: function (result) {
+                             document.getElementById('ngpeffdt').focus();
+                         }
+                     });
+                     return false;
+                 }
+             }
+
+             if (self.txtngpmoddt() != null && self.txtngpmoddt() != "") {
+                 var isdatecomplvalidate = isValidDate(self.txtngpmoddt());
+                 if (isdatecomplvalidate == false) {
+                     $.msgBox({
+                         title: "Gro Group",
+                         content: "Please enter the Valid Modified Date",
+                         type: "info",
+                         parent: true,
+                         buttons: [{ value: "Ok" }],
+                         afterClose: function (result) {
+                             document.getElementById('ngpmoddt').focus();
+                         }
+                     });
+                     return false;
+                 }
+             }
+
+             if (self.txtmrevdesc() != null && self.txtmrevdesc() != "") {
+                 var isdatecomplvalidate = isValidDateMonth(self.txtmrevdesc());
+                 if (isdatecomplvalidate == false) {
+                     $.msgBox({
+                         title: "Gro Group",
+                         content: "Please enter the Valid Annual Start",
+                         type: "info",
+                         parent: true,
+                         buttons: [{ value: "Ok" }],
+                         afterClose: function (result) {
+                             document.getElementById('mrevdesc').focus();
+                         }
+                     });
+                     return false;
+                 }
+             }
+
+            
+            //if (self.txtphone() == null || self.txtphone() == "") {
+            //    $.msgBox({
+            //        title: "Gro Group",
+            //        content: "Please enter the phone",
+            //        type: "info",
+            //        buttons: [{ value: "Ok" }],
+            //        afterClose: function (result) {
+            //            document.getElementById('phone').focus();
+            //        }
+            //    });
+            //    return false;
+            //}
+            $.ajax({
+                url: "ValidatemfgCompany",
+                data: { company: self.txtcompany(), AddMode: self.AddMode(), mfgno: GmfgNo },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items == true) {
+                        $.msgBox({
+                            title: "Gro Group", content: "Company already exists", parent: true,
+                            afterClose: function (result) {
+                                self.company("");
+                                $("#company").focus();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        savemfg();
+                    }
+                }
+            });
+        }
+
+        function savemfg() {
+            Objmfg = [];
+            Objmfg = {
+                mfgno: self.txtmfgno(), oldmfgno: self.txtOldmfgno(), company: self.txtcompany(), mailadd: self.txtmailadd(), city: self.txtcity(), state: self.txtstate(),
+                zip: self.txtzip(), country: $("#country").val(), phone: self.txtphone(), phone2: self.txtphone2(), fax: self.txtfax(),
+                voicemail: self.txtvoicemail(),
+                email:self.txtemail(),webpage: self.txtwebpage(), webpage2: self.txtwebpage2(), corpname: self.txtcorpname(),
+                shipadd: self.txtshipadd(), scity: self.txtscity(), sstate: self.txtsstate(), nszip: self.txtnszip(), scountry: $("#scountry").val(),
+                ngpeffdt: self.txtngpeffdt(), ngp_xcpt: self.txtngp_xcpt(), ngpmoddt: self.txtngpmoddt(), mrevdesc: self.txtmrevdesc(),
+                vpc: self.txtvpc(), vpc_rmks: self.txtvpc_rmks(), canprog: self.txtcanprog(), primary: $("#primary").val(), secondary: $("#secondary").val(),
+                classcd: $("#classcd").val(), codec: $("#codec").val(), status: $("#status").val(), termyr: self.txttermyr(), codea: self.codea(), officehrs: self.txtofficehrs(), mds_stat: self.txtmds_stat(),
+                mdsrevyr: self.txtmdsrevyr(), prog_ly: self.txtprog_ly(), prog_cy: self.txtprog_cy(), pds_ly: self.pds_ly(), pds_cy: self.pds_cy(), prgrevty: self.txtprgrevty(), prgrevly: self.txtprgrevly(),
+                prgrevpy: self.txtprgrevpy(),
+                hwsb: self.txthwsb(),
+                igc_chi: self.txtigc_chi(),
+                ref_by: self.txtref_by(), products: self.txtproducts()
+            }
+
+            $.ajax({
+                url: "SaveMfg",
+                data: { ObjmfgList: JSON.stringify(Objmfg), IsAddMode: self.AddMode() },
+                type: "POST",
+                success: function (response) {
+                    self.AddMode(false);
+                    self.EditMode(true);
+                    self.SaveMode(false);
+                    self.EnableDisableMode(true);
+                    self.EnableDisableControls(false);
+                    //$(".Disable").css("pointer-events", "auto");
+
+                    //$("#tabs").tabs({ disabled: [] });
+                    //$(".Disable").css("cursor", "pointer");
+
+                    CallEnableTabs();
+
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.Items);
+                    }
+                    else {
+                        if (response.Items != "") {
+                            self.txtmfgno(response.Items);
+                        }
+                        mfgList();
+                    }
+                }
+            });
+        }
+
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+
+        self.confirmcancel = function () {
+            //$(".Disable").css("pointer-events", "auto");
+
+            //$("#tabs").tabs({ disabled: [] });
+            //$(".Disable").css("cursor", "pointer");
+
+            CallEnableTabs();
+
+            $.ajax({
+                url: "ShowMfgList",
+                data: { Mfgno: GmfgNo },
+                type: "POST",
+                success: function (response) {
+                    self.SelectedItem(response.Items[0]);
+                }
+            });
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+            self.EnableDisableControls(false);
+
+            if (self.txtwebpage() != "") {
+                document.getElementById("WebpageLink").style.display = "block";
+                document.getElementById("webpage").style.display = "none";
+            } else {
+                document.getElementById("WebpageLink").style.display = "none";
+                document.getElementById("webpage").style.display = "block";
+            }
+
+            if (self.txtwebpage() != "") {
+                document.getElementById("WebpageLink2").style.display = "block";
+                document.getElementById("webpage2").style.display = "none";
+            } else {
+                document.getElementById("WebpageLink2").style.display = "none";
+                document.getElementById("webpage2").style.display = "block";
+            }
+        }
+
+        self.Delete = function () {
+            if (self.SaveMode() == true)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+            //if (self.SaveMode() == true)
+            //    return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdelete, false, true);
+        }
+        self.confirmdelete = function () {
+            alerterror("Denied", "Record cannot be deleted");
+            //$.ajax({
+            //    url: "DeleteMfgList",
+            //    data: { MfgNo: GmfgNo },
+            //    type: "POST",
+            //    success: function (response) {
+            //        mfgList();
+            //    }
+            //});
+        }
+
+        self.optionselect = function (item, element) {
+            var obj = element.currentTarget.childNodes[0];
+            self.selectedvalue(obj.value);
+            self.txtname(element.currentTarget.childNodes[0].innerHTML);
+            document.getElementById('mfgsearch').focus();
+        }
+
+        self.bporeport = function () {
+            var repname = "";
+            if (document.getElementById('chkbpo').checked == true) {
+                repname = "RP_BpoSign.repx";
+            }
+            else {
+                repname = "RP_Prgoinfo.repx";
+            }
+            self.ShowMfrReport(repname, document.getElementById('btnbpo').innerHTML);
+        }
+
+        self.mfgreport = function () {
+            var repname = "";
+            if (document.getElementById('chkmds').checked == true) {
+                repname = "RP_MfrDataSheetwithSign.repx";
+
+            }
+            else {
+                repname = "RP_MfrDataSheet.repx";
+            }
+            self.ShowMfrReport(repname, document.getElementById('btnmds').innerHTML);
+        }
+
+        self.prgreport = function () {
+            var repname = "";
+            if (document.getElementById('chkprg').checked == true) {
+                repname = "RP_ProgRefGuidewithSign.repx";
+            }
+            else {
+                repname = "RP_ProgRefGuide.repx";
+            }
+            self.ShowMfrReport(repname, document.getElementById('btnprg').innerHTML);
+        }
+
+        self.searchselecteditem = function (item, element) {
+            if (element == "txtmfgsrch") {
+                self.txtmfgno(item[2]);
+                self.txtOldmfgno(item[0]);
+                mfgList();
+                self.txtsearch("");
+            }
+        }
+
+        self.ShowMfrReport = function (repname, description) {
+            $.ajax({
+                url: "FillMfrReport",
+                type: "POST",
+                //data: { Repname: repname, Description: description, Mfgno: self.txtmfgno(), ClassCd: self.txtclasscd() },
+                data: { Repname: repname, Description: description, Prim: self.txtprimary(), Sec: self.txtsecondary(), ClassCd: self.txtclasscd(), Mfgno: self.txtmfgno() },
+                async: false,
+                success: function (response) {
+                    window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                }
+            });
+        }
+
+        self.ShowAllMfrReport = function (repname) {
+
+            if (document.getElementById('chkallrpts').checked == true) {
+                $("#chkallrpts").attr('title', 'Exclude Signature Block');
+                IsSignMfr = true;
+            }
+            else {
+                $("#chkallrpts").attr('title', 'Include Signature Block');
+                IsSignMfr = false;
+            }
+
+            $.ajax({
+                url: "FillAllMfrReports",
+                type: "POST",
+                //data: { Repname: "RP_MdsBpoPrg.repx", Description: document.getElementById('btnmds').innerHTML, Mfgno: self.txtmfgno(), ClassCd: self.txtclasscd(), MfrSign: IsSignMfr },
+                data: { Repname: "RP_MdsBpoPrg.repx", Description: document.getElementById('btnmds').innerHTML, Prim: self.txtprimary(), Sec: self.txtsecondary(), ClassCd: self.txtclasscd(), Mfgno: self.txtmfgno(), MfrSign: IsSignMfr },
+                async: false,
+                success: function (response) {
+                    window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                }
+            });
+        }
+
+    }
+
+    function CallDisableTabs() {
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            if (list[0].childNodes[0].id != lis[i].childNodes[0].id) {
+                $('#' + tablist[0].id + '').addClass("nallowed");
+                $('#' + lis[i].childNodes[0].id + '').addClass("event-none");
+            }
+        }
+
+    }
+
+    function CallEnableTabs() {
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            $('#' + tablist[0].id + '').removeClass("nallowed");
+            $('#' + lis[i].childNodes[0].id + '').removeClass("event-none");
+        }
+    }
+
+    function divlblchooseleave() {
+        $("#ulist").hide();
+    }
+    function isValidDate(dateString) {
+        var dtRegex = new RegExp(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{2}\b/);
+        return dtRegex.test(dateString);
+
+    }
+    function isValidDateMonth(dateString) {
+        var dtRegex = new RegExp(/\b\d{1,2}[\/-]\d{1,2}\b/);
+        return dtRegex.test(dateString);
+
+    }
+</script>
+
+<div id="tabs" class="tabbedwidget tab-primary" style="margin-top:-4px">
+    <ul id="tabevent">
+        <li><a href="#tab1" id="CompanyProfiles">Manufacturers</a></li>
+        <li><a href="#tab2" class="Disable" id="Contacts">Contacts</a></li>
+        <li><a href="#tab3" class="Disable" id="Notes">Notes</a></li>
+        <li><a href="#tab4" class="Disable" id="Benefits">Benefits</a></li>
+        <li><a href="#tab5" class="Disable" id="ProgInfo">ProgInfo</a></li>
+        <li><a href="#tab6" class="Disable" id="UPC">UPC</a></li>
+        <li><a href="#tab7" class="Disable" id="roomlist">Room List</a></li>
+    </ul>
+    <div id="tab1">
+        <center>
+            <div style="max-width: 1200px !important; text-align: left;">
+                <div class="row-fluid">
+                    <div class="span3 mob-wd-full">
+                        <ul class="sampletool list-nostyle list-inline tooltipsample mob-main-top">
+                            <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd"><i class="icon-file icon-white"></i></a></li>
+                            <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                            <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                            <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete"><i class="icon-remove icon-white"></i></a></li>
+                            <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                        </ul>
+                    </div>
+                    <div class="span3 search-span">
+                        <div class="searchmenu">
+                            <a href="#" class="btn btn-primary searchmenubtn" style="width:3px !important; height:1px; float: none !important;" id="btnsearch"><i style="margin-top:-8px; margin-left:-5px;" class="iconsweets-magnifying iconsweets-white"></i></a>
+                            <ul class="searchmenu-content" data-bind="foreach: $root.Cmbmfg">
+                                <li style="cursor: pointer; list-style-type:none;" data-bind="click: $root.optionselect"><a data-bind="text: Display_FName,value:Field_Name"></a></li>
+                            </ul>
+                        </div>
+                        <input id="mfgsearch" class="input-medium" type="text" placeholder="" style="font-weight:normal" data-bind="disable:EnableDisableControls,value: txtsearch,event:{blur:txtMfgsearch,dblclick: Mfgsearchdbclick},attr:{placeholder:txtname}" />
+                        <span class="reportmenu">
+                            <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="event:{mouseover:$root.reportimgin}" /></a>
+                            <div id="ulist" onmouseleave="divlblchooseleave();">
+                                <ul class="thisdropdown-menu">
+                                    <li>
+                                        <div class="span12 limouseover">
+                                            <div class="span11">
+                                                <span id="btnmds" data-bind="click: $root.mfgreport">Manufacturer Data Sheet</span>
+                                            </div>
+                                            <div class="span1">
+                                                <input type="checkbox" class="checkreport" id="chkmds" title="Include Signature Block" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="span12 limouseover">
+                                            <div class="span11">
+                                                <span id="btnbpo" data-bind="click: $root.bporeport">Basic Program Outline</span>
+                                            </div>
+                                            <div class="span1">
+                                                <input type="checkbox" class="checkreport" id="chkbpo" title="Include Signature Block" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="span12 limouseover">
+                                            <div class="span11">
+                                                <span id="btnprg" data-bind="click: $root.prgreport">Program Reference Guide</span>
+                                            </div>
+                                            <div class="span1">
+                                                <input type="checkbox" class="checkreport" id="chkprg" title="Include Signature Block" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="span12 limouseover">
+                                            <div class="span11">
+                                                <span id="btnmds" data-bind="click: $root.ShowAllMfrReport">MDS,BPO & PRG Reports</span>
+                                            </div>
+                                            <div class="span1">
+                                                <input type="checkbox" class="checkreportAll" id="chkallrpts" title="Include Signature Block" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </span>
+                    </div>
+
+                </div>
+                <form class="Iteminfo" action="" method="post">
+                    <div class="divheight">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <div class="widgetbox">
+                                    <h4 class="widgettitle"><span>COMPANY PROFILES - </span><span>Old MfgNo:</span><span id="oldmfgno" data-bind="text:txtOldmfgno"></span></h4>
+                                    <div class="padding-style" style="border: 1px #BCD8F3 solid;">
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span3 mob-span">MfgNo/Company</label>
+                                                <input id="mfgno" class="input-small" type="text" tabindex="1" data-bind="disable: EnableDisableMode,value: txtmfgno" readonly="readonly" />
+                                                <input id="company" class="input-large" style="width:52%;" maxlength="50" type="text" tabindex="2" required data-bind="disable: EnableDisableMode,value: txtcompany" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span3 mob-span">Mail Address</label>
+                                                <input id="mailadd" class="mob-text" style="width:312px" type="text" maxlength="35" tabindex="3" data-bind="disable: EnableDisableMode,value: txtmailadd" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span3 mob-span"> City</label>
+                                                <input id="city" class="mob-text" style="width:312px" type="text" maxlength="20" tabindex="4" data-bind="disable: EnableDisableMode, value: txtcity" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span3 mob-span"> St-Pr/Zip/Country</label>
+                                                <input id="state" class="input-large mob-state-width" type="text" style="width:35px;" maxlength="2" tabindex="5" data-bind="disable: EnableDisableMode,value: txtstate" />
+                                                <input id="zip" class="input-large mob-zip-width" type="text" maxlength="10" style="width:80px;" tabindex="6" data-bind="disable: EnableDisableMode,value: txtzip,event:{blur:txtzipsearch}" />
+                                                <select id="country" class="mob-cntry-width" style="background-color:white;width:32%" tabindex="7" data-bind="disable:EnableDisableMode, options:cmbcountry,optionsText:'descript',optionsValue:'entry',value:txtcountry"></select>
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                                    <label class="span3 mob-span"> Phone1/Phone2</label>
+                                                    <input id="phone" class="input-small" style="width:128px;" type="text" maxlength="12" tabindex="8" onkeypress="return numbersonly(this,event,true);" data-bind="disable: EnableDisableMode,value:txtphone" />
+                                                    <input id="phone2" class="input-small" style="width:169px;" type="text" maxlength="12" tabindex="9" onkeypress="return numbersonly(this,event,true);" data-bind="disable: EnableDisableMode,value:txtphone2" />
+                                                @*<div class="row-fluid">
+                                                    <label class="span5 mob-span"> V/M</label>
+                                                    <input id="voicemail" class="input-small" type="checkbox" maxlength="1" tabindex="10" data-bind="disable: EnableDisableMode, checked: txtvoicemail" />
+                                                </div>*@
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="row-fluid">
+                                                <label class="span3 mob-span">Office Hrs.</label>
+                                                <input id="officehrs" class="input-small" style="width:130px;" type="text" tabindex="11" maxlength="11" data-bind="disable: EnableDisableMode, value: txtofficehrs" />
+                                            </div>
+                                        </div>
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span5 mob-span">Fax</label>
+                                                    <input id="fax" class="input-small" style="width:130px;" type="text" maxlength="12" tabindex="12" onkeypress="return numbersonly(this,event,true);" data-bind="disable: EnableDisableMode, value: txtfax" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label id="lblemail" class="span3 mob-span">Company Email</label>
+                                                    <input id="txtemail" class="input-large" style="width:312px" type="text" maxlength="35" tabindex="13" data-bind="disable: EnableDisableMode, value: txtemail" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span3 mob-span"> Web Address1</label>
+                                                    <input id="webpage" class="input-large" style="width:312px" type="text" maxlength="40" tabindex="14" data-bind="disable: EnableDisableMode, value: txtwebpage" />
+                                                    <a id="WebpageLink" target="_blank" data-bind="attr: { href:txtwebpageLink}"><span data-bind="text: txtwebpage"></span></a>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span3 mob-span"> Web Address2</label>
+                                                    <input id="webpage2" class="input-large" style="width:312px" type="text" maxlength="40" tabindex="15" data-bind="disable: EnableDisableMode, value: txtwebpage2" />
+                                                    <a id="WebpageLink2" target="_blank" data-bind="attr: { href:txtwebpageLink2}"><span data-bind="text: txtwebpage2"></span></a>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span3 mob-span">Payment Type</label>
+                                                    <select id="codec" class="input-small" style="background-color:white;width:20%;" tabindex="16" data-bind="disable:EnableDisableMode, options:cmbcodec,optionsText:'descript',optionsValue:'entry',value:txtcodec"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7 mob-wd-full">
+                                                    <label class="span5 mob-span">Primary</label>
+                                                    <select id="primary" class="input-small" style="background-color:white;width:50%;" tabindex="17" data-bind="disable:EnableDisableMode, options:cmbprimary,optionsText:'descript',optionsValue:'entry',value:txtprimary"></select>
+                                                </div>
+                                                <div class="span5 mob-wd-full">
+                                                    <label class="span4 mob-span">Secondary</label>
+                                                    <select id="secondary" class="input-small mob-wd-50" style="background-color:white;width:55%;" tabindex="18" data-bind="disable:EnableDisableMode, options:cmbsecondary,optionsText:'descript',optionsValue:'entry',value:txtsecondary"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7 mob-wd-full">
+                                                    <label class="span5 mob-span">Class Code</label>
+                                                    <select id="classcd" class="input-small" style="background-color:white;width:50%;" tabindex="19" data-bind="disable:EnableDisableMode, options:cmbclasscd,optionsText:'descript',optionsValue:'entry',value:txtclasscd"></select>
+                                                </div>
+                                                <div class="span5 mob-wd-full">
+                                                    <label class="span4 mob-span">Status</label>
+                                                    <select id="status" class="input-small mob-wd-50" style="background-color:white;width:55%;" tabindex="20" data-bind="disable:EnableDisableMode, options:cmbstatus,optionsText:'descript',optionsValue:'entry',value:txtstatus"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span3 mob-span">Referred by</label>
+                                                    <input id="ref_by" class="span8 mob-text" type="text" style="min-height: 21px !important;" tabindex="21" maxlength="30" data-bind="disable: EnableDisableMode, value: txtref_by" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span3 mob-span">Products</label>
+                                                    @*<input id="products" class="span8 mob-text"  style="min-height: 21px !important;" type="text" maxlength="70" tabindex="21" data-bind="disable: EnableDisableMode, value: txtproducts" />*@
+                                                    <textarea id="products" class="span8 mob-text" rows="2" cols="10" style="height:43px !important; resize:none; background-color:white; font-weight:bold;" maxlength="70" tabindex="22" data-bind="disable: EnableDisableMode, value: txtproducts"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <label class="span12" style="font-weight:bold">Merchandise Program</label>
+                                                <div class="row-fluid">
+                                                    <div class="span5">
+                                                        <label class="span7 mob-span">Status</label>
+                                                        <input id="mds_stat" class="input-small" style="width:80px;" type="text" maxlength="1" tabindex="23" data-bind="disable: EnableDisableMode, value: txtmds_stat" />
+                                                    </div>
+                                                    <div class="span6">
+                                                        <label class="span4 mob-span">Revision Yr.</label>
+                                                        <input id="mdsrevyr" class="input-small" style="width:80px;" type="text" maxlength="2" tabindex="24" data-bind="disable: EnableDisableMode, value: txtmdsrevyr" />
+                                                    </div>
+                                                </div>
+                                                <div class="row-fluid mob-flex">
+                                                    <label class="span3 mob-wd-dblfull" style="font-weight: bold">Submitted:</label>
+                                                    <label class="span2" style="font-weight: bold">CY</label>
+                                                    <label class="span3" style="font-weight: bold">LY</label>
+                                                    <label class="span3 mob-disp-none"></label>
+                                                </div>
+                                                <div class="row-fluid mob-flex">
+                                                    <label class="span3 mob-wd-dblfull">Program</label>
+                                                    <div class="span2">
+                                                        <input id="prog_cy" class="input-small" type="checkbox" maxlength="1" tabindex="25" data-bind="disable: EnableDisableMode, checked: txtprog_cy" />
+                                                    </div>
+                                                    <div class="span3">
+                                                        <input id="prog_ly" class="input-small" type="checkbox" maxlength="1" tabindex="26" data-bind="disable: EnableDisableMode, checked: txtprog_ly" />
+                                                    </div>
+
+                                                </div>
+                                                <div class="row-fluid mob-flex">
+                                                    <label class="span3 mob-wd-dblfull">PDS</label>
+                                                    <div class="span2">
+                                                        <input id="pds_cy" class="input-small" type="checkbox" maxlength="1" tabindex="27" data-bind="disable: EnableDisableMode, checked: pds_cy" />
+                                                    </div>
+                                                    <div class="span3">
+                                                        <input id="pds_ly" class="input-small" type="checkbox" maxlength="1" tabindex="28" data-bind="disable: EnableDisableMode, checked: pds_ly" />
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="span6">
+                                    <div class="widgetbox">
+                                        <h4 class="widgettitle">CORPORATE INFORMATION</h4>
+                                        <div class="padding-style" style="border: 1px #BCD8F3 solid;">
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span4 mob-span">Corp.Name</label>
+                                                    <input id="corpname" class="input-large" style="width:60%;" type="text" maxlength="35" tabindex="29" data-bind="disable: EnableDisableMode,value: txtcorpname" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span4 mob-span">Ship Address</label>
+                                                    <input id="shipadd" class="input-large" style="width:312px" type="text" maxlength="35" tabindex="30" data-bind="disable: EnableDisableMode,value: txtshipadd" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span4 mob-span">City</label>
+                                                    <input id="scity" class="input-large" style="width:312px" type="text" maxlength="20" tabindex="31" data-bind="disable: EnableDisableMode, value: txtscity" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <label class="span4 mob-span">St-Pr/Zip/Country</label>
+                                                    <input id="sstate" type="text" style="width:35px;" maxlength="2" tabindex="32" class="input-large mob-state-width" data-bind="disable: EnableDisableMode,value: txtsstate" />
+                                                    <input id="nszip" type="text" maxlength="10" style="width:80px;" tabindex="33" class="input-large mob-zip-width" data-bind="disable: EnableDisableMode,value: txtnszip,event:{blur:txtszipsearch}" />
+                                                    <select id="scountry" class="mob-cntry-width" style="background-color:white;width:32%" tabindex="34" data-bind="disable:EnableDisableMode,options:cmbscountry,optionsText:'descript',optionsValue:'entry',value:txtscountry"></select>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid mob-disp-none" style="margin-top: 120px;"></div>
+                                            <div class="row-fluid">
+                                                <label class="span12" style="font-weight:bold">National Group Program</label>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span7 mob-span">Effective </label>
+                                                    <input id="ngpeffdt" class="input-small " placeholder="MM/DD/YY" maxlength="8" type="text" tabindex="35" data-bind="disable: EnableDisableMode, value: txtngpeffdt" />
+                                                </div>
+                                                <div class="span2 mob-span">
+                                                    <input id="ngp_xcpt" class="input-small" type="checkbox" tabindex="36" data-bind="disable: EnableDisableMode, checked: txtngp_xcpt" />
+                                                    <label for="ngp_xcpt">Exception</label>
+                                                </div>
+                                                <div class="span2 mob-span">
+                                                    <input id="vpc" class="input-small" type="checkbox" tabindex="37" data-bind="disable: EnableDisableMode, checked: txtvpc" />
+                                                    <label for="vpc">VPC</label>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span7 mob-span">Modified </label>
+                                                    <input id="ngpmoddt" type="text" placeholder="MM/DD/YY" maxlength="8" class="input-small" tabindex="38" data-bind="disable: EnableDisableMode, value: txtngpmoddt" />
+                                                </div>
+                                                <div class="span2 mob-span">
+                                                    <input id="vpc_rmks" type="checkbox" class="input-small" tabindex="39" data-bind="disable: EnableDisableMode, checked: txtvpc_rmks" />
+                                                    <label for="vpc_rmks">Remarks</label>
+                                                </div>
+                                                <div class="span3 mob-span">
+                                                    <input id="canprog" type="checkbox" class="input-small" tabindex="40" data-bind="disable: EnableDisableMode, checked: txtcanprog" />
+                                                    <label for="canprog">CN Program</label>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span7 mob-span">Annual Start </label>
+                                                    <input id="mrevdesc" type="text" class="input-small" placeholder="MM/DD" maxlength="5" tabindex="41" data-bind="disable: EnableDisableMode, value: txtmrevdesc" />
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span7 mob-span">Termination Year</label>
+                                                    <input id="termyr" class="input-small" type="text" maxlength="2" tabindex="42" data-bind="disable: EnableDisableMode, value: txttermyr" />
+                                                </div>
+                                            </div>
+
+                                            <div class="row-fluid mob-disp-none" style="margin-top: 75px;"></div>
+
+                                            <div class="row-fluid">
+                                                <div class="span7">
+                                                    <label class="span12" style="font-weight: bold">Kick-Off Year/Session</label>
+                                                    <div class="row-fluid">
+                                                        <div class="span12 mob-wd-full">
+                                                            <label class="span7 mob-span">Current Year</label>
+                                                            <input id="prgrevty" class="input-small" style="width:80px;" type="text" maxlength="2" tabindex="43" data-bind="disable: EnableDisableMode, value: txtprgrevty" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row-fluid">
+                                                        <div class="span12 mob-wd-full">
+                                                            <label class="span7 mob-span">Last Year</label>
+                                                            <input id="prgrevly" class="input-small" style="width:80px;" type="text" tabindex="44" maxlength="2" data-bind="disable: EnableDisableMode, value: txtprgrevly" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row-fluid">
+                                                        <div class="span12 mob-wd-full">
+                                                            <label class="span7 mob-span"> Prior Year</label>
+                                                            <input id="prgrevpy" class="input-small" style="width:80px;" type="text" tabindex="45" maxlength="2" data-bind="disable: EnableDisableMode, value: txtprgrevpy" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="span5">
+                                                    <div class="row-fluid">
+                                                        <label class="span6" style="font-weight: bold">Show</label>
+                                                        <label class="span6" style="font-weight: bold">Booth No.</label>
+                                                    </div>
+                                                    <div class="row-fluid">
+                                                        <div class="span12">
+                                                            <label class="span6 mob-span">NHS</label>
+                                                            <input id="hwsb" class="input-small" style="width:70px;" tabindex="46" maxlength="5" type="text" data-bind="disable: EnableDisableMode, value: txthwsb" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row-fluid">
+                                                        <div class="span12">
+                                                            <label class="span6 mob-span">IGC</label>
+                                                            <input id="igc_chi" class="input-small" style="width:70px;" tabindex="47" maxlength="5" type="text" data-bind="disable: EnableDisableMode, value: txtigc_chi" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span6"></div>
+                                                <div class="span6 mob-wd-full">
+                                                    <label class="span7 mob-span">Optional Query Field</label>
+                                                    <input id="codea" class="input-small" style="width:70px;" type="text" maxlength="1" tabindex="48" data-bind="disable: EnableDisableMode, value: codea" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div>
+        </center>
+    </div>
+    <div id="tab2">
+        <div class="frameheight" style="height: 800px">
+            <iframe id="iContacts" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab3">
+        <div style="height: 800px">
+            <iframe id="iNotes" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab4">
+        <div style="height: 800px">
+            <iframe id="iBenefits" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab5">
+        <div style="height: 850px">
+            <iframe id="iProgInfo" width="100%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab6">
+        <div style="height: 800px">
+            <iframe id="iUPC" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div id="tab7">
+        <div style="height: 800px">
+            <iframe id="iroomlist" width="98%" height="100%" scrolling="no" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>

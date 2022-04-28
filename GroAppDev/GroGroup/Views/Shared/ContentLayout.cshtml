@@ -1,0 +1,566 @@
+﻿@using System.Web.Optimization;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gro Group</title>
+    <link href="@Url.Content("~/Styles/Site.css")" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/style.default.css")" type="text/css" />
+    <link href="@Url.Content("~/css/jquery.ui.css")" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive-tables.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/msgBoxLight.css")" type="text/css" />
+    <link href="@Url.Content("~/css/colorpicker.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/colorbox.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/css/style.default.css")" rel="Stylesheet" type="Text/Css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/responsive-screen.css")" type="text/css" />
+    @*<link rel="stylesheet" href="@Url.Content("~/css/responsive_report.css")" type="text/css" />*@
+    @*<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />*@
+    @*<script type="text/javascript" src="@Url.Content("~/js/CSSrefresh.js")"></script>*@
+
+    @Scripts.Render("~/bundles/lOGINjquery")
+    @Scripts.Render("~/bundles/jquery")
+    @*<script src="@Url.Content("~/ckeditor/ckeditor.js")" type="text/javascript"></script>*@
+    <script type="text/javascript" src="@Url.Content("~/js/Validation.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/UserRestrictions.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/tooltiptitle.js")"></script>
+
+    <!--SpellCheck-->
+    <script type="text/javascript" src="@Url.Content("~/JavaScriptSpellCheck/include.js")"></script>
+
+    <link href="@Url.Content("~/css/bootstrap-multiselect.css")" rel="stylesheet" />
+    <link rel="stylesheet" href="@Url.Content("~/css/ie.css")" type="text/css">
+    <script type="text/javascript" src="@Url.Content("~/js/CSSrefresh.js")"></script>
+
+     <!-- for sorting and exporting -->
+    <script src="~/js/GridTable.js"></script>
+
+    @*<script type="text/javascript" src="@Url.Content("~/js/sessionTimeout.js")"></script>*@
+
+    @*<script type="text/javascript">
+        function SortDataView() {
+            scheduler.PerformCallback();
+        }
+
+        function ontreeview(obj) {
+
+            var ss = document.getElementById('hf').value;
+
+            $.ajax({
+                url: '@Url.Action("Treeview", "Schedule")',
+                type: "POST",
+                data: { res: ss },
+                success: function (response) {
+                    SortDataView();
+                }
+            });
+        }
+    </script>*@
+
+    @*<script language=JavaScript>
+            document.onkeypress = function (event) {
+                event = (event || window.event);
+                if (event.keyCode == 123) {
+                    return false;
+                }
+            }
+            document.onmousedown = function (event) {
+                event = (event || window.event);
+                if (event.keyCode == 123) {
+                    return false;
+                }
+            }
+            document.onkeydown = function (event) {
+                event = (event || window.event);
+                if (event.keyCode == 123) {
+                    return false;
+                }
+                if (event.keyCode == 112) {
+                    window.parent.parent.Help(window.parent.parent.document.getElementById("description").value, window.parent.parent.document.getElementById("usermodule").value, event);
+                }
+            }
+
+            function clickIE4() {
+                if (event.button == 2) {
+                    return false;
+                }
+            }
+
+            function clickNS4(e) {
+                if (document.layers || document.getElementById && !document.all) {
+                    if (e.which == 2 || e.which == 3) {
+                        return false;
+                    }
+                }
+            }
+
+            if (document.layers) {
+                document.captureEvents(Event.MOUSEDOWN);
+                document.onmousedown = clickNS4;
+            }
+            else if (document.all && !document.getElementById) {
+                document.onmousedown = clickIE4;
+            }
+
+            document.oncontextmenu = new Function("return false")
+
+            $.autoUpdateStylesheets();
+        </script>*@
+
+    <style>
+        .ui-dialog{
+            top:25%!important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            initSession();
+            $(this).click(function () {
+                ReInitiallizeSession();
+                if (window.parent.parent.Parent != null && window.parent.parent.Parent != undefined)
+                    window.parent.parent.MenuHide();
+                else {
+                    if (window.parent.parent.parent.Parent != null && window.parent.parent.parent.Parent != undefined)
+                        window.parent.parent.parent.MenuHide();
+                }
+            });
+
+            $(this).keypress(function () {
+                ReInitiallizeSession();
+            });
+
+            /*
+            var timeout;
+            $.ajax({
+                url: "../GroGroup/GetSessionTimeout",
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    timeout = response.timeout;
+                }
+            });
+            initSessionMonitor();*/
+
+            $("body").show();
+            $("#loading").fadeOut();
+
+            $('textarea').spellAsYouType({ checkGrammar: true });
+
+            $("#NotesDialog").dialog({
+                draggable: false,
+                autoresize: false,
+                autoOpen: false,
+                modal: true,
+                width: 300
+
+            });
+            var count = 0;
+
+            $("#ui-id-1 .ui-dialog-titlebar-close").live("click", function () {
+                count--;
+                window.frameElement.getAttribute("id") = "";
+                $(".multiexport").removeClass("disabledbutton");
+            });
+            $("#ui-id-2 .ui-dialog-titlebar-close").live("click", function () {
+                count--;
+                window.frameElement.getAttribute("id") = "";
+                $(".multiexport").removeClass("disabledbutton");
+            });
+
+            $("#ui-id-1 .close").live("click", function () {
+                window.frameElement.getAttribute("id") = "";
+            });
+            $("#ui-id-2 .close").live("click", function () {
+                window.frameElement.getAttribute("id") = "";
+            });
+
+            $("#ui-id-1 #export").live("click", function () {
+                count--;
+                $(".multiexport").removeClass("disabledbutton");
+            });
+            $("#ui-id-2 #export").live("click", function () {
+                count--;
+                $(".multiexport").removeClass("disabledbutton");
+            });
+
+            $('#ui-id-1 .ui-dialog-title').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            /*
+            var sessServerAliveTime = 10 * 60 * 200;
+            var sessionTimeout = parseInt(timeout) * 60000;
+            var sessLastActivity;
+            var idleTimer, remainingTimer;
+            var isTimout = false;
+
+            var sess_intervalID, idleIntervalID;
+            var sess_lastActivity;
+            var timer;
+            var isIdleTimerOn = false;
+            localStorage.setItem('sessionSlide', 'isStarted');
+
+            function sessPingServer() {
+                if (!isTimout) {
+                    //$.ajax({
+                    //    url: '/Admin/SessionTimeout',
+                    //    dataType: "json",
+                    //    async: false,
+                    //    type: "POST"
+                    //});
+
+                    return true;
+                }
+            }
+
+            function sessServerAlive() {
+                sess_intervalID = setInterval('sessPingServer()', sessServerAliveTime);
+            }
+
+            function initSessionMonitor() {
+                $(document).bind('keypress.session', function (ed, e) {
+                    sessKeyPressed(ed, e);
+                });
+                $(document).bind('mousedown keydown', function (ed, e) {
+
+                    sessKeyPressed(ed, e);
+                });
+                sessServerAlive();
+                startIdleTime();
+            }
+
+            $(window).scroll(function (e) {
+                localStorage.setItem('sessionSlide', 'isStarted');
+                startIdleTime();
+            });
+
+            function sessKeyPressed(ed, e) {
+                var target = ed ? ed.target : window.event.srcElement;
+                var sessionTarget = $(target).parents("#session-expire-warning-modal").length;
+
+                if (sessionTarget != null && sessionTarget != undefined) {
+                    if (ed.target.id != "btnSessionExpiredCancelled" && ed.target.id != "btnSessionModal" && ed.currentTarget.activeElement.id != "session-expire-warning-modal" && ed.target.id != "btnExpiredOk"
+                         && ed.currentTarget.activeElement.className != "modal fade modal-overflow in" && ed.currentTarget.activeElement.className != 'modal-header'
+                && sessionTarget != 1 && ed.target.id != "session-expire-warning-modal") {
+                        localStorage.setItem('sessionSlide', 'isStarted');
+                        startIdleTime();
+                    }
+                }
+            }
+
+            function startIdleTime() {
+                stopIdleTime();
+                localStorage.setItem("sessIdleTimeCounter", $.now());
+                idleIntervalID = setInterval('checkIdleTimeout()', 1000);
+                isIdleTimerOn = false;
+            }
+
+            //var sessionExpired = document.getElementById("session-expired-modal");
+            //function sessionExpiredClicked(evt) {
+            //    //window.location = "Logout.html";
+            //    sessLogOut();
+            //}
+
+            //document.addEventListener('DOMContentLoaded', function () {
+            //    sessionExpired.addEventListener("click", sessionExpiredClicked, false);
+            //});
+            //sessionExpired.addEventListener("click", sessionExpiredClicked, false);
+            function stopIdleTime() {
+                clearInterval(idleIntervalID);
+                clearInterval(remainingTimer);
+            }
+
+            function checkIdleTimeout() {
+                // $('#sessionValue').val() * 60000;
+                var idleTime = (parseInt(localStorage.getItem('sessIdleTimeCounter')) + (sessionTimeout));
+                if ($.now() > idleTime + 60000) {
+                    $("#session-expire-warning-modal").modal('hide');
+                    document.getElementById('session-expire-warning-modal').style.left = "3000px";
+                    //$("#session-expired-modal").modal('show');
+                    clearInterval(sess_intervalID);
+                    clearInterval(idleIntervalID);
+
+                    $('.modal-backdrop').css("z-index", parseInt($('.modal-backdrop').css('z-index')) + 100);
+                    //$("#session-expired-modal").css('z-index', 2000);
+                    //$('#btnExpiredOk').css('background-color', '#428bca');
+                    //$('#btnExpiredOk').css('color', '#fff');
+
+                    isTimout = true;
+
+                    sessLogOut();
+
+                }
+                else if ($.now() > idleTime) {
+                    ////var isDialogOpen = $("#session-expire-warning-modal").is(":visible");
+                    if (!isIdleTimerOn) {
+                        ////alert('Reached idle');
+                        localStorage.setItem('sessionSlide', false);
+                        countdownDisplay();
+
+                        $('.modal-backdrop').css("z-index", parseInt($('.modal-backdrop').css('z-index')) + 500);
+                        $('#session-expire-warning-modal').css('z-index', 1500);
+                        $('#btnOk').css('background-color', '#428bca');
+                        $('#btnOk').css('color', '#fff');
+                        $('#btnSessionExpiredCancelled').css('background-color', '#428bca');
+                        $('#btnSessionExpiredCancelled').css('color', '#fff');
+                        $('#btnLogoutNow').css('background-color', '#428bca');
+                        $('#btnLogoutNow').css('color', '#fff');
+
+                        $("#seconds-timer").empty();
+                        document.getElementById('session-expire-warning-modal').style.left = "250px";
+                        $("#session-expire-warning-modal").modal('show');
+
+                        isIdleTimerOn = true;
+                    }
+                }
+            }
+
+            $("#btnSessionExpiredCancelled").click(function () {
+                $('.modal-backdrop').css("z-index", parseInt($('.modal-backdrop').css('z-index')) - 500);
+            });
+
+            $("#btnOk").click(function () {
+                document.getElementById('session-expire-warning-modal').style.left = "3000px";
+                $("#session-expire-warning-modal").modal('hide');
+                $('.modal-backdrop').css("z-index", parseInt($('.modal-backdrop').css('z-index')) - 500);
+                startIdleTime();
+                clearInterval(remainingTimer);
+                localStorage.setItem('sessionSlide', 'isStarted');
+                $.ajax({
+                    url: "../GroGroup/ReIniSession",
+                    type: "POST",
+                    success: function (response) {
+
+                    }
+                });
+            });
+
+            $("#btnLogoutNow").click(function () {
+                localStorage.setItem('sessionSlide', 'loggedOut');
+                //window.location = "Logout.html";
+                sessLogOut();
+                //$("#session-expired-modal").modal('hide');
+
+            });
+            //$('#session-expired-modal').on('shown.bs.modal', function () {
+            //    $("#session-expire-warning-modal").modal('hide');
+            //    $(this).before($('.modal-backdrop'));
+            //    $(this).css("z-index", parseInt($('.modal-backdrop').css('z-index')) + 1);
+            //});
+
+            //$("#session-expired-modal").on("hidden.bs.modal", function () {
+            //    //window.location = "Logout.html";
+            //    sessLogOut();
+            //});
+            $('#session-expire-warning-modal').on('shown.bs.modal', function () {
+                document.getElementById('session-expire-warning-modal').style.left = "250px";
+                $("#session-expire-warning-modal").modal('show');
+                $(this).before($('.modal-backdrop'));
+                $(this).css("z-index", parseInt($('.modal-backdrop').css('z-index')) + 1);
+            });
+
+            function countdownDisplay() {
+                var dialogDisplaySeconds = 60;
+                remainingTimer = setInterval(function () {
+                    if (localStorage.getItem('sessionSlide') == "isStarted") {
+                        $("#session-expire-warning-modal").modal('hide');
+                        startIdleTime();
+                        clearInterval(remainingTimer);
+                    }
+                    else if (localStorage.getItem('sessionSlide') == "loggedOut") {
+                        $("#session-expire-warning-modal").modal('hide');
+                        //$("#session-expired-modal").modal('show');
+                    }
+                    else {
+
+                        $('#seconds-timer').html(dialogDisplaySeconds);
+                        dialogDisplaySeconds -= 1;
+                    }
+                }
+                , 1000);
+            };
+
+            function sessLogOut() {
+                // $.ajax({
+                //     url: 'Logout.html',
+                //     dataType: "json",
+                //      async: false,
+                //      type: "POST"
+                //   });
+
+                //window.location = "Logout.html";
+                window.parent.document.getElementById("sess_logout").click();
+            }*/
+            //$.autoUpdateStylesheets();
+        });
+
+        
+        var sess_pollInterval = 60000;
+        var sess_warningMinutes = 719;
+        var sess_intervalID;
+        var sess_lastActivity;
+        var timer = 60;
+        var clearTimer;
+        function initSession() {
+            sess_lastActivity = new Date();
+            sessSetInterval();
+            $(document).bind('keypress.session', function (ed, e) {
+                sessKeyPressed(ed, e);
+            });
+        }
+        function sessSetInterval() {
+            sess_intervalID = clearInterval(sess_intervalID);
+            sess_intervalID = setInterval('sessInterval()', sess_pollInterval);
+        }
+        function sessClearInterval() {
+            clearInterval(sess_intervalID);
+        }
+        function sessKeyPressed(ed, e) {
+            sess_lastActivity = new Date();
+        }
+        function ReInitiallizeSession() {
+            initSession();
+            $.ajax({
+                url: "../GroGroup/ReIniSession",
+                type: "POST",
+                success: function (response) {
+
+                }
+            });
+        }
+
+        function sessInterval() {
+            var now = new Date();
+            //get milliseconds of differneces
+            var diff = now - sess_lastActivity;
+            //get minutes between differences
+            var diffMins = (diff / 1000 / 60);
+            if (diffMins >= sess_warningMinutes) {
+                //wran before expiring
+                //stop the timer
+                sessClearInterval();
+
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Your session has timed out after a long time of inactivity. Please click ok and Sign In again.",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    success: function (result) {
+                        if (result == "Ok") {
+                            window.parent.document.getElementById("sess_logout").click();
+                        }
+                    }
+                });
+
+            }
+        }
+
+        $.autoUpdateStylesheets();
+    </script>
+
+    <style type="text/css">
+        .loading {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            position: fixed;
+            opacity: 0.7;
+            background-color: #fff;
+            z-index: 99;
+            text-align: center;
+        }
+
+        .loading-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 100;
+        }
+
+        #ui-datepicker-div th {
+            padding: 0px 0px 0px 9px;
+        }
+
+         .livespell_textarea{
+         display:block !important;
+         border: 1px solid #ccc !important;
+         clear: none !important;
+         /*border: 1px solid #ddd!important;*/
+     }
+
+          input[type="text"],input[type="time"],input[type="textarea"] {
+            background-color: #fff;
+            /*border-color: #ddd !important;*/
+            font-weight: bold;
+            color: black;
+            font-size: 13px;
+        }
+
+        select {
+            /*border-color: #fff !important;
+            border-color: #ddd !important;*/
+            font-weight: bold;
+            color: black;
+            font-size: 13px;
+        }
+
+    </style>
+
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="@Url.Content("~/js/excanvas.min.js")"></script><![endif]-->
+    @RenderSection("head", false)
+    @Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.GridView },
+        new Script { ExtensionSuite = ExtensionSuite.Editors },
+        new Script { ExtensionSuite = ExtensionSuite.Report }
+          
+    )
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.GridView },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Report }
+    )
+
+</head>
+
+<body class="MainContent" style="display:none">
+    @RenderBody()
+    <div id="loading" class="loading">
+        <img id="loading-image" class="loading-image" src="~/images/loaders/loader5.gif" alt="Loading..." />
+    </div>
+
+    <!--Start Show Session Expire Warning Popup here -->
+    @*<div class="modal fade" id="session-expire-warning-modal" aria-hidden="true" style="height: 150px; width: 500px; left: 3000px;" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Session Expire Warning</h4>
+                </div>
+                <div class="modal-body">
+                    Your session will expire in <span id="seconds-timer"></span> seconds. Do you want to extend the session?
+                </div>
+                <div class="modal-footer">
+                    <button id="btnOk" type="button" class="btn btn-primary" style="padding: 6px 12px; margin-bottom: 0; font-size: 14px; font-weight: normal; border: 1px solid transparent; border-radius: 4px;  background-color: #428bca; color: #FFF;">Continue</button>
+                    <button id="btnSessionExpiredCancelled" type="button" class="btn btn-primary" data-dismiss="modal" style="padding: 6px 12px; margin-bottom: 0; font-size: 14px; font-weight: normal; border: 1px solid transparent; border-radius: 4px; background-color: #428bca; color: #FFF; display:none;">Cancel</button>
+                    <button id="btnLogoutNow" type="button" class="btn btn-primary" style="padding: 6px 12px; margin-bottom: 0; font-size: 14px; font-weight: normal; border: 1px solid transparent; border-radius: 4px;  background-color: #428bca; color: #FFF;">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <div id="NotesDialog" title="Fields">
+        <ul id="navigation" class="subs" data-bind="foreach:{ data: $root.menulist }" style="margin-top:-4px;">
+            <li style="list-style-type: none;">
+                <a href="#" style="width:190px;text-decoration: none;">
+                    <input type="checkbox" class="checked" data-bind="attr:{id:'chk_'+ $index()}" />
+                    <label data-bind="text:$data,attr:{id:'lbl_'+ $index(),for:'chk_'+ $index()}"> </label>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

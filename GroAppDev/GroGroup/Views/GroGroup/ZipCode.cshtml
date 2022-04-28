@@ -1,0 +1,628 @@
+﻿@{
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+    ViewBag.Title = "ZipCode";
+}
+
+<link href="~/css/Theadscroll.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;width:49%;}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable td{ text-align: left !important;}
+
+                    .dytable tr td:nth-of-type(1):before{content:'City';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'State';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'County';font-weight: bold;}
+                    .dytable tr td:nth-of-type(4):before{content:'Zip Code';font-weight: bold;}
+                    .dytable tr td:nth-of-type(5):before{content:'Latitude';font-weight: bold;}
+                    .dytable tr td:nth-of-type(6):before{content:'Longitude';font-weight: bold;}
+
+@media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+<style>
+    input[type="text"] {
+        background-color: white;
+        border: #ddd 1px solid;
+        font-weight: bold;
+        color: black;
+        font-size: 13px;
+    }
+
+    /* Style The Dropdown Button */
+    .searchmenubtn {
+        color: white;
+        padding: 13px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border: 1px !important;
+        border-color: black !important;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .searchmenu {
+        position: relative;
+        display: inline-block;
+        border: 1px !important;
+        border-color: black !important;
+        z-index: 999;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .searchmenu-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        top: 2.8em;
+    }
+
+        /* Links inside the dropdown */
+        .searchmenu-content a {
+            top: 1em;
+            height: 20px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            color: black;
+            text-decoration: none !important;
+            display: block;
+        }
+
+            /* Change color of dropdown links on hover */
+            .searchmenu-content a:hover {
+                top: -5px;
+                background-color: #BCD8F3 !important;
+                color: #800909 !important;
+            }
+
+    /* Show the dropdown menu on hover */
+    .searchmenu:hover .searchmenu-content {
+        display: block;
+        margin-top: -10px;
+    }
+
+    .searchmenu-content:after {
+        top: -7px;
+        content: " ";
+        left: 4%;
+        position: absolute;
+        width: 10px;
+        height: 9px;
+        border-right: 2px solid #0866c6;
+        border-bottom: 2px solid #0866c6;
+        background: white;
+        transform: rotate(222deg);
+    }
+
+    .table-container {
+        height: 45em;
+    }
+</style>
+
+<script type="text/javascript">
+    var ZipCode;
+    var CityNo = "";
+    var rowIndex = 0;
+    var zip, city = false;
+    $(document).ready(function () {
+        ZipCode = new viewModel();
+        ko.applyBindings(ZipCode);
+
+        $("#btnAdd").click({ handler: ZipCode.Add });
+        $("#btnEdit").click({ handler: ZipCode.Edit });
+        $("#btnSave").click({ handler: ZipCode.Save });
+        $("#btnDelete").click({ handler: ZipCode.Delete });
+        $("#btnCancel").click({ handler: ZipCode.Cancel });
+        $("#cmbstate").change({ handler: ZipCode.StateSelectionChanged });
+        $("#Schcity").blur({ handler: ZipCode.SearchCity });
+        $("#Schzip").blur({ handler: ZipCode.SearchZip });
+        $("#cmbstate").hide();
+        $("#Schcity").show();
+        $("#Schzip").hide();
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            if ($(window).height() > 700)
+                $('#TbZip').css('height', $(window).height() - 350 + 'px');
+            else
+                $('#TbZip').css('height', $(window).height() - 100 + 'px');
+            $('table#TbZip tbody').css("overflow-y", "scroll");
+            $('table#TbZip thead').css("width", "98.5%");
+        }
+    });
+
+    
+
+    function viewModel() {
+
+        var self = this;
+        var Gcityid = 0;
+        self.EnableDisableControls = ko.observable(true);
+        self.EnableDisableMode = ko.observable(false);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+        self.cityid = ko.observable();
+        self.txtcity = ko.observable();
+        self.txtstate = ko.observable();
+        self.txtcountry = ko.observable();
+        self.txtzip = ko.observable();
+        self.txtlat = ko.observable();
+        self.txtlng = ko.observable();
+        self.lblselected = ko.observable();
+        self.txtcityValue = ko.observable();
+        self.txtzipValue = ko.observable();
+
+        self.CmbstateList = ko.observableArray([]);
+        self.txtstateValue = ko.observable();
+        self.ZipCodeGrigList = ko.observable();
+        self.ZipComboList = ko.observable();
+
+        self.lblselected("City");
+
+
+        if ($(window).height() > 700)
+            $('#TbZip').css('max-height', $(window).height() - 350 + 'px');
+        else
+            $('#TbZip').css('max-height', $(window).height() - 100 + 'px');
+
+        $(".clickableRow").live("click", function () {
+            if (self.SaveMode() == true && self.AddMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveMode() == true && self.AddMode() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+            }
+            else {
+                rowIndex = $(this).attr("id");
+                $('.clickableRow').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+
+
+
+
+        $.ajax({
+            url: "FillSearchComboList",
+            type: "POST",
+            data: { ScreenFrom: 'Zip Code', FormClass: 'ZipCode' },
+            success: function (response) {
+                if (response.Items.length > 0) {
+                    self.ZipComboList(response.Items);
+                }
+                else {
+                    var StaticHeadercmbo = "City-City,State-State,Zip-Zip Code";
+                    var Comboheadsplit = StaticHeadercmbo.split(",");
+                    var ComboArray = []
+                    for (var i = 0; i < Comboheadsplit.length; i++) {
+                        var Splitdesc = "";
+                        Splitdesc = Comboheadsplit[i].split("-");
+                        ComboArray.push({
+                            Field_Name: Splitdesc[0],
+                            Display_FName: Splitdesc[1]
+                        });
+                    }
+                    self.ZipComboList(ComboArray);
+                }
+            }
+        });
+
+
+        $.ajax({
+            url: "SearchZipcombo",
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.CmbstateList(response.Items);
+                self.txtstateValue(response.Items[0].state);
+                FillZipGrid();
+            }
+        });
+
+        self.StateSelectionChanged = function () {
+            self.cityid("");
+            self.txtzipValue("");
+            self.txtcityValue("");
+            FillZipGrid();
+        }
+
+        function FillZipGrid() {
+
+            $.ajax({
+                url: "FillZipCodeGrid",
+                type: "POST",
+                data: { Filterstate: self.txtstateValue(), cityid: CityNo },
+                success: function (response) {
+                    self.ZipCodeGrigList(response.Items);
+                    if (response.rowindex > 0) {
+                        $('#TbZip tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                        BindZipCode(response.Items[response.rowindex]);
+                        rowIndex = response.rowindex;
+                    }
+                    else if (response.rowindex < 0) {
+                        $('#TbZip tbody tr:first').addClass('success selected');
+                        BindZipCode(response.Items[0]);
+                        rowIndex = response.rowindex;
+                    }
+                    else {
+                        $('#TbZip tbody tr:first').addClass('success selected');
+                        BindZipCode(response.Items[0]);
+                        rowIndex = response.rowindex;
+                    }
+                }
+            });
+        }
+
+
+
+        self.SelectedZipCodeList = function (item) {
+            BindZipCode(item);
+        }
+
+        function BindZipCode(item) {
+            if (self.SaveMode() == true)
+                return false;
+            self.cityid(item.cityid);
+            self.txtcity(item.City);
+            self.txtstate(item.State)
+            self.txtcountry(item.Country);
+            self.txtzip(item.Zip);
+            self.txtlat(item.lat);
+            self.txtlng(item.lng);
+            Gcityid = item.cityid;
+        }
+
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableControls(false);
+            self.EnableDisableMode(true);
+            self.txtcity("");
+            self.txtstate("");
+            self.txtcountry("");
+            self.txtzip("");
+            self.txtlat("");
+            self.txtlng("");
+            self.cityid("");
+            $("#city").focus();
+            $('.clickableRow').removeClass('success selected');
+        }
+        self.Edit = function () {
+            if (self.ZipCodeGrigList().length == 0)
+                return false;
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableControls(false);
+            self.EnableDisableMode(true);
+            $("#city").focus();
+        }
+        self.checkmandatory = function () {
+            if (self.txtcity() == null || self.txtcity() == "") {
+                $.msgBox({
+                    title: "Gro Group", content: "Please enter City",
+                    afterClose: function (result) {
+                        document.getElementById("city").focus();
+                    }
+                });
+                return false;
+            }
+            if (self.txtstate() == null || self.txtstate() == "") {
+                $.msgBox({
+                    title: "Gro Group", content: "Please enter State  ",
+                    afterClose: function (result) {
+                        document.getElementById("state").focus();
+                    }
+                });
+                return false;
+            }
+            if (self.txtzip() == null || self.txtzip() == "") {
+                $.msgBox({
+                    title: "Gro Group", content: "Please enter Zip",
+                    afterClose: function (result) {
+                        document.getElementById("zip").focus();
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+        
+        self.Save = function () {
+
+            if (!self.checkmandatory()) return false;
+            $.ajax({
+                url: "ValidateZipcode",
+                data: { City: self.txtcity(), State: self.txtstate(), Zip: self.txtzip(), AddMode: self.AddMode(), Gcityid: Gcityid },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items == true) {
+                        $.msgBox({
+                            title: "Gro Group", content: "City, State and Zipcode already exists",
+                            afterClose: function (result) {
+                                $("#city").focus();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        var cityid;
+                        if (self.AddMode() == true)
+                            cityid = 0;
+                        else
+                            cityid = self.cityid();
+                        var zipcodelist = [];
+                        zipcodelist = {
+                            cityid: self.cityid(),
+                            city: self.txtcity(),
+                            state: self.txtstate(),
+                            country: self.txtcountry(),
+                            zip: self.txtzip(),
+                            lat: self.txtlat(),
+                            lng: self.txtlng()
+                        }
+                        $.ajax({
+                            url: "SaveZipCode",
+                            type: "POST",
+                            data: { zipcodelist: JSON.stringify(zipcodelist), IsAddMode: self.AddMode() },
+                            success: function (response) {
+                                self.cityid(response.Items);
+                                CityNo = response.Items;
+                                self.AddMode(false);
+                                self.EditMode(true);
+                                self.SaveMode(false);
+                                self.EnableDisableControls(true);
+                                self.EnableDisableMode(false);
+                                if (self.txtcityValue() != undefined && self.txtcityValue().trim() != "" && self.txtcityValue() != null) {
+                                    city = true;
+                                    self.SearchCity();
+                                }
+                                else if (self.txtzipValue() != undefined && self.txtzipValue().trim() != "" && self.txtzipValue() != null) {
+                                    zip = true;
+                                    self.SearchZip();
+                                }
+                                else {
+                                    FillZipGrid();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        self.Delete = function () {
+            if (self.SaveMode() == true || self.ZipCodeGrigList().length == 0)
+                return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdelete, false, true);
+            alerterror("Denied", "Record cannot be deleted");
+        }
+        self.confirmdelete = function () {
+            $.ajax({
+                url: "DeleteZipCode",
+                type: "POST",
+                data: { cityid: Gcityid },
+                success: function (response) {
+                    FillZipGrid();
+                }
+            });
+        }
+        self.Cancel = function () {
+            if (!self.SaveMode()) return;
+            alertconfirm("Cancel", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+            if (!self.EditMode()) {
+                self.AddMode(false);
+                self.EditMode(true);
+                self.SaveMode(false);
+                self.EnableDisableControls(true);
+                self.EnableDisableMode(false);
+                if (self.txtcityValue() != undefined && self.txtcityValue().trim() != "" && self.txtcityValue() != null) {
+                    $('#TbZip tbody tr:eq(' + rowIndex + ')').addClass('success selected');
+                    BindZipCode(self.ZipCodeGrigList()[rowIndex]);
+                }
+                else if (self.txtzipValue() != undefined && self.txtzipValue().trim() != "" && self.txtzipValue() != null) {
+                    $('#TbZip tbody tr:eq(' + rowIndex + ')').addClass('success selected');
+                    BindZipCode(self.ZipCodeGrigList()[rowIndex]);
+                }
+                else {
+                    $.ajax({
+                        url: "CancelZipCode",
+                        type: "POST",
+                        data: { cityid: Gcityid },
+                        success: function (response) {
+                            self.ZipCodeGrigList(response.Items);
+                            if (response.rowindex > 0) {
+                                $('#TbZip tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                                BindZipCode(response.Items[response.rowindex]);
+                            }
+                            else if (response.rowindex < 0) {
+                                $('#TbZip tbody tr:first').addClass('success selected');
+                                BindZipCode(response.Items[0]);
+                            }
+                            else {
+                                $('#TbZip tbody tr:first').addClass('success selected');
+                                BindZipCode(response.Items[0]);
+                            }
+                        }
+                    });
+                }
+                
+            }
+        }
+        self.SearchCity = function () {
+            if (self.txtcityValue() == undefined || self.txtcityValue().trim() == "" || self.txtcityValue() == null)
+                return false;
+            $("#loading").fadeIn();
+            $.ajax({
+                url: "FilterCity",
+                type: "POST",
+                data: { SearchCity: self.txtcityValue()},
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    //BindZipCode(response.Items[0]);
+                    self.ZipCodeGrigList(response.Items);
+                    self.txtzipValue("");
+                    if (city == true) {
+                        city = false;
+                        $('#TbZip tbody tr:eq(' + rowIndex + ')').addClass('success selected');
+                        BindZipCode(self.ZipCodeGrigList()[rowIndex]);
+                    }
+                    else {
+                        $('#TbZip tbody tr:first').addClass('success selected');
+                    }
+                    
+                },
+                error: function (request, status, error) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+        }
+        self.SearchZip = function () {
+            if (self.txtzipValue() == undefined || self.txtzipValue().trim() == "" || self.txtzipValue() == null)
+                return false;
+            $("#loading").fadeIn();
+            $.ajax({
+                url: "FilterZip",
+                type: "POST",
+                data: { SearchZIP: self.txtzipValue() },
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    //BindZipCode(response.Items[0]);
+                    self.ZipCodeGrigList(response.Items);
+                    self.txtcityValue("");
+                    if (zip == true) {
+                        zip = false;
+                        $('#TbZip tbody tr:eq(' + rowIndex + ')').addClass('success selected');
+                        BindZipCode(self.ZipCodeGrigList()[rowIndex]);
+                    }
+                    else
+                        $('#TbZip tbody tr:first').addClass('success selected');
+                },
+                error: function (request, status, error) {
+                $("#loading").fadeOut();
+                alert("Gro Group", request.responseText, false, false);
+            }
+            });
+        }
+
+        self.searchoptionselect = function (item, element) {
+            var obj = element.currentTarget.childNodes[0];
+            //self.selectedvalue(obj.value);
+            self.lblselected(obj.text);
+
+            if (obj.text == 'State') {
+                $("#cmbstate").show();
+                $("#Schcity").hide();
+                $("#Schzip").hide();
+                $("#cmbstate").focus();
+            }
+            if (obj.text == 'City') {
+                $("#cmbstate").hide();
+                $("#Schcity").show();
+                $("#Schzip").hide();
+                $("#Schcity").focus();
+            }
+            if (obj.text == 'Zip Code') {
+                $("#cmbstate").hide();
+                $("#Schcity").hide();
+                $("#Schzip").show();
+                $("#Schzip").focus();
+            }
+        }
+
+    }
+</script>
+
+    <div class="row-fluid container divheight" style="max-width:1100px !important; text-align:left;">
+        <div class="row-fluid" style="margin-top: 20px;">
+            <div class="span3">
+                <ul class="list-nostyle list-inline tooltipsample">
+                    <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd" data-bind="enable:EditMode"><i class="icon-file icon-white"></i></a></li>
+                    <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                    <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                    <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete" data-bind="enable:EditMode"><i class="icon-remove icon-white"></i></a></li>
+                    <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel" data-bind="enable:SaveMode"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                </ul>
+            </div>
+            <div class="span4">
+                <div class="searchmenu">
+                    <a href="#" class="btn btn-primary searchmenubtn" style="width:3px !important; height:1px; float: none !important;" id="btnsearch"><i style="margin-top:-8px; margin-left:-5px;" class="iconsweets-magnifying iconsweets-white"></i></a>
+                    <ul class="searchmenu-content" data-bind="foreach: $root.ZipComboList">
+                        <li style="cursor: pointer; list-style-type:none;" data-bind="click: $root.searchoptionselect"><a data-bind="text: Display_FName,value:Field_Name"></a></li>
+                    </ul>
+                </div>
+                <span id="cmbstate">
+                    <a href="#" class="btn btn-primary searchmenubtn" style="width: 150px !important;  height:1px; float: none !important;margin-right: -50%;"></a>
+                    <label class="input-large textchng" style="font-weight: normal; border: none; color: white;font-size: 13px; " data-bind="text: lblselected"></label>
+                    <select id="cmbstate" class="input-small" data-bind="disable:EnableDisableMode,options:CmbstateList,optionsText:'state',optionsValue:'state',value:txtstateValue"></select>
+                </span>
+                <input id="Schcity" type="text" class="input-medium" data-bind="disable:EnableDisableMode,value:txtcityValue,OnEnter:SearchCity,attr:{placeholder:lblselected}" />
+                <input id="Schzip" type="text" onkeypress="return isNumberKey(event);" class="input-medium" data-bind="disable:EnableDisableMode,value:txtzipValue,OnEnter:SearchZip,attr:{placeholder:lblselected}" />
+            </div>
+        </div>
+        <div class="widgetbox">
+            <h4 class="widgettitle">Zip Code</h4>
+            <div class="widgetcontent">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div>
+                            <table id="" class="dytable table  table-bordered table-hover">
+                                <tbody style="overflow-y:hidden;">
+                                    <tr>
+                                        <td style="border-color:white" align="left"><input id="city" maxlength="28" type="text" class="input-medium" required data-bind="disable:EnableDisableControls,value:txtcity" /></td>
+                                        <td style="border-color:white" align="left"><input id="state" maxlength="2" type="text" class="input-medium" required data-bind="    disable: EnableDisableControls, value: txtstate" /></td>
+                                        <td style="border-color:white" align="left"><input id="country" maxlength="25" type="text" class="input-medium" data-bind="disable:EnableDisableControls,value:txtcountry" /></td>
+                                        <td style="border-color:white" align="left"><input id="zip" maxlength="10" type="text" class="input-medium" required data-bind="disable:EnableDisableControls,value:txtzip" /></td>
+                                        <td style="border-color:white" align="left"><input id="lat" onkeypress="return numberswithdot(this, event, true,3);" maxlength="8" type="text" class="input-medium" data-bind="disable:EnableDisableControls,value:txtlat" /></td>
+                                        <td style="border-color:white" align="left"><input id="lng" onkeypress="return numberswithdot(this, event, true,4);" maxlength="9" type="text" class="input-medium" data-bind="    disable: EnableDisableControls, value: txtlng" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="width: 100%;" class="row-fluid">
+                            <table id="TbZip" class="dytable table table-bordered table-hover" >
+                                <thead style="width: 100%">
+                                    <tr>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>County</th>
+                                        <th>Zip Code</th>
+                                        <th>Latitude</th>
+                                        <th>Longitude</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="width:100%; overflow-y:overlay;" data-bind="foreach: $root.ZipCodeGrigList">
+                                    <tr style="cursor: pointer;" class="clickableRow" data-bind="attr: {id:$index()},click:$root.SelectedZipCodeList">
+                                        <td data-bind="text:City"></td>
+                                        <td data-bind="text:State"></td>
+                                        <td data-bind="text:Country"></td>
+                                        <td data-bind="text:Zip"></td>
+                                        <td data-bind="text:lat"></td>
+                                        <td data-bind="text:lng"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,361 @@
+﻿@model GroGroup.Controllers.GroGroupController
+@{
+    ViewBag.Title = "Login";
+}
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gro Group</title>
+    <link href="@Url.Content("~/css/style.default.css")" rel="Stylesheet" type="Text/Css" />
+    <link href="@Url.Content("~/css/msgBoxLight.css")" rel="stylesheet" type="Text/Css" />
+
+   
+    @Scripts.Render("~/bundles/lOGINjquery")
+    <script type="text/javascript" src="@Url.Content("~/js/jquery.msgBox.js")"></script>
+    <style>
+        input:required:invalid, input:enabled:invalid{
+            border: 1px solid white !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+        @*var log;
+
+        jQuery(document).ready(function ($) {
+
+            log = new viewModel();
+            ko.applyBindings(log);
+
+            var msg = '@ViewBag.Message';
+            if (msg != null && msg != "") {
+                jQuery('.login-alert').fadeIn();
+                return false;
+            }
+
+            $('#login').submit(function () {
+                var u = jQuery('#username').val();
+                var p = jQuery('#password').val();
+                if (u == '' && p == '') {
+                    jQuery('.login-alert').fadeIn();
+                    return false;
+                }
+            });
+
+        });
+
+        function viewModel() {
+            var self = this;
+            document.getElementById('username').focus();
+        }*@
+
+        var key = "SXGWLZPDOKFIVUHJYTQBNMACERxswgzldpkoifuvjhtybqmncare";
+        function getCookie(c_name) {
+            var c_value = document.cookie;
+            var c_start = c_value.indexOf(" " + c_name + "=");
+            if (c_start == -1) {
+                c_start = c_value.indexOf(c_name + "=");
+            }
+            if (c_start == -1) {
+                c_value = null;
+            }
+            else {
+                c_start = c_value.indexOf("=", c_start) + 1;
+                var c_end = c_value.indexOf(";", c_start);
+                if (c_end == -1) {
+                    c_end = c_value.length;
+                }
+                c_value = unescape(c_value.substring(c_start, c_end));
+                c_value = decodeStr(c_value);
+            }
+            return c_value;
+        }
+
+
+        function setCookie(c_name, value, exdays) {
+            var exdate = new Date();
+            exdate.setDate(exdate.getDate() + exdays);
+            var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+            document.cookie = c_name + "=" + c_value;
+        }
+
+        function checkCookie() {
+
+            var seccode = document.getElementById('txtSecretCode').value.split(",");
+            // seccode = seccode.toUpperCase();
+            var cookiename = document.getElementById('txtCookieName').value;
+            var secretexpirydays = document.getElementById('txtSecretExpiryDays').value;
+
+            var username = getCookie(cookiename);
+            for (var i = 0; i < seccode.length; i++) {
+
+                codesec = seccode[i].toUpperCase();
+                if (username == codesec) {
+                    document.getElementById('SecretCodeDiv').style.display = 'none';
+                    document.getElementById('LoginDiv').style.display = 'block';
+                    document.getElementById('username').focus();
+                    return;
+                }
+                else {
+                    document.getElementById('SecretCodeDiv').style.display = 'block';
+                    document.getElementById('LoginDiv').style.display = 'none';
+                    document.getElementById('EditSecretCode').focus();
+                }
+            }
+            if (username != seccode) {
+
+                username = document.getElementById('EditSecretCode').value;
+                username = username.toUpperCase();
+
+                for (var i = 0; i < seccode.length; i++) {
+                    var codesecupp = seccode[i].toUpperCase();
+                    if (username == codesecupp)
+                        codesec = seccode[i];
+
+                }
+                seccode = codesec.toUpperCase();
+
+
+                if (username == seccode) {
+                    var enusname = encodeStr(username);
+                    setCookie(cookiename, enusname, parseInt(secretexpirydays));
+
+                    document.getElementById('SecretCodeDiv').style.display = 'none';
+                    document.getElementById('LoginDiv').style.display = 'block';
+                    document.getElementById('username').focus();
+                }
+                else {
+                    if (document.getElementById('EditSecretCode').value != "") {
+                        //alert('Invalid Secret Code. Please try again');
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: "Invalid Secret Code. Please try again",
+                            type: "info",
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                document.getElementById('EditSecretCode').value = "";
+                               
+                                document.getElementById('EditSecretCode').focus();
+                            }
+                        });
+                        $(".msgButton").focus();
+                        $(".msgBoxImage").hide();
+                        return false;
+                        
+                    }
+                }
+            }
+        }
+
+        function onKeyPressed(ev) {
+            var e = ev || event;
+            if (e.keyCode == 13) {
+                checkCookie();
+                return false; //prevents form from being submitted.
+            }
+        }
+
+        //Encrypt and decrypt
+
+        function encodeStr(uncoded) {
+
+            uncoded = uncoded.toUpperCase().replace(/^\s+|\s+$/g, "");
+            var coded = "";
+            var chr;
+            for (var i = uncoded.length - 1; i >= 0; i--) {
+                chr = uncoded.charCodeAt(i);
+                coded += (chr >= 65 && chr <= 90) ?
+      key.charAt(chr - 65 + 26 * Math.floor(Math.random() * 2)) :
+      String.fromCharCode(chr);
+            }
+
+            //decodeStr(coded);
+            return encodeURIComponent(coded);
+        }
+
+        function decodeStr(coded) {
+            coded = decodeURIComponent(coded);
+            var uncoded = "";
+            var chr;
+            for (var i = coded.length - 1; i >= 0; i--) {
+                chr = coded.charAt(i);
+                uncoded += (chr >= "a" && chr <= "z" || chr >= "A" && chr <= "Z") ?
+      String.fromCharCode(65 + key.indexOf(chr) % 26) :
+      chr;
+            }
+            //alert(uncoded);
+            return uncoded;
+        }
+
+        var log;
+        $(document).ready(function () {
+
+
+            var msg = '@ViewBag.Message';
+            if (msg != null && msg != "") {
+                jQuery('.login-alert').fadeIn();
+                return false;
+            }
+
+            log = new viewModel();
+            ko.applyBindings(log);
+
+            //$("#btnsubmit").click({ handler: log.submit });
+
+        });
+
+
+
+        function viewModel() {
+            var self = this;
+
+            $.ajax({
+                url: "@Url.Content("~/GroGroup/ValidateClientIPAddress")",
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items != "") {
+                        document.getElementById('hylnInactive').click();
+                    }
+                }
+            });
+
+            //self.submit = function () {
+            //    var username = $("#username").val();
+            //    var pwd = $("#password").val();
+            //    if (username == null || username == "") {
+            //        $.msgBox({
+            //            title: "Gro Group",
+            //            content: "Please enter username",
+            //            type: "info",
+            //            buttons: [{ value: "Ok" }],
+            //            afterClose: function (result) {
+            //                document.getElementById('username').focus();
+            //            }
+            //        });
+            //        return false;
+            //    }
+            //    if (pwd == null || pwd == "") {
+            //        $.msgBox({
+            //            title: "Gro Group",
+            //            content: "Please enter password",
+            //            type: "info",
+            //            buttons: [{ value: "Ok" }],
+            //            afterClose: function (result) {
+            //                document.getElementById('password').focus();
+            //            }
+            //        });
+            //        return false;
+            //    }
+            //    //$.ajax({
+            //    //    url: "../GroGroup/Loginsubmit",
+            //    //    type: "POST",
+            //    //    async: false,
+            //    //    data: { username: username, password: pwd },
+            //    //    success: function (response) {
+            //    //        if (response.Error != "") {
+            //    //            $("#errormsg").text(response.Error);
+            //    //        }
+            //    //        else {
+            //    //            $("#errormsg").text("");
+            //    //            //return RedirectToAction("Main");
+            //    //        }
+            //    //    }
+            //    //});
+            //}
+
+        }//viewmodel
+
+
+
+
+
+    </script>
+</head>
+<body class="loginpage" style="background:#0866c6;overflow:hidden;" onload="checkCookie();">
+@using (Html.BeginForm())
+{
+    <div class="container" style="margin-top:14%;">
+
+
+        <div class="logo animate0 bounceIn">
+            <img src="@Url.Content("~/images/GrogroupRep.png")" id="clublogo" alt="" style="border-color:transparent; width:265px; margin-top:-150px; background-color: #0866c6;" />
+        </div>
+
+        <div id="SecretCodeDiv" style="display:none;margin-top:5%;">
+            <input id="txtSecretCode" type="hidden" value="@System.Configuration.ConfigurationManager.AppSettings["SecretCode"]" />
+            <input id="txtCookieName" type="hidden" value="@System.Configuration.ConfigurationManager.AppSettings["CookieName"]" />
+            <input id="txtSecretExpiryDays" type="hidden" value="@System.Configuration.ConfigurationManager.AppSettings["SecretExpiryDays"]" />
+
+            @*<div>
+                <center>*@
+            <center>
+                <table>
+                    <tr>
+                        <td style="width: 225px;">
+                            <label style="color:white;">Please enter your Secret Code</label>
+                        </td>
+                        <td style="width: 225px;">
+                            <input id="EditSecretCode" name="EditSecretCode" type="password" autofocus onkeyup="onKeyPressed(event);" />
+                        </td>
+                        <td>
+                            <input style="width:30px;" value="OK" id="btnOk" type="button" onclick="checkCookie();" />
+                        </td>
+                    </tr>
+                </table>
+            </center>
+                @*</center>
+            </div>*@
+
+                <a id="hylnInactive" style="display:none" href="@Url.Content("~/GroGroup/IPRestriction")"></a>
+</div>
+
+        <div class="loginpanel" style="text-align:center;display:none;margin-top:17%;" id="LoginDiv">
+            <div class="loginpanelinner">
+                @*<div class="logo animate0 bounceIn">
+                        <img src="@Url.Content("~/images/GrogroupRep.png")" id="clublogo" alt="" style="border-color:transparent; width:265px; margin-top:-150px; background-color: #0866c6;" />
+                    </div>*@
+                @*<form id="login" method="post">*@
+                <div class="inputwrapper login-confirm">
+                    <div class="confirm confirm-error" style="width:270px;">
+                        <span style="font-family:Verdana; font-size:12px; font-style:normal; font-weight:bold; color:black;">@*@ViewBag.LoginMessage*@</span>
+                    </div>
+                </div>
+                <div class="inputwrapper login-alert">
+                    <div class="alert alert-error" style="width:270px;">
+                        @ViewBag.Message
+                    </div>
+                </div>
+                <div class="inputwrapper animate1 bounceIn">
+                    <input type="text" name="username" id="username" maxlength="50" placeholder="Enter Initials" required autofocus />
+                </div>
+                <div class="inputwrapper animate2 bounceIn">
+                    <input type="password" name="password" id="password" placeholder="Enter Password" required />
+                </div>
+                <div class="inputwrapper animate4 bounceIn">
+                    <button name="Submit">Sign In</button>
+                </div>
+                <div class="inputwrapper animate4 bounceIn">
+                    <label style="display:none">
+                        <input type="checkbox" class="remember" name="signin" />
+                        Keep me Signed in
+                    </label>
+                </div>
+
+                @*</form>*@
+            </div>
+            <!--loginpanelinner-->
+        </div>
+        <!--loginpanel-->
+        <div class="loginfooter">
+            <p>
+                Vedas All Rights Reserved.
+            </p>
+        </div>
+    </div>
+}
+</body>
+</html>
+
+

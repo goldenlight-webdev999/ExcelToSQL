@@ -1,0 +1,2555 @@
+﻿@{
+    ViewBag.Title = "Benefits";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(10){width:auto !important;}
+                     .dytable tr td:nth-child(1){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(2){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(3){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(4){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(5){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(6){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(7){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(8){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(9){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(10){width:auto !important;text-align: left !important;}
+                    .dytable tr td:nth-child(11){width:auto !important;text-align: left !important;}
+
+                    .dytable tr td:nth-of-type(1):before{content:'Period';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'Period From';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'Period To';font-weight: bold;}
+                    .dytable tr td:nth-of-type(4):before{content:'Component';font-weight: bold;}
+                    .dytable tr td:nth-of-type(5):before{content:'Percent';font-weight: bold;}
+                    .dytable tr td:nth-of-type(6):before{content:'Plateau From';font-weight: bold;}
+                    .dytable tr td:nth-of-type(7):before{content:'Plateau To';font-weight: bold;}
+
+                    .dytable1 tr td:nth-of-type(1):before{content:'Pay Period #';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(2):before{content:'Pay Period From';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(3):before{content:'Pay Period To';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(4):before{content:'Payment Due';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(5):before{content:'Date Payment Received';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(6):before{content:'Amount Received';font-weight: bold;}
+
+                    .dytable2 tr td:nth-of-type(1):before{content:'Company';font-weight: bold;}
+                    .dytable2 tr td:nth-of-type(2):before{content:'Distno';font-weight: bold;}
+                    .dytable2 tr td:nth-of-type(3):before{content:'Purchase';font-weight: bold;text-align: left}
+                    .dytable2 tr td:nth-of-type(9):before{content:'Benefit';font-weight: bold;text-align: left}
+                    .dytable2 tr td:nth-of-type(10):before{content:'HQFee';font-weight: bold;text-align: left}
+                    .dytable2 tr td:nth-of-type(11):before{content:'Netpay';font-weight: bold;text-align: left}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+<style type="text/css">
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width: 253px;
+    }
+
+    .ui-datepicker-calendar thead {
+        width: 100% !important;
+    }
+
+    .ui-datepicker-calendar tbody {
+        overflow-y: overlay;
+        width: 100% !important;
+    }
+
+    .textbox_size {
+        width: 30%;
+    }
+
+    .combobox_size {
+        width: 32%;
+    }
+
+    #tblBenefit tbody > tr:last-child > td {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .nallowed {
+        cursor: not-allowed;
+    }
+
+    .event-none {
+        pointer-events: none !important;
+    }
+
+    /*#notes___livespell_proxy{
+        height:270px !important;
+        width:860px !important;
+    }*/
+</style>
+
+<style>
+    /*.ui-dialog {
+        width: 1125px !important;
+        left: 19% !important;
+        top: 10% !important;
+    }*/
+    #TbDistribution th {
+        cursor: default !important;
+        background: #4a4848 !important;
+    }
+
+    .SaveColor:hover, .SaveColor:active, .SaveColor:focus, .btn-group.open .SaveColor .dropdown-toggle {
+        background: #149216;
+    }
+
+    .SaveColor, .SaveColor:link {
+        background: #149216;
+        border-color: #daa004;
+    }
+
+</style>
+
+<script type="text/javascript">
+    var rowIndex = 0, rowIndexpaydist = "rowid0";
+    var rowIndexpay = "row0";
+    var prgno = "", chkno = "";
+    var ChkNo = "", cmpval = "", Distno = "";
+    var tablename = "", evecount = "";
+    var dyclass = "", parents = "", sortDirection = "";
+    //var prevCheckNo = "";
+
+    var readonly = false;
+
+    $(document).ready(function () {
+        var mfgNo = "", Company = "", ProgNo = "";
+        var txtrecvdon = "", txtamount = "", txthqper = "", txtholdpay = "";
+        benefits = new viewModel();
+        search = benefits;
+        ko.applyBindings(benefits);
+        $('#TbBenefits tbody tr:first').addClass('success selected');
+        $('#TbPayment tbody tr:first').addClass('success selected');
+        $('#tblBenefit tbody tr:first').addClass('success selected');
+
+        //Payment Distribution Screen Tab
+        //$("#btnAddPaydist").click({ handler: benefits.AddPaydist });
+        //$("#btnEditPaydist").click({ handler: benefits.EditPaydist });
+        //$("#btnSavePaydist").click({ handler: benefits.SavePaydist });
+        //$("#btnDeletePaydist").click({ handler: benefits.DeletePaydist });
+        //$("#btnCancelPaydist").click({ handler: benefits.CancelPaydist });
+
+        //Payment Screen Tab
+        $("#btnAddPay").click({ handler: benefits.AddPay });
+        $("#btnEditPay").click({ handler: benefits.EditPay });
+        $("#btnSavePay").click({ handler: benefits.SavePay });
+        $("#btnDeletePay").click({ handler: benefits.DeletePay });
+        $("#btnCancelPay").click({ handler: benefits.CancelPay });
+
+        //Program Screen Tab
+        $("#btnAddPrg").click({ handler: benefits.AddPrg });
+        $("#btnEditPrg").click({ handler: benefits.EditPrg });
+        $("#btnSavePrg").click({ handler: benefits.SavePrg });
+        $("#btnDeletePrg").click({ handler: benefits.DeletePrg });
+        $("#btnCancelPrg").click({ handler: benefits.CancelPrg });
+
+        //$("#btnsubmit").click({ handler: benefits.Submit });
+
+        //Notes Screen Tab
+        $("#btnEditNgp").click({ handler: benefits.EditNgp });
+        $("#btnSaveNgp").click({ handler: benefits.SaveNgp });
+        $("#btnDeleteNgp").click({ handler: benefits.DeleteNgp });
+        $("#btnCancelNgp").click({ handler: benefits.CancelNgp });
+
+        $("#progfrom").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#progto").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#recvdon").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#dueon").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#chkfrom").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#chkto").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#wsrecvd").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+
+        $("#chkshowpspurchase").click({ handler: benefits.showpurchase });
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            if ($(window).height() > 700) {
+                $('#TbBenefits').css('height', $(window).height() - 420 + 'px');
+                $('#TbPayment').css('height', $(window).height() - 20 + 'px');
+            }
+            else {
+                $('#TbBenefits').css('height', $(window).height() - 100 + 'px');
+                $('#TbPayment').css('height', $(window).height() - 100 + 'px');
+            }
+            $('table#TbBenefits tbody').css("overflow-y", "scroll");
+            $('table#TbBenefits thead').css("width", "98.4%");
+            $('table#TbPayment tbody').css("overflow-y", "scroll");
+            $('table#TbPayment thead').css("width", "98.4%");
+            $('table#tblBenefit').css("height", "350px");
+            $('table#tblBenefit tbody').css("overflow-y", "scroll");
+            $('table#tblBenefit thead').css("width", "98.4%");
+
+        }
+    });
+
+    function viewModel() {
+        var self = this;
+
+        //Program Screen Tab
+        self.EnableDisableModePrg = ko.observable(true);
+        self.AddModePrg = ko.observable(false);
+        self.EditModePrg = ko.observable(true);
+        self.SaveModePrg = ko.observable(false);
+        self.DeleteModePrg = ko.observable(true);
+
+        //Payment Screen Tab
+        self.EnableDisableModePay = ko.observable(true);
+        self.EnableDisPayChk = ko.observable(true);
+        self.AddModePay = ko.observable(false);
+        self.EditModePay = ko.observable(true);
+        self.SaveModePay = ko.observable(false);
+        self.DeleteModePay = ko.observable(true);
+
+        //Payment Distribution Screen Tab
+        self.EnableDisableModePaydist = ko.observable(true);
+        self.AddModePaydist = ko.observable(false);
+        self.EditModePaydist = ko.observable(true);
+        self.SaveModePaydist = ko.observable(false);
+        self.DeleteModePaydist = ko.observable(true);
+        self.FillRemarks = ko.observable();
+        self.DiscrepencyList = ko.observable([]);
+
+        //Notes Screen Tab
+        self.EnableDisableModeNgp = ko.observable(true);
+        self.EditModeNgp = ko.observable(true);
+        self.SaveModeNgp = ko.observable(false);
+        self.DeleteModeNgp = ko.observable(true);
+        self.CompanynameList = ko.observable([]);
+        self.BeneNgpTitle = ko.observable();
+        self.BeneprgTitle = ko.observable();
+        self.BenepayTitle = ko.observable();
+        self.BenepaydistTitle = ko.observable();
+
+        self.EnableDisableControls = ko.observable(false);
+        mfgNo = window.parent.document.getElementById('mfgno').value;
+        Company = window.parent.document.getElementById('company').value;
+        BeneprgTitle = "Manufacturer Program For: " + mfgNo + " - " + Company;
+        self.BeneprgTitle(BeneprgTitle);
+        BeneNgpTitle = "Manufacturer NGP Notes For: " + mfgNo + " - " + Company;
+        self.BeneNgpTitle(BeneNgpTitle);
+        self.BenepayTitle("Manufacturer Payment For: " + mfgNo + " - " + Company);
+        self.BenepaydistTitle("Manufacturer Payment Distribution For: " + mfgNo + " - " + Company);
+        self.companyno = ko.observable();
+        window.parent.CallEnableTabs();
+
+        if ($(window).height() > 700)
+            $('#TbPayment').css('max-height', $(window).height() - 420 + 'px');
+        else
+            $('#TbPayment').css('max-height', $(window).height() - 100 + 'px');
+
+        if ($(window).height() > 700)
+            $('#TbBenefits').css('max-height', $(window).height() - 420 + 'px');
+        else
+            $('#TbBenefits').css('max-height', $(window).height() - 100 + 'px');
+
+        $(".PopupWindow").dialog({
+            draggable: false,
+            autoOpen: false,
+            autoresize: false,
+            modal: true,
+            dragable: false,
+            width: 900
+        });
+
+        $.ajax({
+            url: "FillCompanyname",
+            type: "POST",
+            success: function (response) {
+                self.CompanynameList(response.Items);
+                if (response.Items.length > 0) {
+                    cmpval = response.Items[0].DistNo;
+                }
+            }
+        });
+
+        $.ajax({
+            url: "FillDiscrepency",
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.DiscrepencyList(response.Items);
+            }
+        });
+
+
+        $(".clickableRow").live("click", function () {
+            if (self.SaveModePrg() == true && self.AddModePrg() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveModePrg() == true && self.AddModePrg() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+            }
+            else {
+                rowIndex = $(this).attr("id");
+                $('.clickableRow').removeClass('success selected');
+                $(this).addClass('success selected');
+            }
+        });
+
+        $(".clickableRowpay").live("click", function () {
+            if (self.SaveModePay() == true && self.AddModePay() == true) {
+                $('.clickableRowpay').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveModePay() == true && self.AddModePay() == false) {
+                $('.clickableRowpay').removeClass('success selected');
+                $('#' + rowIndexpay).addClass('success selected');
+            }
+            else {
+                rowIndexpay = $(this).attr("id");
+                $('.clickableRowpay').removeClass('success selected');
+                $(this).addClass('success selected');
+            }
+        });
+
+        $(".clickableRowpaydist").live("click", function () {
+            rowIndexpaydist = $(this).attr("id");
+            $('.clickableRowpaydist').removeClass('success selected');
+            $(this).addClass('success selected');
+        });
+
+        /*********Export function code ***********/
+        self.menulist = ko.observableArray([]);
+
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    //if (evecount[i].className.includes("hide")) {
+                    //    $("#chk_" + [i]).attr('checked', false);
+                    //}
+                    //else {
+                    //    $("#chk_" + [i]).attr('checked', true);
+                    //}
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+
+        function sort(column) {
+            //$("#loading").fadeIn();
+            var findSortKey = function ($cell) {
+                return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+            };
+            //var sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+            var $rows = $("." + dyclass).find('tbody tr').get();
+            var bob = 0;
+            //loop through all the rows and find
+            $.each($rows, function (index, row) {
+                row.sortKey = findSortKey($(row).children('td').eq(column));
+            });
+            var self = this;
+            var $buttons = $('.sort');
+            idx = $buttons.index(this);
+            //compare and sort the rows alphabetically or numerically
+            $rows.sort(function (a, b) {
+                var $obj1 = $(a).find('td').eq(idx),
+                $obj2 = $(b).find('td').eq(idx),
+                value1, value2;
+                count++;
+                if (a.sortKey == b.sortKey) {
+                    no++;
+                    return 0;
+                }
+                else {
+                    if (a.sortKey.trim() == "" && b.sortKey.trim() == "") {
+                        return -sortDirection;
+                    }
+                    if ($.isNumeric((a.sortKey.replace(/\,/g, '').trim())) == true && $.isNumeric((b.sortKey.replace(/\,/g, '').trim())) == true) {
+                        //numeracy check
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) < parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return -sortDirection;
+                        }
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) > parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return sortDirection;
+                        }
+                    }
+                    else if ((a.sortKey).split(":").length - 1 == 1) {
+                        //time check
+                        var res = (a.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        var ser = (b.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        a = new Date('1970/01/01 ' + res);
+                        b = new Date('1970/01/01 ' + ser);
+                        return a < b ? -sortDirection : a > b ? sortDirection : 0;
+                    }
+                    else if ((a.sortKey).split(" ").length - 1 >= 90) {
+                        value1 = $obj1.find("input")[0].checked;
+                        value2 = $obj2.find("input")[0].checked;
+                        return value1 < value2 ? -sortDirection : value1 > value2 ? sortDirection : 0;
+                    }
+                    else {
+                        //alphabetic check
+                        if (a.sortKey.replace(/\,/g, '').trim() < b.sortKey.replace(/\,/g, '').trim()) {
+                            return -sortDirection;
+                        }
+                        if (a.sortKey.replace(/\,/g, '').trim() > b.sortKey.replace(/\,/g, '').trim()) {
+                            return sortDirection;
+                        }
+                    }
+                    return 0;
+                }
+            });
+
+            //add the rows in the correct order to the bottom of the table
+            $.each($rows, function (index, row) {
+                if (count == no) {
+                }
+                else {
+                    $('.' + dyclass + ' tbody').append(row);
+                    //$('.tablesorting tbody').append();
+                    row.sortKey = null;
+                }
+            });
+            //identify the collumn sort order
+            $('.' + dyclass + ' th').removeClass('sorted-asc sorted-desc');
+            $('.' + dyclass + ' th i').removeClass('icon-white icon-chevron-down icon-white icon-chevron-up');
+
+            var $sortHead = $('.' + dyclass + ' th').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')');
+            if (count != no) {
+                if (sortDirection == 1) {
+                    $sortHead.addClass('sorted-asc');
+                    $("." + parents).addClass('icon-white icon-chevron-up');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+                else {
+                    $sortHead.addClass('sorted-desc');
+                    $("." + parents).addClass('icon-white icon-chevron-down');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+            }
+            count = ""; no = "";
+            //$("#loading").fadeOut();
+            //identify the collum to be sorted by
+            $('.' + dyclass + ' td').removeClass('sorted').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')').addClass('sorted');
+        }
+
+        $('.prgtablesort th').each(function (column) {
+            $('.prgtablesort th').css({ "cursor": "pointer" });
+            $('.prgtablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        $('.paytablesort th').each(function (column) {
+            $('.paytablesort th').css({ "cursor": "pointer" });
+            $('.paytablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        /*********End Export function code ***********/
+
+        //Program Screen Tab
+        self.mfgacct = ko.observable();
+        self.refcomp = ko.observable();
+        self.ProgramNo = ko.observable();
+        self.progcntl = ko.observable();
+        self.period = ko.observable();
+        self.program = ko.observable();
+        self.percent = ko.observable();
+        self.progfrom = ko.observable();
+        self.progto = ko.observable();
+        self.pur_xcld = ko.observable();
+        self.plvl_fro = ko.observable();
+        self.plvl_to = ko.observable();
+        self.plvl_comments = ko.observable();
+
+        //self.directd = ko.observable();
+        //self.echeck = ko.observable();
+        self.txtprogcntl = ko.observable();
+        self.txtperiod = ko.observable();
+        self.txtprogram = ko.observable();
+        self.txtpercent = ko.observable();
+        self.txtprogfrom = ko.observable();
+        self.txtprogto = ko.observable();
+        self.txtpur_xcld = ko.observable();
+        self.txtplvl_fro = ko.observable();
+        self.txtplvl_to = ko.observable();
+        self.txtdirectd = ko.observable();
+        self.txtecheck = ko.observable();
+        self.FillMfgPaymentGrid = ko.observable([]);
+        self.FillMfgBenefitsGrid = ko.observable([]);
+        self.BenefitDistList = ko.observable([]);
+        self.BenefitProgList = ko.observable([]);
+        //Payment Screen Tab
+        self.txtmfgacct = ko.observable();
+        self.txtrefcomp = ko.observable();
+        self.ProgramNoPay = ko.observable();
+        self.checkno = ko.observable();
+        self.checknum = ko.observable();
+
+        self.holdpay = ko.observable();
+        self.hqper = ko.observable();
+        //self.txtComments = ko.observable();
+        self.recvdon = ko.observable();
+        self.amount = ko.observable();
+        self.dueon = ko.observable();
+        self.chkfrom = ko.observable();
+        self.chkto = ko.observable();
+        self.wsrecvd = ko.observable();
+        self.batchno = ko.observable();
+
+        //Payment Distribution Screen Tab
+        self.txtmfgacct = ko.observable();
+        self.txtrefcomp = ko.observable();
+        self.checknopay = ko.observable();
+        self.distacct = ko.observable();
+        self.company = ko.observable();
+        self.batchno = ko.observable();
+        self.purchase = ko.observable();
+        self.txtrecvdon = ko.observable();
+        self.txtamount = ko.observable();
+        self.txthqper = ko.observable();
+        self.txtholdpay = ko.observable();
+        self.paynote = ko.observable();
+        self.Benefit = ko.observable();
+
+        //Recon tab
+        self.count = ko.observable();
+        self.popupcount = ko.observable();
+        self.purchase = ko.observable();
+        self.popuppurchase = ko.observable();
+        self.adjustment = ko.observable();
+        self.pspurchase = ko.observable();
+        self.diff = ko.observable();
+        self.DPercent = ko.observable();
+        self.Benefit = ko.observable();
+        self.HQFee = ko.observable();
+        self.NetPay = ko.observable();
+
+        self.SelectedMfgBenefitCommon = function (item) {
+            if (item != undefined) {
+                self.txtprogcntl(item.progcntl);
+                self.txtperiod(item.period);
+                self.txtprogram(item.program);
+                self.txtpercent(toFixedFormate(item.percent));
+                self.txtprogfrom(DateBind(item.progfrom));
+                self.txtprogto(DateBind(item.progto));
+                self.txtpur_xcld(item.pur_xcld);
+                self.txtplvl_fro(numberWithCommas(item.plvl_fro));
+                self.txtplvl_to(numberWithCommas(item.plvl_to));
+                self.plvl_comments(item.comments);
+                //self.txtdirectd(item.directd);
+                //self.txtecheck(item.echeck);
+            }
+        }
+
+        self.SelectedMfgBenefits = function (item) {
+            if (item != undefined) {
+                self.mfgacct(mfgNo);
+                self.refcomp(Company);
+                ProgNo = item.ProgNo;
+                self.ProgramNo(item.ProgNo);
+                self.progcntl(item.progcntl);
+                self.period(item.period);
+                self.program(item.program.trim());
+                self.percent(toFixedFormate(item.percent));
+                self.progfrom(DateBind(item.progfrom));
+                self.progto(DateBind(item.progto));
+                self.pur_xcld(item.pur_xcld == "True" ? true : false);
+                self.plvl_fro(numberWithCommas(item.plvl_fro));
+                self.plvl_to(numberWithCommas(item.plvl_to));
+                self.plvl_comments(item.comments);
+
+                //self.directd(item.directd == "True" ? true : false);
+                //self.echeck(item.echeck == "True" ? true : false);
+            }
+            else {
+                self.clearprgfields();
+            }
+        }
+
+        self.SelectedMfgPayment = function (item) {
+            if (item != undefined) {
+                self.txtmfgacct(mfgNo);
+                self.txtrefcomp(Company);
+                self.ProgramNoPay(item.ProgNo);
+                self.checkno(item.CheckNo);
+                self.batchno(item.batchno);
+                self.checknum(item.checknum);
+                //prevCheckNo = item.checknum;
+                self.batchno(item.batchno); //ely
+                self.holdpay(item.holdpay == "True" ? true : false);
+                self.hqper(toFixedFormate(item.hqper));
+                //self.txtComments(item.comments);
+                self.recvdon(DateBind(item.recvdon));
+                self.amount(numberWithCommas(item.amount));
+                self.dueon(DateBind(item.dueon));
+                self.chkfrom(DateBind(item.chkfrom));
+                self.chkto(DateBind(item.chkto));
+                self.wsrecvd(DateBind(item.wsrecvd));
+                txtrecvdon = DateBind(item.recvdon);
+                txtamount = item.amount;
+                txthqper = toFixedFormate(item.hqper);
+                txtholdpay = item.holdpay == "True" ? true : false;
+            }
+            else {
+                self.clearpayfields();
+            }
+        }
+
+        //self.SelectedMfgPytDistributionGrid = function (item) {
+        //    if (item != undefined) {
+        //        self.txtmfgacct(mfgNo);
+        //        self.txtrefcomp(Company);
+        //        self.checknopay(item.checknum);
+        //        self.distacct(item.distacct);
+        //        self.company(item.company);
+        //        self.batchno(item.batchno);
+        //        self.purchase(item.purchase);
+        //        self.paynote(item.paynote);
+        //        self.Benefit(item.Benefit);
+        //        self.txtrecvdon(txtrecvdon);
+        //        self.txtamount(txtamount);
+        //        self.txthqper(txthqper);
+        //        self.txtholdpay(txtholdpay);
+        //    }
+        //}
+        function remarks() {
+            $.ajax({
+                url: "FillRemarks",
+                data: { ProgNo: ProgNo },
+                type: "POST",
+                success: function (response) {
+                    if (response.Items != null && response.Items.length > 0)
+                        self.FillRemarks(response.Items[0].DistributionRemarks);
+                    else
+                        self.FillRemarks("");
+                }
+            });
+        }
+
+        function FillGrid() {
+            $.ajax({
+                url: "FillMfgBenefitsGrid",
+                data: { mfgNo: window.parent.document.getElementById('mfgno').value, prgno: prgno },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    $('#TbBenefits th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    $("#PopupWindowPrg").dialog("close");
+                    self.FillMfgBenefitsGrid(response.Items);
+                    if (response.Items != null && response.Items.length > 0) {
+                        if (response.rowindex > 0) {
+                            self.SelectedMfgBenefitCommon(response.Items[response.rowindex]);
+                            self.SelectedMfgBenefits(response.Items[response.rowindex]);
+                            self.GETSelectProgram(response.Items[response.rowindex]);
+                            $('#' + response.rowindex).addClass('success selected');
+                            rowIndex = response.rowindex;
+                        }
+                        else {
+                            self.SelectedMfgBenefitCommon(response.Items[0]);
+                            self.SelectedMfgBenefits(response.Items[0]);
+                            self.GETSelectProgram(response.Items[0]);
+                            $('#' + response.rowindex).addClass('success selected');
+                            rowIndex = response.rowindex;
+                        }
+                        document.getElementById("Payment").style.pointerEvents = "auto";
+                        document.getElementById("PaymentDistribution").style.pointerEvents = "auto";
+                    }
+                    else {
+                        document.getElementById("Payment").style.pointerEvents = "none";
+                        document.getElementById("PaymentDistribution").style.pointerEvents = "none";
+                    }
+
+                    var THIndex = $('#TbBenefits thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        if ($('#TbBenefits thead th')[i].className == "hide")
+                            $('#TbBenefits tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    }
+                }
+            });
+
+        }
+
+        function FillGridPay() {
+            //$("#loading").fadeIn();
+            $.ajax({
+                url: "FillMfgPaymentGrid",
+                data: { ProgNo: ProgNo, chkno: chkno },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    //$("#loading").fadeOut();
+                    $('#TbPayment th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    $("#PopupWindowPay").dialog("close");
+                    self.FillMfgPaymentGrid(response.Items);
+                    if (response.Items != null && response.Items.length > 0) {
+                        if (response.rowindex > 0) {
+                            self.SelectedMfgPayment(response.Items[response.rowindex]);
+                            self.GETSelectPayment(response.Items[response.rowindex]);
+                            $('#row' + response.rowindex).addClass('success selected');
+                            rowIndexpay = response.rowindex;
+                        }
+                        else {
+
+                            if (rowIndexpay != "row0") {
+                                if ($.isNumeric(rowIndexpay) == true) {
+                                    rowIndexpay = rowIndexpay;
+                                }
+                                else {
+                                    rowIndexpay = rowIndexpay.substring(3, 7);
+                                }
+                                $('#row' + rowIndexpay).addClass('success selected');
+                                self.GETSelectPayment(response.Items[rowIndexpay]);
+                                self.SelectedMfgPayment(response.Items[rowIndexpay]);
+                                //rowIndexpay = response.rowindex;
+                            } else {
+
+                                $('#row' + response.rowindex).addClass('success selected');
+                                self.GETSelectPayment(response.Items[response.rowindex]);
+                                self.SelectedMfgPayment(response.Items[0]);
+                                rowIndexpay = response.rowindex;
+                            }
+
+                        }
+
+                    }
+                    else {
+                        self.checknum("");
+                        //prevCheckNo = "";
+                        self.batchno("");
+                        self.holdpay("");
+                        self.hqper("");
+                        //self.txtComments("");
+                        self.recvdon("");
+                        self.amount("");
+                        self.dueon("");
+                        self.chkfrom("");
+                        self.chkto("");
+                        self.wsrecvd("");
+                        self.ProgramNoPay("");
+                        self.checkno("");
+                    }
+                    var THIndex = $('#TbPayment thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        if ($('#TbPayment thead th')[i].className == "hide")
+                            $('#TbPayment tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    }
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    //$("#loading").fadeOut();
+                    alert("Gro Group", Request.responseText, true, false);
+                }
+            });
+        }
+
+        function FillGridPaydist() {
+            var purchase = 0, adjustment = 0, pspurchase = 0, diff = 0, DPercent = 0, Benefit = 0, HQFee = 0, NetPay = 0;
+            $.ajax({
+                url: "FillBenefitDistDataGrid",
+                data: { ProgNo: self.ProgramNoPay(), ChkNo: self.checknum() }, //self.checkno()
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    self.BenefitDistList(response.Items);
+                    
+                    if (response.Items.length == 1) {
+                        if ((response.Items[0].purchase == 0 || response.Items[0].purchase == 0.00) && (response.Items[0].adjustment == 0 || response.Items[0].adjustment == 0.00)) { //&& $("#cmbdist").val() == response.Items[0].distno
+                            $("#Deletedist").css("display", "none");
+                        }
+                        else {
+                            $("#Deletedist").css("display", "block");
+                        }
+                    }
+                    else {
+                        if (response.Items.length > 0)
+                            $("#Deletedist").css("display", "block");
+                        else
+                            $("#Deletedist").css("display", "none");
+                    }
+
+                    if (readonly == true) {
+                        $("#Deletedist").css("display", "none");
+                        $("#Save").css("display", "none");
+
+                        $('#cmbdist').attr('disabled', 'disabled');
+                        $('#Add').attr('disabled', 'disabled');
+                    }
+                    else {
+                        if (response.Items.length > 0) {
+                            //if ((response.Items[0].purchase == 0 || response.Items[0].purchase == 0.00) && (response.Items[0].adjustment == 0 || response.Items[0].adjustment == 0.00)) {
+                            //    $("#Deletedist").css("display", "none");
+                            //}
+                            //else {
+                            //    $("#Deletedist").css("display", "block");
+                            //}
+                            $("#Deletedist").css("display", "block");
+                        }
+                        else
+                            $("#Deletedist").css("display", "none");
+
+                        $("#Save").css("display", "block");
+
+                        $('#cmbdist').removeAttr('disabled');
+                        $('#Add').removeAttr('disabled');
+                    }
+
+                    $("#rowid0").addClass('success selected');
+                    count = response.Items.length;
+                    Distno = response.Items[0].distno;
+                    for (i = 0; i < response.Items.length; i++) {
+                        purchase += parseFloat(response.Items[i].purchase);
+                        adjustment += parseFloat(response.Items[i].adjustment);
+                        pspurchase += parseFloat(response.Items[i].pspurchase);
+                        diff += parseFloat(response.Items[i].diff);
+                        DPercent += parseFloat(response.Items[i].DPercent);
+                        Benefit += parseFloat(response.Items[i].Benefit);
+                        HQFee += parseFloat(response.Items[i].HQFee);
+                        NetPay += parseFloat(response.Items[i].NetPay);
+
+
+                        if (readonly == true)
+                            $('#purchase' + i).attr('readonly', true);
+                        else
+                            $('#purchase' + i).attr('readonly', false);
+                    }
+                    self.purchase(numberWithCommas(toFixedFormate(purchase)));
+                    self.pspurchase(numberWithCommas(toFixed(pspurchase)));
+                    self.adjustment(numberWithCommas(toFixedFormate(adjustment)));
+                    self.diff(numberWithCommas(toFixedFormate(diff)));
+                    self.DPercent(numberWithCommas(toFixedFormate(DPercent)));
+                    self.Benefit(numberWithCommas(toFixedFormate($.isNumeric(Benefit) == true ? Benefit : 0)));
+                    self.HQFee(numberWithCommas(toFixedFormate($.isNumeric(HQFee) == true ? HQFee : 0)));
+                    self.NetPay(numberWithCommas(toFixedFormate($.isNumeric(NetPay) == true ? NetPay : 0)));
+                    self.count('Count: ' + count);
+                }
+            });
+            remarks();
+        }
+
+        self.confirmadd = function () {
+            $("#PopupWindowPrg").dialog("open");
+        }
+
+        $(".tittle").live("dblclick", function () {
+            $("#PopupWindowPrg").dialog("open");
+        });
+
+        self.GETSelectProgram = function (item) {
+            if (self.SaveModePrg() == true) {
+                return;
+            }
+            else {
+                self.SelectedMfgBenefits(item);
+                self.SelectedMfgBenefitCommon(item);
+                FillGridPay();
+
+            }
+
+        }
+
+        self.SelectedProgramRecord = function (item) {
+            if (self.SaveModePrg() == true) {
+                return;
+            }
+            else {
+                self.SelectedMfgBenefits(item);
+                self.SelectedMfgBenefitCommon(item);
+                $("#Payment").click();
+            }
+        }
+
+        self.confirmaddpay = function () {
+            $("#PopupWindowPay").dialog("open");
+        }
+
+
+        self.GETSelectPayment = function (item) {
+            if (self.SaveModePay() == true) {
+                return;
+            }
+            else {
+                self.SelectedMfgPayment(item);
+                FillGridPaydist();
+            }
+        }
+
+        self.SelectedPaymentRecord = function (item) {
+            if (self.SaveModePay() == true) {
+                return;
+            }
+            else {
+                self.SelectedMfgPayment(item);
+                $("#PaymentDistribution").click();
+            }
+        }
+
+        $("#Deletedist").click(function () {
+
+            alertconfirm("Delete", "Are you sure you want to delete this record ?", distdelete, false, true);
+
+        });
+
+        function distdelete() {
+            $.ajax({
+                url: "DeleteBenefitRecon",
+                data: { Distno: Distno, Progno: self.ProgramNoPay(), Chkno: self.checknum() },
+                type: "POST",
+                success: function (response) {
+                    FillGridPaydist();
+                }
+            });
+        }
+
+        $(".tr_clone").live("click", function () {
+            Distno = $(this).context.cells[1].innerText;
+            //if (($(this).context.cells[2].children[0].value == 0 || $(this).context.cells[2].children[0].value == 0.00) && ($(this).context.cells[3].children[0].value == 0 || $(this).context.cells[3].children[0].value == 0.00)) {
+            //    $("#Deletedist").css("display", "none");
+            //}
+            //else {
+            if (readonly == true)
+                $("#Deletedist").css("display", "none");
+            else
+                $("#Deletedist").css("display", "block");
+            //}
+        });
+
+
+        $("#Save").click(function () {
+
+            var BenefitArr = [];
+            var tableRef = document.getElementById('tblBenefit').getElementsByTagName('tbody')[0];
+
+            for (var i = 0; i < tableRef.rows.length ; i++) {
+
+                if (tableRef.rows[i].cells[2].children[0].value != null && tableRef.rows[i].cells[2].children[0].value != ""
+                    && tableRef.rows[i].cells[2].children[0].value != "0" && tableRef.rows[i].cells[2].children[0].value != "0.00") {
+                    BenefitArr.push({
+
+                        company: tableRef.rows[i].cells[0].innerText,
+                        distno: tableRef.rows[i].cells[1].innerText,
+
+                        purchase: (tableRef.rows[i].cells[2].children[0].value).replace(/\,/g, ''),
+                        adjustment: tableRef.rows[i].cells[3].children[0].value,
+
+                        pspurchase: (tableRef.rows[i].cells[4].innerText).replace(/\,/g, ''),
+                        diff: (tableRef.rows[i].cells[5].innerText).replace(/\,/g, ''),
+                        DPercent: tableRef.rows[i].cells[6].innerText,
+
+                        Discrepency: tableRef.rows[i].cells[7].children[0].value,
+
+                        Benefit: (tableRef.rows[i].cells[8].innerText).replace(/\,/g, ''),
+                        HQFee: (tableRef.rows[i].cells[9].innerText).replace(/\,/g, ''),
+                        NetPay: (tableRef.rows[i].cells[10].innerText).replace(/\,/g, '')
+
+                    })
+                }
+
+            }
+
+            if (BenefitArr.length > 0) {
+
+                $.ajax({
+                    url: "SaveBenefitRecon",
+                    data: { ObjBenefit: JSON.stringify(BenefitArr), Progno: self.ProgramNoPay(), Chkno: self.checknum(), Remarks: document.getElementById('remarks').value }, //Chkno: self.checkno()
+                    type: "POST",
+                    success: function (response) {
+                        FillGridPaydist();
+                        alert("Gro Group", "Updated Successfully");
+                    }
+                });
+            }
+
+
+        });
+
+        $("#Add").click(function () {
+
+            //check company exist
+            var finddistno = document.getElementById('cmbdist').value;
+            var distname = "";
+            distname = $("#cmbdist option:selected").text();
+            //Distno = finddistno;
+            var tableRef = document.getElementById('tblBenefit').getElementsByTagName('tbody')[0];
+
+            if (tableRef.rows.length > 0) {
+                for (var i = 0; i < tableRef.rows.length; i++) {
+                    if (finddistno == tableRef.rows[i].cells[1].innerText) {
+                        alert("Gro Group", "Distributor already exist!");
+                        return;
+                    }
+                }
+            }
+
+            var $tr = $('#tblBenefit tbody>tr:first').closest('.tr_clone').addClass('success selected');
+            var curRow = $tr;
+            var $clone = $tr.clone();
+            $('.clickableRowpaydist').removeClass('success selected');
+            rowIndexpaydist = "rowid0";
+            $clone[0].cells[0].innerText = distname;
+            $clone[0].cells[1].innerText = finddistno;
+
+            $clone[0].cells[2].children[0].value = 0.00;
+            $clone[0].cells[3].children[0].value = 0.00;
+
+            $clone[0].cells[4].innerText = 0;
+            $clone[0].cells[5].innerText = 0;
+            $clone[0].cells[6].innerText = 0;
+
+            $clone[0].cells[7].children[0].value = 'False';
+
+            $clone[0].cells[8].innerText = 0;
+            $clone[0].cells[9].innerText = 0;
+            $clone[0].cells[10].innerText = 0;
+
+            $tr.before($clone);
+            $("#Deletedist").css("display", "none");
+            //$('#purchase' + 0).attr('readonly', false);
+        });
+
+        self.Benefitchange = function (item, event) {
+            var idname = event.currentTarget.id;
+            var benefitid = "Benefit" + idname;
+            var hqid = "HQFee" + idname;
+            var netpayid = "NetPay" + idname;
+            var diffid = "diff" + idname;
+            var DPercentid = "DPercent" + idname;
+            var benefit = (self.percent() * parseFloat(item.purchase) + parseFloat(item.adjustment)) / 100;
+            var hq = benefit * self.hqper() / 100
+            var netpay = benefit - hq;
+            var diff = item.purchase - item.pspurchase;
+            var DPercent = ((parseFloat(item.purchase) + parseFloat(item.adjustment)) - (item.pspurchase)) / item.purchase;
+
+            document.getElementById(benefitid).innerHTML = toFixed(benefit);
+            document.getElementById(hqid).innerHTML = toFixed(hq);
+            document.getElementById(netpayid).innerHTML = toFixed(netpay);
+            document.getElementById(diffid).innerHTML = toFixed(diff);
+            document.getElementById(DPercentid).innerHTML = toFixedFormate(DPercent);
+        }
+
+
+        $("input.tr_box_change").live('blur', function () {
+
+            var $tr = $(this).closest('.tr_clone');
+            var curRow = $tr;
+
+            var itempurchase, itemadjustment, itempspurchase;
+            itempurchase = (curRow[0].cells[2].children[0].value).replace(/\,/g, '');
+            itemadjustment = (curRow[0].cells[3].children[0].value).replace(/\,/g, '');
+            itempspurchase = (curRow[0].cells[4].innerText).replace(/\,/g, '');
+            //if ((itempurchase == 0 || itempurchase == 0.00) && (itemadjustment == 0 || itemadjustment == 0.00)) {
+            //    $("#Deletedist").css("display", "none");
+            //}
+            //else {
+            if (readonly == true)
+                $("#Deletedist").css("display", "none");
+            else
+                $("#Deletedist").css("display", "block");
+            //}
+
+            var benefit = (self.percent() * (parseFloat(itempurchase) + parseFloat(itemadjustment))) / 100;
+            var hq = (benefit * self.hqper()) / 100;
+            var netpay = benefit - hq;
+            var diff = (parseFloat(itempurchase) + parseFloat(itemadjustment)) - itempspurchase;
+            var DPercent = ((parseFloat(itempurchase) + parseFloat(itemadjustment)) - itempspurchase) / itempurchase;
+
+            curRow[0].cells[8].innerText = numberWithCommas(toFixedFormate($.isNumeric(benefit) == true ? benefit : 0)); //8
+            curRow[0].cells[9].innerText = numberWithCommas(toFixedFormate($.isNumeric(hq) == true ? hq : 0)); //9
+            curRow[0].cells[10].innerText = numberWithCommas(toFixedFormate($.isNumeric(netpay) == true ? netpay : 0));  //10
+            curRow[0].cells[5].innerText = numberWithCommas(toFixedFormate($.isNumeric(diff) == true ? diff : 0)); //5
+            curRow[0].cells[6].innerText = toFixedFormate($.isNumeric(DPercent) == true ? DPercent : 0.00); //6
+
+
+        });
+
+
+        self.Btnbenefitrecon = function () {
+            $.ajax({
+                url: "BgenefitReconReport",
+                data: { progNo: self.ProgramNo(), ChkNo: self.checknum() }, //self.checkno()
+                type: "POST",
+                success: function (response) {
+                    window.parent.parent.parent.document.getElementById('searchscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.parent.document.getElementById('sc1'), 'click');
+                }
+            });
+        }
+
+        //self.Submit = function () {
+
+        //    var tempPeriod = $("#fromdt").val() + "-" + $("#todt").val();
+
+        //    viewtotal(tempPeriod);
+        //}
+
+        //self.BtnViewTotal = function () {
+        //    viewtotal(self.period());
+        //}
+
+        //function viewtotal(period) {
+        //    var popuppurchase = 0;
+        //    $.ajax({
+        //        url: "ViewCompTotal",
+        //        data: { MfgNo: mfgNo, Distno: Distno, Period: period }, //self.checkno()
+        //        type: "POST",
+        //        success: function (response) {
+        //            self.BenefitProgList(response.Items);
+        //            var popupcount = response.Items.length;
+        //            for (i = 0; i < response.Items.length; i++) {
+        //                popuppurchase += parseFloat(response.Items[i].purchase);
+        //            }
+        //            self.popuppurchase(numberWithCommas(toFixedFormate(popuppurchase)));
+
+        //            self.popupcount('Count: ' + popupcount);
+
+        //            var fdate = response.Sdate;
+        //            var frmdate = fdate.replace("11/01/", '');
+        //            var tdate = response.Edate;
+        //            var todate = tdate.replace("10/31/", '');
+        //            $("#fromdt").val(frmdate);
+        //            $("#todt").val(todate);
+
+        //            var title = "Payment Distribution Total From :" + response.Sdate + "-" + response.Edate;
+        //            $("#PurchaseDailog").dialog("option", "title", title);
+        //            $("#PurchaseDailog").dialog("open");
+
+        //        }
+        //    });
+        //}
+
+        self.confirmaddpaydist = function () {
+            $("#PopupWindowPaydist").dialog("open");
+        }
+
+        FillGrid();
+
+        self.AddPrg = function () {
+            if (self.SaveModePrg() == true)
+                return false;
+
+            CallDisableTabs();
+            window.parent.CallDisableTabs();
+
+            self.AddModePrg(true);
+            self.SaveModePrg(true);
+            self.EditModePrg(false);
+            self.EnableDisableModePrg(false);
+            self.clearprgfields();
+            //self.directd("");
+            //self.echeck("");
+            $("#period").focus();
+            $('.clickableRow').removeClass('success selected');
+        }
+
+        self.clearprgfields = function () {
+            self.ProgramNo("");
+            self.progcntl("");
+            self.period("");
+            self.program("");
+            self.percent("");
+            self.progfrom("");
+            self.progto("");
+            self.pur_xcld("");
+            self.plvl_fro("");
+            self.plvl_to("");
+            self.plvl_comments("");
+
+        }
+
+        self.EditPrg = function () {
+            if (self.FillMfgBenefitsGrid().length == 0)
+                return false;
+
+            CallDisableTabs();
+            window.parent.CallDisableTabs();
+
+            self.AddModePrg(false);
+            self.SaveModePrg(true);
+            self.EditModePrg(false);
+            self.EnableDisableModePrg(false);
+        }
+
+        self.SavePrg = function () {
+
+            if (self.period() == null || self.period() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Program Year",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('period').focus();
+                    }
+                });
+                return false;
+            }
+
+            var prdval = self.period();
+            var t = prdval.indexOf('-');
+            if (t >= 0) {
+                var s = prdval.split('-');
+                if (s[0] == "" || s[1] == "" || s[0].length == 1 || s[1].length == 1) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Program Year",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('period').focus();
+                        }
+                    });
+
+                    return false;
+                }
+            }
+            else {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Valid Program Year",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('period').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.progfrom() == null || self.progfrom() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the period from",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('progfrom').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.progfrom() != null && self.progfrom() != "") {
+                var isdatecomplvalidate = isValidDate(self.progfrom());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period from",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('progfrom').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.progto() == null || self.progto() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the period to",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('progto').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.progto() != null && self.progto() != "") {
+                var isdatecomplvalidate = isValidDate(self.progto());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid period to",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('progto').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.program() == null || self.program() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Component",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('program').focus();
+                    }
+                });
+                return false;
+            }
+
+            objprg = [];
+            objbprg = {
+                mfgNo: window.parent.document.getElementById('mfgno').value,
+                ProgNo: self.ProgramNo(),
+                progcntl: self.progcntl(),
+                period: self.period(),
+                program: self.program(),
+                percent: self.percent(),
+                progfrom: self.progfrom(),
+                progto: self.progto(),
+                pur_xcld: self.pur_xcld(),
+                plvl_fro: self.plvl_fro().replace(/\,/g, ''),
+                plvl_to: self.plvl_to().replace(/\,/g, ''),
+                comments: self.plvl_comments(),
+                //directd: self.directd(),
+                //echeck: self.echeck(),
+            }
+            $.ajax({
+                url: "SaveBenefitPrg",
+                data: { ObjBenefit: JSON.stringify(objbprg), IsAddMode: self.AddModePrg() },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        prgno = response.ItemMsg;
+                        $('#TbBenefits tbody tr').remove();
+                        FillGrid();
+                    }
+                }
+            });
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+
+            self.AddModePrg(false);
+            self.EditModePrg(true);
+            self.SaveModePrg(false);
+            self.EnableDisableModePrg(true);
+        }
+
+        self.CancelPrg = function () {
+            if (self.SaveModePrg() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelPrg, true, true);
+        }
+
+        self.confirmcancelPrg = function () {
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+
+            self.SelectedMfgBenefits(self.FillMfgBenefitsGrid()[rowIndex]);
+            self.AddModePrg(false);
+            self.EditModePrg(true);
+            self.SaveModePrg(false);
+            self.EnableDisableModePrg(true);
+            $('#' + rowIndex).addClass('success selected');
+        }
+
+        self.DeletePrg = function () {
+            if (self.SaveModePrg() == true || self.FillMfgBenefitsGrid().length == 0)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+            //if (self.SaveModePrg() == true)
+            //    return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdeletePrg, false, true);
+        }
+
+        self.confirmdeletePrg = function () {
+        }
+
+        self.AddPay = function () {
+            if (self.SaveModePay() == true)
+                return false;
+
+            CallDisableTabs();
+            window.parent.CallDisableTabs();
+
+            self.AddModePay(true);
+            self.SaveModePay(true);
+            self.EditModePay(false);
+            self.EnableDisableModePay(false);
+            self.EnableDisPayChk(false);
+
+            self.clearpayfields();
+
+            $("#hqper").focus();
+            $('.clickableRowpay').removeClass('success selected');
+        }
+
+        self.clearpayfields = function () {
+            self.checknum("");
+            self.holdpay("");
+            self.batchno("");
+            self.hqper("");
+            //self.txtComments("");
+            self.recvdon("");
+            self.amount("");
+            self.dueon("");
+            self.chkfrom("");
+            self.chkto("");
+            self.wsrecvd("");
+        }
+
+        self.EditPay = function () {
+            if (self.FillMfgPaymentGrid().length == 0)
+                return false;
+
+            CallDisableTabs();
+            window.parent.CallDisableTabs();
+
+            self.AddModePay(false);
+            self.SaveModePay(true);
+            self.EditModePay(false);
+            self.EnableDisableModePay(false);
+            self.EnableDisPayChk(true);
+        }
+
+        self.SavePay = function () {
+
+            if (self.checknum() == null || self.checknum() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Pay Period #",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('checknum').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.chkfrom() == null || self.chkfrom() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Pay Period From",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('chkfrom').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.chkfrom() != null && self.chkfrom() != "") {
+                var isdatecomplvalidate = isValidDate(self.chkfrom());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Pay Period From",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('chkfrom').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+
+            if (self.chkto() == null || self.chkto() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Pay Period To",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('chkto').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.chkto() != null && self.chkto() != "") {
+                var isdatecomplvalidate = isValidDate(self.chkto());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Pay Period To",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('chkto').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.dueon() != null && self.dueon() != "") {
+                var isdatecomplvalidate = isValidDate(self.dueon());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Payment Due",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('dueon').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.wsrecvd() != null && self.wsrecvd() != "") {
+                var isdatecomplvalidate = isValidDate(self.wsrecvd());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Date Worksheet Received",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('wsrecvd').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.recvdon() != null && self.recvdon() != "") {
+                var isdatecomplvalidate = isValidDate(self.recvdon());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Date Payment Received",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('recvdon').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            if (self.AddModePay() == true) {
+                $.ajax({
+                    url: "ValidateProgPaymentCheck",
+                    data: { progNo: ProgNo, checknum: self.checknum(), AddMode: self.AddModePay() }, // prevCheckNo: prevCheckNo
+                    type: "POST",
+                    success: function (response) {
+                        if (response.Items == true) {
+                            $.msgBox({
+                                title: "Gro Group", content: "Check# already exists", parent: true, subparent: true,
+                                afterClose: function (result) {
+                                    document.getElementById('checknum').focus();
+                                    return false;
+                                }
+                            });
+                        }
+                        else {
+                            SaveBenefitPay();
+                        }
+                    }
+                });
+            }
+            else
+                SaveBenefitPay();
+        }
+
+        function SaveBenefitPay() {
+            objpay = [];
+            objpay = {
+                mfgNo: window.parent.document.getElementById('mfgno').value,
+                ProgNo: ProgNo,
+                checkno: self.checkno(),
+                checknum: self.checknum(),
+                holdpay: self.holdpay(),
+                hqper: self.hqper(),
+                //comments: self.txtComments(),
+                recvdon: self.recvdon(),
+                amount: self.amount().replace(/\,/g, ''),
+                dueon: self.dueon(),
+                chkfrom: self.chkfrom(),
+                chkto: self.chkto(),
+                wsrecvd: self.wsrecvd(),
+            }
+            $.ajax({
+                url: "SaveBenefitPay",
+                data: { ObjBenefit: JSON.stringify(objpay), IsAddMode: self.AddModePay() },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        chkno = response.ItemMsg;
+                        $('#TbPayment tbody tr').remove();
+                        FillGridPay();
+                    }
+                }
+            });
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+
+            self.AddModePay(false);
+            self.EditModePay(true);
+            self.SaveModePay(false);
+            self.EnableDisableModePay(true);
+            self.EnableDisPayChk(true);
+        }
+
+        self.CancelPay = function () {
+            if (self.SaveModePay() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelPay, true, true);
+        }
+
+        self.confirmcancelPay = function () {
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+
+            if ($.isNumeric(rowIndexpay) == true) {
+                rowIndexpay = rowIndexpay;
+            }
+            else {
+                rowIndexpay = rowIndexpay.substring(3, 7);
+            }
+            self.SelectedMfgPayment(self.FillMfgPaymentGrid()[rowIndexpay]);
+            self.AddModePay(false);
+            self.EditModePay(true);
+            self.SaveModePay(false);
+            self.EnableDisableModePay(true);
+            self.EnableDisPayChk(true);
+            $('#row' + rowIndexpay).addClass('success selected');
+        }
+
+        self.DeletePay = function () {
+            if (self.SaveModePay() == true || self.FillMfgPaymentGrid().length == 0)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+            //if (self.SaveModePay() == true)
+            //    return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdeletePay, false, true);
+        }
+
+        self.confirmdeletePay = function () {
+        }
+
+        //self.AddPaydist = function () {
+        //    if (self.SaveModePaydist() == true)
+        //        return false;
+        //    self.AddModePaydist(true);
+        //    self.SaveModePaydist(true);
+        //    self.EditModePaydist(false);
+        //    self.EnableDisableModePaydist(false);
+        //    self.checknopay("");
+        //    self.distacct("");
+        //    self.company("");
+        //    self.batchno("");
+        //    self.purchase("");
+        //    self.txtrecvdon("");
+        //    self.txtamount("");
+        //    self.txthqper("");
+        //    self.txtholdpay("");
+        //    self.paynote("");
+        //    self.Benefit("");
+        //    $("#checknopay").focus();
+        //}
+
+        //self.EditPaydist = function () {
+        //    self.AddModePaydist(false);
+        //    self.SaveModePaydist(true);
+        //    self.EditModePaydist(false);
+        //    self.EnableDisableModePaydist(false);
+        //}
+
+        //self.SavePaydist = function () {
+        //    self.AddModePaydist(false);
+        //    self.EditModePaydist(true);
+        //    self.SaveModePaydist(false);
+        //    self.EnableDisableModePaydist(true);
+        //}
+
+        //self.CancelPaydist = function () {
+        //    if (self.SaveModePaydist() != true)
+        //        return false;
+        //    alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelPaydist, true, false);
+        //}
+
+        //self.confirmcancelPaydist = function () {
+        //    FillGridPaydist();
+        //    self.AddModePaydist(false);
+        //    self.EditModePaydist(true);
+        //    self.SaveModePaydist(false);
+        //    self.EnableDisableModePaydist(true);
+
+        //}
+
+        //self.DeletePaydist = function () {
+        //    alerterror("Denied", "Record cannot be deleted");
+        //    //if (self.SaveModePaydist() == true)
+        //    //    return false;
+        //    //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdeletePaydist, false, true);
+        //}
+
+        //self.confirmdeletePaydist = function () {
+        //}
+
+
+        $(".Prg").live("click", function () {
+            ProgNo = self.ProgramNo();
+        });
+
+        $("#Program").live("click", function () {
+            $('#TbBenefits thead th').removeClass("hide");
+            $('#TbBenefits tbody tr td').removeClass("hide");
+            $('#TbBenefits th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+
+        $("#Payment").live("click", function () {
+            $('#TbPayment thead th').removeClass("hide");
+            $('#TbPayment tbody tr td').removeClass("hide");
+            $('#TbPayment th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+            $('#TbPayment tbody tr').remove();
+            FillGridPay();
+        });
+
+        $("#PaymentDistribution").live("click", function () {
+            $('table#tblBenefit tbody#TfootTot tr').removeClass('success selected');
+            if (self.ProgramNoPay() == "" || self.checkno() == "") {
+                //FillGridPaydist();
+                alert("Gro Group", "Please select the Programno and Checkno", true, true);
+                $("#Payment").click();
+            }
+            else {
+                $("#CheckNo").text(self.checknum());
+                $("#lblBatchno").text(self.batchno()); //ely
+                $("#BHC").text(self.percent());
+                $("#HQ").text(self.hqper());
+                $("#Company").text(self.refcomp());
+                $("#CheckFrom").text(self.chkfrom());
+                $("#CheckTo").text(self.chkto());
+                self.companyno(cmpval);
+
+                if (self.batchno() != null && self.batchno().trim() != "") {
+                    readonly = true;
+                }
+                else {
+                    readonly = false;
+                }
+
+                FillGridPaydist();
+
+                if ($('#chkshowpspurchase').is(':checked')) {
+                    $("#tdpspurchase").show();
+                    $("#btmpspur").show();
+                    for (var i = 0; i < self.BenefitDistList().length; i++) {
+                        $("#PsPurchase" + i).show();
+                    }
+                }
+                else {
+                    $("#tdpspurchase").hide();
+                    $("#btmpspur").hide();
+                    for (var i = 0; i < self.BenefitDistList().length; i++) {
+                        $("#PsPurchase" + i).hide();
+                    }
+                }
+
+            }
+        });
+
+        self.showpurchase = function () {
+
+            if ($('#chkshowpspurchase').is(':checked')) {
+                $("#tdpspurchase").show();
+                $("#btmpspur").show();
+                for (var i = 0; i < self.BenefitDistList().length; i++) {
+                    $("#PsPurchase" + i).show();
+                }
+            }
+            else {
+                $("#tdpspurchase").hide();
+                $("#btmpspur").hide();
+                for (var i = 0; i < self.BenefitDistList().length; i++) {
+                    $("#PsPurchase" + i).hide();
+                }
+            }
+
+        }
+
+        self.EditNgp = function () {
+
+            CallDisableTabs();
+            window.parent.CallDisableTabs();
+
+            $("#notes").focus();
+            self.SaveModeNgp(true);
+            self.EditModeNgp(false);
+            self.EnableDisableModeNgp(false);
+        }
+
+        self.SaveNgp = function () {
+            if (self.txtngpnotes() == null || self.txtngpnotes() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the NGP Notes",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('ngpnotes').focus();
+                    }
+                });
+                return false;
+            }
+
+            $.ajax({
+                url: "NGPSaveNotes",
+                data: { ngpnotes: self.txtngpnotes(), mfgNo: window.parent.document.getElementById('mfgno').value },
+                type: "POST",
+                success: function (response) {
+                    self.EditModeNgp(true);
+                    self.SaveModeNgp(false);
+                    self.EnableDisableModeNgp(true);
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.Items);
+                    }
+                    else {
+                        self.FillNGPNotes();
+                    }
+                }
+            });
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+        }
+
+        self.CancelNgp = function () {
+            if (self.SaveModeNgp() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelNgp, true, true);
+        }
+
+        self.confirmcancelNgp = function () {
+
+            CallEnableTabs();
+            window.parent.CallEnableTabs();
+
+            self.FillNGPNotes();
+            self.EditModeNgp(true);
+            self.SaveModeNgp(false);
+            self.EnableDisableModeNgp(true);
+        }
+
+        //Mfg NGP Notes
+        self.txtngpnotes = ko.observable();
+
+        self.FillNGPNotes = function () {
+            $.ajax({
+                url: "FillNGPNotes",
+                data: { mfgNo: window.parent.document.getElementById('mfgno').value },
+                type: "POST",
+                success: function (response) {
+                    self.txtngpnotes(response.Items[0].NGPNotes);
+                }
+            });
+        }
+
+        self.FillNGPNotes();
+    }
+
+    function CallDisableTabs() {
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            if (list[0].childNodes[0].id != lis[i].childNodes[0].id) {
+                $('#' + tablist[0].id + '').addClass("nallowed");
+                $('#' + lis[i].childNodes[0].id + '').addClass("event-none");
+            }
+        }
+
+    }
+    function CallEnableTabs() {
+
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            $('#' + tablist[0].id + '').removeClass("nallowed");
+            $('#' + lis[i].childNodes[0].id + '').removeClass("event-none");
+        }
+    }
+
+    function toFixed(item) {
+        if (item == "")
+            item = "0";
+        else
+            item = parseFloat(item).toFixed(0);
+        return item;
+    }
+
+
+    function numberswithdotminus(obj, e, decimal, pos) {
+        var key;
+        var keychar;
+        var numVal = obj.value;
+        var clsindex = numVal.indexOf(".");
+        var minindex = numVal.indexOf("-");
+        if (clsindex <= -1) {
+            if (minindex <= -1) {
+                switch (numVal.length) {
+                    case pos - 1:
+                        obj.value = numVal + ".";
+                        break;
+
+                }
+            }
+            else {
+                switch (numVal.length) {
+                    case pos:
+                        obj.value = numVal + ".";
+                        break;
+
+                }
+            }
+
+        }
+
+        if (window.event) {
+            key = window.event.keyCode;
+        }
+        else if (e) {
+            key = e.which;
+        }
+        else {
+            return true;
+        }
+        keychar = String.fromCharCode(key);
+
+
+        if ((key == null) || (key == 0) || (key == 9) || (key == 13) || (key == 27)) {
+            return true;
+        }
+
+        else if (key == 8) {
+            obj.value = "";
+            return true;
+        }
+        else if ((("-0123456789").indexOf(keychar) > -1)) {
+            return true;
+        }
+        else if (decimal && (keychar == ".") && clsindex > -1) {
+            return false;
+        }
+        else if (decimal && (keychar == ".") && clsindex <= -1) {
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    //input value accepted number only
+    var ch = false;
+    var nums = false;
+    function isNumberKeyminus(evt) {
+        var charCode = ((evt.which) ? evt.which : event.keyCode);
+
+        if (charCode == 46 && nums == true) { //&& ch == false
+            ch = true;
+            return true;
+        }
+        else if (charCode == 45) {
+            return true;
+        }
+        else {
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            } else {
+                nums = true;
+                return true;
+            }
+        }
+    }
+
+    //Export function code
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "Benefits", tablename + "_.csv", "Screen", tablename + "_");
+    }
+</script>
+
+<div id="tabs" class="tabbedwidget tab-primary">
+    <div class="row-fluid">
+        <ul id="tabevent">
+            <li><a href="#Prog" id="Program">Program</a></li>
+            <li><a href="#Pay" id="Payment">Payment</a></li>
+            <li><a href="#Paydist" id="PaymentDistribution">Payment Distribution</a></li>
+            <li><a href="#NGP" id="NGPNotes">NGP Notes</a></li>
+        </ul>
+    </div>
+
+    <div id="Prog" class="container mob-cont">
+        <div style="max-width: 1210px !important; text-align: left; margin-top: 10px;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="enable:EditModePrg"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAddPrg"><i class="icon-file icon-white"></i></a></li>
+                        <li data-bind="visible: EditModePrg"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditPrg"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModePrg"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSavePrg"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:EditModePrg"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDeletePrg"><i class="icon-remove icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModePrg"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelPrg"><i class=" iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <h4 class="widgettitle tittle"><span data-bind="text: BeneprgTitle"></span></h4>
+            <div class="padding-style" style="border: 1px#BCD8F3 solid;">
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label class="span4 mob-span">Control #</label>
+                        <input type="text" class="input-small mob-text" maxlength="6" data-bind="disable: true,value: ProgramNo" />
+                        @*<input id="progcntl" type="text" class="input-small mob-text" maxlength="6" data-bind="disable: EnableDisableModePrg,value: progcntl" />*@
+                    </div>
+                    <div class="span4">
+                        <label class="span4 mob-span">Period From</label>
+                        <input id="progfrom" type="text" class="input-small mob-text" tabindex="2" maxlength="10" data-bind="disable: EnableDisableModePrg,value: progfrom" required />
+                    </div>
+                    <div class="span4">
+                        <label class="span4 mob-span">Component</label>
+                        <input id="program" type="text" class="input-small mob-text" tabindex="4" maxlength="3" data-bind="disable: EnableDisableModePrg,value: program" required />
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <label class="span4 mob-span">Program Year</label>
+                        <input id="period" type="text" class="input-small mob-text" tabindex="1" maxlength="5" placeholder="YY-YY" onkeypress="return periods(this, event, true);" data-bind="disable: EnableDisableModePrg,value: period" required />
+                    </div>
+                    <div class="span4">
+                        <label class="span4 mob-span">Period To</label>
+                        <input id="progto" type="text" class="input-small mob-text" maxlength="10" tabindex="3" data-bind="disable: EnableDisableModePrg,value: progto" required />
+                    </div>
+                    <div class="span4">
+                        <label class="span4 mob-span">Percent</label>
+                        <input id="percent" type="text" class="input-small mob-text" tabindex="5" onkeypress="return numberswithdot(this, event, true,3);" maxlength="7" data-bind="disable: EnableDisableModePrg,value: percent" />
+                    </div>
+                </div>
+            </div>
+            <div class="padding-style" style="border:1px#BCD8F3 solid;margin-top:5px;">
+                <div class="row-fluid">
+                    <div class="span8">
+                        <label class="span2 mob-span">Comments</label>
+                        <textarea class="mob-text" tabindex="6" style="resize:none;width: 65%;height:75px;font-weight: bold;color: black; font-size: 14px;" maxlength="8000" data-bind="disable: EnableDisableModePrg,value: plvl_comments"></textarea>
+                    </div>
+                    <div class="span4">
+                        <div class="row-fluid">
+                            <label class="span4 mob-span">Plateau From</label>
+                            <input type="text" tabindex="7" class="input-small mob-text" onkeypress="return numbers(this)" maxlength="10" data-bind="disable: EnableDisableModePrg,value: plvl_fro" />
+
+                        </div>
+                        <div class="row-fluid">
+                            <label class="span4 mob-span">Plateau To</label>
+                            <input type="text" tabindex="8" class="input-small mob-text" onkeypress="return numbers(this)" maxlength="10" data-bind="disable: EnableDisableModePrg,value: plvl_to" />
+
+                        </div>
+                        <div class="row-fluid">
+                            <label class="span6 mob-span">VPC Duplicate purchases</label>
+                            <input type="checkbox" tabindex="9" data-bind="disable: EnableDisableModePrg,checked: pur_xcld" />
+                        </div>
+                    </div>
+                </div>
+                
+                
+
+                @*<div class="row-fluid">
+                        <div class="span4">
+                            <label class="span3"></label>
+                        </div>
+                        <div class="span4">
+                            <label class="span4 mob-span">DirectD</label>
+                            <input type="checkbox" data-bind="disable: EnableDisableModePrg,checked: directd" />
+                        </div>
+
+                        <div class="span4">
+                            <label class="span3 mob-span">E Check</label>
+                            <input type="checkbox" data-bind="disable: EnableDisableModePrg,checked: echeck" />
+                        </div>
+
+                    </div>*@
+            </div>
+        </div>
+        <div style="width: 100%; margin-top: 5px;">
+            <table id="TbBenefits" class="dytable table table-bordered tablesort prgtablesort" title="Program">
+                <thead style="width: 100%;">
+                    <tr class="exportclass">
+                        @*<th style="width:9%;">ProgNo<i class="tog0" style="float: right; margin-top: -4px;"></i></th>*@
+                        @*<th style="width:8%;">VPC<i class="tog5" style="float: right; margin-top: -4px;"></i></th>*@
+                        <th style="width:9%;">Period<i class="tog1" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:15%;">Period From<i class="tog3" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:12%;">Period To<i class="tog4" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:15%;">Component<i class="tog2" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:10%;">Percent<i class="tog6" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:13%;">Plateau From<i class="tog7" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:13%;">Plateau To<i class="tog8" style="float: right; margin-top: -4px;"></i></th>
+                        @*<th style="width:13%;">Comments <i class="tog8" style="float: right; margin-top: -4px;"></i></th>*@
+
+                      
+                        @*<th style="width:3%;">Period<i class="tog1" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:4%;">Period From<i class="tog3" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:3%;">Period To<i class="tog4" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:4%;">Component<i class="tog2" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:3%;">Percent<i class="tog6" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:4%;">Plateau From<i class="tog7" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:4%;">Plateau To<i class="tog8" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:13%;">Comments <i class="tog8" style="float: right; margin-top: -4px;"></i></th>*@
+
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: FillMfgBenefitsGrid " style="overflow-y:overlay">
+                    <tr style="cursor: pointer;" class="clickableRow Prg" data-bind="attr: {id:$index()},event: {click: $root.GETSelectProgram,dblclick: $root.SelectedProgramRecord} ">
+                        @*<td style="width:9%;" data-bind="text:ProgNo"></td>*@
+                        @*<td style="width:8%;" data-bind="text: pur_xcld"></td>*@
+                        <td style="width:9%;" data-bind="text:period"></td>
+                        <td style="width:15%;" data-bind="text:DateBind(progfrom)"></td>
+                        <td style="width:12%;" data-bind="text: DateBind(progto)"></td>
+                        <td style="width:15%;" data-bind="text:program"></td>
+                        <td style="width:10%;" data-bind="text: toFixedFormate(percent)"></td>
+                        <td style="width:13%;" data-bind="text: numberWithCommas(plvl_fro)"></td>
+                        <td style="width:13%;" data-bind="text:numberWithCommas(plvl_to)"></td>
+                        @*<td style="width:13%;" data-bind="text:comments"></td>*@
+
+                        @*<td style="width:3%;" data-bind="text:period"></td>
+                        <td style="width:4%;" data-bind="text:DateBind(progfrom)"></td>
+                        <td style="width:3%;" data-bind="text: DateBind(progto)"></td>
+                        <td style="width:4%;" data-bind="text:program"></td>
+                        <td style="width:3%;" data-bind="text: toFixedFormate(percent)"></td>
+                        <td style="width:4%;" data-bind="text: numberWithCommas(plvl_fro)"></td>
+                        <td style="width:4%;" data-bind="text:numberWithCommas(plvl_to)"></td>
+                        <td style="width:13%;" data-bind="text:comments"></td>*@
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="Pay" class="container mob-cont">
+        <div class="row-fluid">
+            <div class="span4">
+                <ul class="list-nostyle list-inline tooltipsample">
+                    <li data-bind="enable:EditModePay"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAddPay"><i class="icon-file icon-white"></i></a></li>
+                    <li data-bind="visible: EditModePay"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditPay"><i class="icon-edit icon-white"></i></a></li>
+                    <li data-bind="visible: SaveModePay"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSavePay"><i class="icon-list-alt icon-white"></i></a></li>
+                    <li data-bind="enable:EditModePay"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDeletePay"><i class="icon-remove icon-white"></i></a></li>
+                    <li data-bind="enable:SaveModePay"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelPay"><i class=" iconsweets-arrowleft iconsweets-white"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <h4 class="widgettitle tittle"><span data-bind="text: BenepayTitle"></span></h4>
+        <div class="padding-style" style="border: 1px#BCD8F3 solid;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <label class="span4 mob-span">Control #</label>
+                    <input type="text" class="input-small mob-text" maxlength="6" data-bind="disable: true,value: ProgramNo" />
+                    @*<input id="progcntl" type="text" class="input-small mob-text" maxlength="6" data-bind="disable: true,value: progcntl" />*@
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Period From</label>
+                    <input id="progfrom" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: true,value: progfrom" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Component</label>
+                    <input id="program" type="text" class="input-small mob-text" maxlength="3" data-bind="disable: true,value: program" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4">
+                    <label class="span4 mob-span">Program Year</label>
+                    <input id="period" type="text" class="input-small mob-text" maxlength="5" data-bind="disable: true,value: period" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Period To</label>
+                    <input id="progto" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: true,value: progto" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Percent</label>
+                    <input id="percent" type="text" class="input-small mob-text" onkeypress="return isNumberKey(event);" maxlength="5" data-bind="disable: true,value: percent" />
+                </div>
+            </div>
+        </div>
+        <div class="padding-style" style="border:1px#BCD8F3 solid;margin-top:5px;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <div class="row-fluid">
+                        <label class="span4 mob-span">HQ(%)</label>
+                        <input id="hqper" tabindex="1" type="text" class="input-small mob-text" style="width:13%" onkeypress="return numberswithdot(this, event, true,2);" maxlength="5" data-bind="disable: EnableDisableModePay,value: hqper" />
+                    </div>
+                    @*<div class="row-fluid">
+                        <label class="span4 mob-span">Comments</label>
+                        <textarea class="mob-text" style="resize:none;width: 230px;height:75px;font-weight: bold;color: black; font-size: 14px;" maxlength="8000" data-bind="disable: EnableDisableModePay,value: txtComments"></textarea>
+
+                    </div>*@
+
+                </div>
+                <div class="span4">
+
+                    <div class="row-fluid">
+                        <label class="span4 mob-span">Pay Period #</label>
+                        <input type="text" tabindex="2" id="checknum" style="width:11%" class="input-small mob-text" maxlength="2" data-bind="disable: EnableDisPayChk,value: checknum" required />
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span4 mob-span">Pay Period From</label>
+                        <input id="chkfrom" tabindex="3" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: EnableDisableModePay,value: chkfrom" required />
+
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span4 mob-span">Pay Period To</label>
+                        <input id="chkto" tabindex="4" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: EnableDisableModePay,value: chkto" required />
+
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span4 mob-span">Payment Due</label>
+                        <input id="dueon" tabindex="5" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: EnableDisableModePay,value: dueon" />
+
+                    </div>
+
+                </div>
+                <div class="span4">
+                    <div class="row-fluid">
+                        <label class="span6 mob-span">Date Worksheet Received</label>
+                        <input id="wsrecvd" tabindex="6" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: EnableDisableModePay,value: wsrecvd" />
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span6 mob-span">Date Payment Received</label>
+                        <input id="recvdon" tabindex="7" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: EnableDisableModePay,value: recvdon" />
+
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span6 mob-span">Amount Received</label>
+                        <input id="amount" tabindex="8" type="text" class="input-medium mob-text" onkeypress="return numberswithdotminus(this, event, true, 7);" maxlength="10" data-bind="disable: EnableDisableModePay, value :amount" />
+
+                    </div>
+                    <div class="row-fluid">
+                        <label class="span6 mob-span">Hold Payment</label>
+                        <input id="holdpay" tabindex="9" type="checkbox" data-bind="disable: EnableDisableModePay,checked: holdpay" />
+
+                    </div>
+
+                </div>
+            </div>
+         
+        </div>
+        <div style="width: 100%; margin-top: 5px;">
+            <table id="TbPayment" class="dytable dytable1 table table-bordered table-hover tablesort paytablesort" style="border: solid 1px #ddd" title="Payment">
+                <thead style="width: 100%;">
+                    <tr class="exportclass">
+                        @*<th style="width:9%;">ProgNo<i class="tog0" style="float: right; margin-top: -4px;"></i></th>*@
+                        <th style="width:9%;">Pay Period #<i class="tog1" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:11%;">Pay Period From<i class="tog3" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:11%;">Pay Period To<i class="tog4" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width:15%;">Payment Due<i class="tog2" style="float: right; margin-top: -4px;"></i></th>
+                        @*<th style="width:9%;">Batch#<i class="tog5" style="float: right; margin-top: -4px;"></i></th>
+                            <th style="width:8%;">HQ %<i class="tog6" style="float: right; margin-top: -4px;"></i></th>*@
+                        <th style="width:13%;">Date Payment Received<i class="tog7" style="float: right; margin-top: -4px;"></i></th>
+                        <th style="width: 16%; text-align: right;padding-right:25px;">Amount Received<i class="tog8" style="float: right; margin-top: -4px;"></i></th>
+                        @*<th style="width:16%;">Comments<i class="tog7" style="float: right; margin-top: -4px;"></i></th>*@
+
+                        @*<th style="width:14%;">Ctl<i class="tog9" style="float: right; margin-top: -4px;"></i></th>*@
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: FillMfgPaymentGrid" style="overflow-y:overlay">
+                    <tr class="clickableRowpay Pay" data-bind="attr: {id:'row'+$index()},event: {click: $root.GETSelectPayment,dblclick: $root.SelectedPaymentRecord}">
+                        @*<td style="width:9%;" data-bind="text:ProgNo"></td>*@
+                        <td style="width:9%;" data-bind="text:checknum"></td>
+                        <td style="width:11%;" data-bind="text:DateBind(chkfrom)"></td>
+                        <td style="width:11%;" data-bind="text: DateBind(chkto)"></td>
+                        <td style="width:15%;" data-bind="text:DateBind(dueon)"></td>
+                        @*<td style="width:9%;" data-bind="text: batchno"></td>
+                            <td style="width:8%;" data-bind="text: toFixedFormate(hqper)"></td>*@
+                        <td style="width:13%;" data-bind="text: DateBind(recvdon)"></td>
+                        <td style="width:16%;text-align:right;padding-right:25px;" data-bind="text: numberWithCommas(amount)"></td>
+                        @*<td style="width:16%;padding-right:25px;" data-bind="text: comments"></td>*@
+                        @*<td style="width:14%;" data-bind="text: chkcntlx"></td>*@
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="Paydist" class="container mob-cont">
+        <h4 class="widgettitle tittle"><span data-bind="text: BenepaydistTitle"></span></h4>
+        <div class="padding-style" style="border: 1px#BCD8F3 solid;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <label class="span4 mob-span">Control #</label>
+                    <input type="text" class="input-small mob-text" maxlength="6" data-bind="disable: true,value: ProgramNo" />
+                    @*<input id="progcntl" type="text" class="input-small mob-text" maxlength="6" data-bind="disable: true,value: progcntl" />*@
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Period From</label>
+                    <input id="progfrom" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: true,value: progfrom" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Component</label>
+                    <input id="program" type="text" class="input-small mob-text" maxlength="3" data-bind="disable: true,value: program" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span4">
+                    <label class="span4 mob-span">Program Year</label>
+                    <input id="period" type="text" class="input-small mob-text" maxlength="5" data-bind="disable: true,value: period" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Period To</label>
+                    <input id="progto" type="text" class="input-small mob-text" maxlength="10" data-bind="disable: true,value: progto" />
+                </div>
+                <div class="span4">
+                    <label class="span4 mob-span">Percent</label>
+                    <input id="percent" type="text" class="input-small mob-text" onkeypress="return isNumberKey(event);" maxlength="5" data-bind="disable: true,value: percent" />
+                </div>
+            </div>
+        </div>
+
+        <div class="padding-style" style="border: 1px#BCD8F3 solid; margin-bottom: 5px; margin-top: 5px; ">
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span4" style="font-weight:bold">Manufacturer: <label id="Company"></label> </label>
+                    <label class="span4" style="font-weight:bold">Period: <label id="CheckFrom"></label> - <label id="CheckTo"></label></label>
+                    <label class="span4" style="font-weight:bold">Batchno: <label id="lblBatchno"></label></label>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <label class="span4" style="font-weight:bold">Pay Period #: <label id="CheckNo"></label></label>
+                    <label class="span4" style="font-weight:bold">BHC: <label id="BHC"></label>%</label>
+                    <label class="span4" style="font-weight:bold">HQ: <label id="HQ"></label>%</label>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span8">
+                <select id="cmbdist" data-bind="options:CompanynameList,optionsText:'company',optionsValue:'DistNo',value: companyno"></select>
+                <input type="button" id="Add" value="New Distributor" class="btn btn-primary" />
+                <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" title="Benefit Distribution Reconciliation" data-bind="event:{click:$root.Btnbenefitrecon}" /></a>
+                @*<a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/alert.png")" title="View Total" data-bind="event:{click:$root.BtnViewTotal}" /></a>*@
+            </div>
+            <div class="span2">
+                <label for="chkshowpspurchase">Show PSPurchase</label>
+                <input type="checkbox" id="chkshowpspurchase" />
+            </div>
+            <div class="span2">
+                <input type="button" id="Save" value="Save" class="btn btn-primary" style="float:right;margin-right:10px;" />
+                <input type="button" id="Deletedist" value="Delete" class="btn btn-primary" style="float:right;margin-right:10px;" />
+            </div>
+        </div>
+        <div style="width: 100%; margin-top: 5px;">
+            <table id="tblBenefit" class="dytable dytable2 table table-bordered table-hover main-tablesort" style="width: 100%;max-height:350px;">
+                <thead style="width: 100%;">
+                    <tr class="main-exportclass " data-bind="">
+                        <th>Company</th>
+                        <th>Distno</th>
+                        <th style="text-align:right">Purchase</th>
+                        <th style="display:none;">Adjustment</th>
+                        <th id="tdpspurchase" style="text-align:right; display:none;width:100px;">Pspurchase</th>
+                        <th style="text-align:right; display:none;">Diff</th>
+                        <th style="display:none;">Dpercent</th>
+                        <th title="Discrepency" style="width:6%; display:none;">Disc</th>
+                        <th style="text-align:right">Benefit</th>
+                        <th style="text-align:right">HQFee</th>
+                        <th style="text-align:right;padding-right:28px;">NetPay</th>
+                    </tr>
+                </thead>
+                <tbody id="tblbdyBenefitDist" data-bind="foreach: $root.BenefitDistList" style="overflow-y:overlay;width:100%;">
+                    <tr style="cursor:pointer;" class="clickableRowpaydist tr_clone" data-bind="attr:{id:'rowid'+$index()}">
+                        <td data-bind="text: company,attr:{id: 'company'+$index()}"></td>
+                        <td data-bind="text:distno"></td>
+                        <td style="text-align:right;"><input type="text" style="text-align:right;height:15px !important;width: 98%;" class="input-medium tr_box_change pri-btn" data-bind="value: numberWithCommas(purchase),attr:{id: 'purchase'+$index()}" onkeypress="return isNumberKeyminus(event);" /></td>
+                        <td style="display:none;"><input type="text" class="input-small tr_box_change" style="width:70px" data-bind="value: adjustment" onkeypress="return isNumberKey(event);" /></td>
+                        <td style="text-align:right; display:none;width:100px;" data-bind="text: numberWithCommas(pspurchase),attr:{id: 'PsPurchase'+$index()}"></td>
+                        <td style="text-align:right; display:none;" data-bind="text:numberWithCommas(toFixedFormate(diff)) ,attr:{id: 'diff'+$index()}"></td>
+                        <td style="display:none;" data-bind="text:toFixedFormate(DPercent) ,attr:{id: 'DPercent'+$index()}"></td>
+                        <td style="width:6%; display:none;"><select data-bind="options:$root.DiscrepencyList,optionsText:'DiscrepencyDisp',optionsValue:'Discrepency',value: Discrepency,attr:{id: 'Disp'+$index()}" style="width:100%;"></select></td>
+                        <td style="text-align:right" data-bind="text:numberWithCommas(toFixedFormate(Benefit)),attr:{id: 'Benefit'+$index()}"></td>
+                        <td style="text-align:right" data-bind="text:numberWithCommas(toFixedFormate(HQFee)),attr:{id: 'HQFee'+$index()}"></td>
+                        <td style="text-align:right;padding-right:28px;" data-bind="text:numberWithCommas(toFixedFormate(NetPay)),attr:{id: 'NetPay'+$index()}"></td>
+                    </tr>
+                </tbody>
+                <tbody id="TfootTot" style="flex: none !important;color:blue;font-size:13px;font-weight:bold;overflow:hidden;width:100% !important">
+                    <tr style="cursor: pointer;background:white;border: none !important;">
+                        <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:count"></td>
+                        <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd;"></td>
+                        <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;text-align:right" data-bind="text:purchase"></td>
+                        <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; display:none;" data-bind="text:adjustment"></td>
+                        <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;text-align:right; display:none;width:100px;" data-bind="text:pspurchase,attr:{id: 'btmpspur'}"></td>
+                        <td style="text-align: right; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; display:none;" data-bind="text:diff"></td>
+                        <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; display:none;" data-bind="text:DPercent"></td>
+                        <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd; width: 6.8%; display:none;"></td>
+                        <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: right" data-bind="text:Benefit"></td>
+                        <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: right" data-bind="text:HQFee"></td>
+                        <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: right;padding-right:28px;" data-bind="text:NetPay"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row-fluid" style="display:none;">
+                <div class="span12">
+                    <label class="span1 mob-text">Remarks</label>
+                    <textarea id="remarks" class="mob-text" style="width:92%" name="remarks" data-bind="text:FillRemarks"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="NGP" class="container mob-cont">
+        <div style="max-width:1202px !important; text-align:left;margin-top:10px">
+            <div class="row-fluid">
+                <div class="span4">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="visible: EditModeNgp"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditNgp"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModeNgp"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSaveNgp"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModeNgp"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelNgp"><i class=" iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="widgetbox">
+                <h4 class="widgettitle"><span data-bind="text: BeneNgpTitle"></span></h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid" style="height: 300px;">
+                        <div class="row-fluid">
+                            <label class="span12">NGP Notes</label>
+                        </div>
+                        <div class="row-fluid">
+                            <textarea id="notes" class="md-textbox" style="height: 270px; width: 860px;" data-bind="disable: EnableDisableModeNgp,value: txtngpnotes"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="PurchaseDailog" class="PopupWindow" style="width:1000px" >
+
+    <div class="row-fluid">
+        <div class="span1">
+            From
+        </div>
+        <div class="span1">
+            <input id="fromdt" type="text" class="mob-text" maxlength="2" style="width:100%" />
+        </div>
+        <div class="span1" style="text-align: right;">
+            To
+        </div>
+        <div class="span1">
+            <input id="todt" type="text" class="mob-text" maxlength="2" style="width:100%"  />
+        </div>
+        <div class="span2">
+            @*<input type="button" id="btnsubmit" value="submit" class="btn btn-primary" />*@
+        </div>
+
+    </div>
+
+    <table id="tblBenefitProg" class="table table-bordered table-hover" style="width: 100%;max-height:350px;">
+        <thead style="width: 100%;">
+            <tr class="main">
+                <th>Mfg No</th>
+                <th>Company</th>
+                <th>Distno</th>
+                <th>Cash Received On</th>
+                <th>Prog Yr</th>
+                <th>Purchase</th>
+            </tr>
+        </thead>
+        <tbody id="tblbdyBenefitProg" data-bind="foreach: $root.BenefitProgList" style="overflow-y:overlay;width:100%;">
+            <tr style="cursor:pointer;" class="clickableRowpaydist tr_clone" data-bind="attr:{id:'rowid'+$index()}">
+                <td data-bind="text:MfgNo"></td>
+                <td data-bind="text:company"></td>
+                <td data-bind="text:DistNo"></td>
+                <td data-bind="text:DateBind(recvdon)"></td>
+                <td data-bind="text:period"></td>
+                <td data-bind="text:numberWithCommas(purchase)"></td>
+
+              
+            </tr>
+        </tbody>
+        <tbody id="TblBeneFitProgfootTot" style="flex: none !important;color:blue;font-size:13px;font-weight:bold;overflow:hidden;width:100% !important">
+            <tr style="cursor: pointer;background:white;border: none !important;">
+                <td style="text-align: left; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:popupcount" ></td>       @*//data-bind="text:count"*@
+                <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd;"></td>
+                <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd;"></td>
+                <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd;"></td>
+                <td style="border: 1px solid #ddd; border-bottom: 1px solid #ddd;"></td>
+                <td style="border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;" data-bind="text:popuppurchase"></td>         @*//data-bind="text:purchase"*@
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,576 @@
+﻿/* responsive codes */
+@media (min-width: 0px) and (max-width: 415px) {
+
+    .tabbedwidget {
+        margin-top: 5px !important;
+    }
+
+    .MainContent div {
+        height: auto;
+    }
+
+    div.tabon {
+        width: 100% !important;
+        height: auto;
+    }
+
+     div.tabcontent {
+        overflow: scroll;
+        height: 434px !important;
+        width: 92% !important;
+    }
+
+    .input-medium, .input-small {
+        min-height: 19px !important;
+        margin-left: 0px !important;
+    }
+
+    /*.input-large {
+        width: 90% !important;
+        min-height: 25px !important;
+    }*/
+    .input-large {
+        width: 43% !important;
+        min-height: 25px !important;
+    }
+
+    .input-text {
+        width: 150px !important;
+        height: 25px !important;
+    }
+
+    .userinformation {
+        color: black !important;
+    }
+
+    .listclass {
+        z-index: 100 !important;
+    }
+
+    .InputLabel {
+        width: 50px !important;
+        float: left !important;
+    }
+
+    .InputCheck {
+        margin-left: 10% !important;
+    }
+
+    .md-textbox {
+        width: 200px !important;
+    }
+
+    .mob-cont{
+          height:50em !important;
+          overflow-y:auto;
+      }
+
+    .mob-top {
+        margin-top: 20px !important;
+        text-align: center !important;
+    }
+
+    .mob-span {
+        width: 47% !important;
+        float: left !important;
+    }
+
+     .mob-flex{
+        display:inline-flex!important;
+    }
+    .mob-wd-dblfull{
+            width: 200% !important;
+    }
+    .correctborder {
+        padding: 15px 12px;
+        margin-bottom: 5px;
+        border: 1px#BCD8F3 solid;
+    }
+
+    .pri-btn {
+        width: 65% !important;
+        height: 20px !important;
+        /*text-align:left !important;*/
+    }
+
+    .msgBox {
+        left: 70px !important;
+        top: 180px !important;
+        width: 60% !important;
+    }
+
+    .msgBoxImage {
+        height: 50px !important;
+        width: 50px !important;
+    }
+
+    .msgBoxContent {
+        height: 90px !important;
+    }
+
+    .mob-div {
+        text-align: center !important;
+    }
+
+    .mob-div-span{
+        width:100% !important;
+        margin-top:15px !important;
+    }
+
+    .combobox_size {
+        width: 34%;
+    }
+      .cmb-yn {
+        width: 20%;
+    }
+     .mob-text{
+        width:40% !important;
+    }
+    .mob-cmb{
+        width:43% !important;
+    }
+    .mob-wd-full{
+          width:100% !important;
+    }
+
+      .city-width{width:12% !important;}
+    .state-width{width:8% !important;}
+    .zip-width{width:6% !important;}
+        .cntry-width{width:17% !important;}
+
+
+        .mob-city-width{width:15% !important;}
+    .mob-state-width{width:10% !important;}
+    .mob-zip-width{width:16% !important;}
+        .mob-cntry-width{width:17% !important;}
+        .mob-disp-none{
+            display:none!important;
+        }
+         .mob-main-top {
+        margin-top: 30% !important;
+        text-align: center !important;
+    }
+.mob-top-5{
+    margin-top:5%;
+}
+.mob-check-2{
+        width: 194px !important;
+    display:-webkit-box !important;
+}
+
+.mob-check-3{
+    display:-webkit-box !important;
+}
+
+.mob-wd-20{
+      width:20%!important;
+}
+.mob-folat-left{
+    float:left!important;
+}
+
+ .mob-wd-50{
+      width:50%!important;
+}
+
+ .search-span {
+            width: 59% !important;
+            float: left !important;
+        }
+
+ 
+.divheight{
+             height: 600px !important;
+             overflow-y:auto !important;
+        }
+    .frameheight{
+         height: 690px !important;
+    }
+  
+    .padding-style{
+   padding: 15px 12px;
+}
+
+     .PurDist{
+        float:left !important;
+    }
+
+}
+    /* For Tab */
+    @media (min-width: 416px) and (max-width: 769px) {
+
+    .MainContent div {
+            height: auto;
+        }
+
+    div.tabon {
+            width: 100% !important;
+        }
+
+    div.tabcontent {
+            height: 500px;
+            overflow: overlay;
+            width: 97% !important;
+        }
+
+    .divlabel-small {
+            width: 30.5% !important;
+            margin-left: 0px !important;
+            float: left !important;
+        }
+  
+    .divlabeletc {
+            width: 48% !important;
+            margin-left: 0px !important;
+            float: left !important;
+        }
+
+    /*.divlabelcheck {
+            width: 28.5% !important;
+            margin-left: 0px !important;
+            float: left !important;
+        }*/
+
+    /*.input-medium, .input-small {
+            width: 250px !important;
+        }*/
+
+    .input-large {
+            width: 43% !important;
+            height: 25px !important;
+        }
+
+    .input-text {
+            width: 255px !important;
+            height: 25px !important;
+        }
+
+    .InputLabel {
+            width: 50px !important;
+            float: left !important;
+        }
+
+    .InputCheck {
+            margin-left: 10% !important;
+        }
+
+    .md-textbox {
+            width: 200px !important;
+        }
+
+    .mob-cont{
+          height:60em !important;
+          overflow-y:auto;
+      }
+
+    .mob-top {
+            margin-top: 20px !important;
+        }
+    .mob-top-5{
+    margin-top:5%;
+}
+
+    .mob-span {
+            width: 47% !important;
+            float: left !important;
+            margin-left: 0px !important;
+        }
+
+     .mob-flex{
+        display:inline-flex!important;
+    }
+    .mob-wd-dblfull{
+            width: 200% !important;
+    }
+    .correctborder {
+            padding: 15px 12px;
+            margin-bottom: 5px;
+            border: 1px#BCD8F3 solid;
+        }
+
+    .pri-btn {
+            width: 65% !important;
+            height: 20px !important;
+            text-align: center !important;
+        }
+
+    .msgBox {
+            left: 35px !important;
+            top: 180px !important;
+            width: 50% !important;
+        }
+
+    .combobox_size {
+        width: 34%;
+    }
+      .cmb-yn {
+        width: 20%;
+    }
+    .city-width{width:11% !important;}
+
+    .state-width{width:6% !important;}
+
+    .zip-width{width:8% !important;}
+
+        .cntry-width{width:8% !important;}
+
+
+         .mob-city-width{width:15% !important;}
+    .mob-state-width{width:10% !important;}
+    .mob-zip-width{width:16% !important;}
+        .mob-cntry-width{width:17% !important;}
+        .mob-disp-none{
+            display:none!important;
+        }
+         /*.mob-main-top {
+        margin-top: 30% !important;
+        text-align: center !important;
+    }*/
+
+    .mob-text{
+        width:40% !important;
+    }
+    .mob-cmb{
+        width:41% !important;
+    }
+     .mob-wd-full{
+          width:100% !important;
+    }
+     .mob-check-2{
+             width: 194px !important;
+    display:-webkit-box !important;
+}
+
+     .mob-check-3{
+    display:-webkit-box !important;
+}
+     .mob-wd-20{
+      width:20%!important;
+}
+     .mob-wd-50{
+      width:50%!important;
+}
+
+.mob-folat-left{
+    float:left!important;
+}
+.search-span {
+            width: 59% !important;
+            float: left !important;
+        }
+.divheight{
+             height: 600px !important;
+             overflow-y:auto !important;
+        }
+
+.frameheight{
+         height: 690px !important;
+    }
+
+.padding-style{
+   padding: 15px 12px;
+}
+
+ .PurDist{
+        float:left !important;
+    }
+
+    }
+    /*System*/
+    @media (min-width: 768px) and (max-width: 1025px) {
+    .correctborder {
+            padding: 15px 12px;
+            margin-bottom: 5px;
+            border: 1px#BCD8F3 solid;
+        }
+
+    .primary-btn {
+            text-align: right !important;
+            width: 75% !important;
+            height: 25px !important;
+        }
+
+    .mb-sm {
+            width: 45% !important;
+        }
+
+    .tab-roomlist{
+    max-width:90% !important; 
+    text-align:left; 
+    height:1055px;
+    overflow-y:overlay;
+}
+
+    .textarea-roomlist{
+    width:50%;
+    height:48px;
+}
+
+    .combobox_size {
+        width: 32%;
+    }
+      .cmb-yn {
+        width: 10%;
+    }
+
+      .mob-cont{
+          height:60em !important;
+          overflow-y:auto;
+      }
+
+    .mob-input-large{
+        width:60% !important;
+    }    
+
+     .mob-flex{
+        display:inline-flex!important;
+    }
+    .mob-wd-dblfull{
+            width: 150% !important;
+    }
+    .col-padding{padding:4.5% !important;}
+
+    .city-width{width:30% !important;}
+
+    .state-width{width:10% !important;}
+
+    .zip-width{width:15% !important;}
+
+
+    .lookup-desc{width:80% !important}
+
+    .cntry-width{width:16% !important;}
+
+    .mob-text{
+        width:40% !important;
+    }
+    .mob-cmb{
+        width:43% !important;
+    }
+     .mob-wd-full{
+          width:100% !important;
+    }
+
+      .mob-city-width{width:15% !important;}
+    .mob-state-width{width:10% !important;}
+    .mob-zip-width{width:16% !important;}
+        .mob-cntry-width{width:17% !important;}
+        .mob-disp-none{
+            display:none!important;
+        }
+         /*.mob-main-top {
+        margin-top: 30% !important;
+        text-align: center !important;
+    }*/
+
+         .md-wd-20{
+             width:20%!important;
+         }
+         .mob-wd-50{
+      width:50%!important;
+}
+         .search-span {
+            width: 59% !important;
+            float: left !important;
+        }
+         .mfg-margin-left{margin-left:4px !important;}
+
+         .padding-style{
+   padding: 15px 12px;
+}
+
+          .PurDist{
+        float:left !important;
+    }
+    }
+
+    @media (min-width: 1026px) and (max-width: 3000px) {
+    .correctborder {
+            padding: 15px 12px;
+            margin-bottom: 5px;
+            border: 1px#BCD8F3 solid;
+        }
+
+    .pri-btn {
+            text-align: right !important;
+            height: 25px !important;
+            margin-left: 0px !important;
+        }
+
+    .mb-sm {
+            width: 45% !important;
+        }
+
+    .mob-input-large {
+            width:60% !important;
+        }
+
+    .tab-roomlist{
+    max-width:90% !important; 
+    text-align:left; 
+    height:1055px;
+    overflow-y:overlay;
+}
+
+    .textarea-roomlist{
+    width:50%;
+    height:48px;
+}
+
+     .cmb-yn {
+        width: 9%;
+    }
+    .combobox_size {
+        width: 32%;
+    }
+
+    .city-width{width:30% !important;}
+
+    .state-width{width:10% !important;}
+
+    .zip-width{width:15% !important;}
+
+    .col-padding{padding:4.5% !important;}
+
+    .lookup-desc{width:80% !important}
+
+     .cntry-width{width:16% !important;}
+
+     
+  input[type="checkbox"]{
+      margin:0px;
+  }
+
+  .mfg-margin-left{margin-left:4px !important;}
+
+  .mfg-margin-style{margin-left: 34px !important;}
+
+  .mfg-margin-greet{margin-left: 75px !important;}
+
+  .padding-style{
+   padding: 15px 12px;
+}
+
+  .win-height{
+      height: 574px !important;
+  }
+
+  .dist-margin-left{
+      margin-left: 14px !important;
+  }
+
+  .retcont-style{
+      margin-left: 41px !important;
+  }
+
+   .PurDist{
+        float:right !important;
+    }
+
+   .prd-margin-left{
+      margin-left: -9px !important;
+  }
+   .marg-left{
+       margin-left:3px !important;
+   }
+    }

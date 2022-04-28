@@ -1,0 +1,932 @@
+﻿
+@{
+    ViewBag.Title = "Notes";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+<script type="text/javascript" src="@Url.Content("~/time-picker/jquery.timepicker.min.js")"></script>
+<link href="@Url.Content("~/time-picker/jquery.timepicker.css")" rel="stylesheet" type="text/css" />
+<link href="~/css/jquery.ui.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(10){width:auto !important;}
+
+.dytable tr td:nth-child(1){width:auto !important;}
+.dytable tr td:nth-child(2){width:auto !important;}
+.dytable tr td:nth-child(3){width:auto !important;}
+.dytable tr td:nth-child(4){width:auto !important;}
+.dytable tr td:nth-child(5){width:auto !important;}
+.dytable tr td:nth-child(6){width:auto !important;}
+.dytable tr td:nth-of-type(1):before{content:'Note Dt';font-weight: bold;}
+.dytable tr td:nth-of-type(2):before{content:'Due Dt';font-weight: bold;}
+.dytable tr td:nth-of-type(3):before{content:'Dt Completed';font-weight: bold;}
+.dytable tr td:nth-of-type(4):before{content:'Type';font-weight: bold;}
+.dytable tr td:nth-of-type(5):before{content:'User';font-weight: bold;}
+.dytable tr td:nth-of-type(6):before{content:'Notes';font-weight: bold;}
+@media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+
+<style type="text/css">
+    /* Style The Dropdown Button */
+    .searchmenubtn {
+        color: white;
+        padding: 13px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        border: 1px !important;
+        border-color: black !important;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .searchmenu {
+        position: relative;
+        display: inline-block;
+        border: 1px !important;
+        border-color: black !important;
+        z-index: 1000;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .searchmenu-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        top: 2.8em;
+    }
+
+        /* Links inside the dropdown */
+        .searchmenu-content a {
+            top: 1em;
+            height: 20px !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            color: black;
+            text-decoration: none !important;
+            display: block;
+        }
+
+            /* Change color of dropdown links on hover */
+            .searchmenu-content a:hover {
+                top: -5px;
+                background-color: #BCD8F3 !important;
+                color: #800909 !important;
+            }
+
+    /* Show the dropdown menu on hover */
+    .searchmenu:hover .searchmenu-content {
+        display: block;
+        margin-top: -10px;
+    }
+
+    .searchmenu-content:after {
+        top: -7px;
+        content: " ";
+        left: 6%;
+        position: absolute;
+        width: 10px;
+        height: 9px;
+        border-right: 2px solid #0866c6;
+        border-bottom: 2px solid #0866c6;
+        background: white;
+        transform: rotate(222deg);
+    }
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .searchmenu:hover .searchmenubtn {
+    }
+
+     .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width:253px;
+    }
+     select,textarea{
+        background-color: white !important;
+        border-color: #ddd !important;
+        font-weight: bold;
+        color: black;
+        font-size: 13px;
+    }
+      .ui-datepicker-calendar thead {
+        width: 100% !important;
+    }
+
+    .ui-datepicker-calendar tbody {
+        overflow-y: overlay;
+        width: 100% !important;
+    }
+
+    .notelist{
+        width:80% !important;
+        height:200px !important;
+        /*margin-left:27px !important;*/
+         resize:none !important;
+    }
+
+    .nallowed {
+   cursor: not-allowed;
+}
+.event-none {
+    pointer-events: none!important;
+}
+
+</style>
+<script type="text/javascript">
+    var search;
+    var notes, Newnote="";
+    var NO = "", companyname = "", NoteHeadTitle = "", screenname = "";
+    var rowIndex = 0;
+    var vtype = "", vct = "", vuser = "", vfor = "";
+    var tablename = "";
+    $(document).ready(function () {
+        notes = new viewModel();
+        search = notes;
+        ko.applyBindings(notes);
+        $('#TbNotes tbody tr:first').addClass('success selected');
+        $("#btnAdd").click({ handler: notes.Add });
+        $("#btnEdit").click({ handler: notes.Edit });
+        $("#btnSave").click({ handler: notes.Save });
+        $("#btnDelete").click({ handler: notes.Delete });
+        $("#btnCancel").click({ handler: notes.Cancel });
+        $("#ntype").change({ handler: notes.cmbchange });
+
+        $("#txtdate").datepicker({
+            dateFormat: 'mm/dd/yy'
+        }).datepicker();
+        $("#duedate").datepicker({
+            dateFormat: 'mm/dd/yy'
+        }).datepicker();
+        $("#datecompl").datepicker({
+            dateFormat: 'mm/dd/yy'
+        }).datepicker();
+        //$('#TblNotes tbody tr:first').addClass('success selected');
+
+        //$("#cmbcontact option:selected").val(vct);
+        $("#ntype option:selected").val(vtype);
+        $("#nuser option:selected").val(vuser);
+        $("#for option:selected").val(vfor);
+
+        document.getElementById('ntype').title = $("#ntype option:selected").text();
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('table#TbNotes').css("overflow-x", "hidden");
+            $('table#TbNotes').css("overflow-y", "hidden");
+            $('table#TbNotes tbody').css("overflow-y", "scroll");
+            $('table#TbNotes tbody').css("height", "500px");
+            $('table#TbNotes thead').css("width", "98.5%");
+
+        }
+
+    });
+
+   
+
+    function viewModel() {
+        var self = this;
+
+        self.EnableDisableMode = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+        self.EnableDisableControls = ko.observable(false);
+        self.txtnoteid = ko.observable();
+        self.txtmfgno = ko.observable("");
+        self.txtdistno = ko.observable("");
+        self.txtretailno = ko.observable("");
+        //self.txtmfgname = ko.observable("");
+       // self.txtdistname = ko.observable("");
+        //self.txtretailname = ko.observable("");
+       
+        self.menulist = ko.observableArray([]);
+        self.txtndate = ko.observable();
+        //self.txtntime = ko.observable("");
+        //self.cmbcontact = ko.observableArray([]);
+        //self.txtcontactno = ko.observable();
+        //self.txttime = ko.observable("");
+
+        self.cmbntype = ko.observableArray([]);
+        self.cmbnuser = ko.observableArray([]);
+
+        self.txtntype = ko.observable("");
+        self.txtnuser = ko.observable("");
+        self.txtfor = ko.observable("");
+
+        self.txtduedate = ko.observable("");
+       
+        self.cmbfor = ko.observableArray([]);
+        self.txtcompleted = ko.observable(false);
+        self.txtdatecompl = ko.observable("");
+        self.txtnotes = ko.observable();
+
+        self.MfgNotesGrid = ko.observable();
+
+        self.NoteTitle = ko.observable("");
+        
+
+        // pmfgno = window.parent.document.getElementById('mfgno').value;
+        NO = '@ViewBag.No';
+        screenname = '@ViewBag.ScreenName';
+        companyname = window.parent.document.getElementById('company').value;
+        NoteHeadTitle = screenname + " Notes For: " + NO + " - " + companyname;
+        self.NoteTitle(NoteHeadTitle);
+
+        window.parent.CallEnableTabs();
+
+        if (screenname == "Manufacturer")
+        {
+            self.txtmfgno(NO);
+            //self.txtmfgname(companyname);
+        }
+        if (screenname == "Distributor") {
+            self.txtdistno(NO);
+            //self.txtdistname(companyname);
+        }
+        if (screenname == "Retailer") {
+            self.txtretailno(NO);
+            //self.txtretailname(companyname);
+        }
+        
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: "NTYPE" },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbntype(response.Items);
+            }
+        });
+
+        //$.ajax({
+        //    url: "GetContactList",
+        //    data: { No: NO, ScreenName: screenname },
+        //    type: "POST",
+        //    async: false,
+        //    success: function (response) {
+        //        self.cmbcontact(response.Items);
+        //    }
+        //});
+
+        $.ajax({
+            url: "GetEmployeeUserList",
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbnuser(response.Items);
+                self.cmbfor(response.Items);
+            }
+        });
+
+
+
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+        doublesort();
+
+       
+        
+        $(".clickableRow").live("click", function () {
+            if (self.SaveMode() == true && self.AddMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveMode() == true && self.AddMode() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+            }
+            else {
+                rowIndex = $(this).attr("id");
+                $('.clickableRow').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+
+        function FillGrid() {
+            $.ajax({
+                url: "FillMfgNotesGrid",
+                data: { No: NO, ScreenName: screenname, noteid: Newnote },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    $('#TbNotes th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.MfgNotesGrid(response.Items);
+                    if (response.Items != null && response.Items.length > 0) {
+                        if (response.rowindex > 0) {
+                            $("#" + response.rowindex).addClass('success selected');
+                           // $('#TbNotes tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                            self.SelectedMfgNote(response.Items[response.rowindex]);
+                            rowIndex = response.rowindex;
+                        }
+                        else {
+                            $("#" + response.rowindex).addClass('success selected');
+                          //  $('#TbNotes tbody tr:first').addClass('success selected');
+                            self.SelectedMfgNote(response.Items[0]);
+                            rowIndex = response.rowindex;
+                        }
+                    }
+                    var THIndex = $('#TbNotes thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        var clsname = $('#TbNotes thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                }
+            });
+        }
+
+        self.SelectedMfgNote = function (item) {
+            if (self.SaveMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else {
+                if (item != undefined) {
+                    self.txtnoteid(item.NoteId);
+                    //self.txtcontactno(item.contactno.trim());
+
+                    self.txtndate(DateBind(item.ndate));
+                    //self.txtntime(item.ntime);
+                    self.txtntype(item.ntype);
+                    self.txtnuser(item.nuser);
+                    self.txtfor(item.for_);
+                    self.txtduedate(DateBind(item.duedate));
+                    //self.txttime(item.time);
+                    if (item.completed == "True" || item.completed == true)
+                        self.txtcompleted(true);
+                    else
+                        self.txtcompleted(false);
+                    self.txtdatecompl(DateBind(item.datecompl));
+                    self.txtnotes(item.notes);
+
+                    vtype = item.contactno.trim();
+                    vct = item.ntype;
+                    vuser = item.nuser;
+                    vfor = item.for_;
+                    document.getElementById('ntype').title = $("#ntype option:selected").text();
+                }
+            }
+        }
+        self.SelectNotesTab = function (item) {
+            $('#tabs').tabs({ active: 1 });
+        }
+
+       
+        FillGrid();
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+
+            window.parent.CallDisableTabs();
+            CallDisableTabs();
+
+            self.txtnoteid("");
+            //self.txtcontactno("");
+            self.txtndate(DateBind(new Date()));
+            //self.txtntime("");
+            self.txtntype(""); self.txtnuser('@ViewBag.Initials'); self.txtnotes(""); self.txtduedate("");
+            //self.txttime("");
+            self.txtfor(""); self.txtcompleted(false); self.txtdatecompl("");
+            //$("#textnotes").css("margin-left", "3.2%");
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            //document.getElementById('ntime').focus();
+            $('.clickableRow').removeClass('success selected');
+            
+        }
+
+        self.Edit = function () {
+            if (self.MfgNotesGrid().length == 0)
+                return false;
+
+            window.parent.CallDisableTabs();
+            CallDisableTabs();
+
+           // $("#textnotes").css("margin-left", "3.2%");
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            //document.getElementById('ntime').focus();
+           // $("#textnotes").css("margin-left", "3.2%");
+        }
+
+        self.Save = function () {
+            if (self.txtndate() == null || self.txtndate() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Date",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('txtdate').focus();
+                    }
+                });
+                return false;
+            }
+            var isdatevalidate = isValidDate(self.txtndate());
+            if (isdatevalidate == false)
+            {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid Date",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('txtdate').focus();
+                    }
+                });
+                return false;
+            }
+           if (self.txtntype() == null || self.txtntype() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Type",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('ntype').focus();
+                    }
+                });
+                return false;
+            }
+            if (self.txtnotes() == null || self.txtnotes() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the notes",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('textnotes').focus();
+                    }
+                });
+                return false;
+            }
+            if (self.txtduedate() != null && self.txtduedate() != "") {
+                var isduedatvalidate = isValidDate(self.txtduedate());
+                if (isduedatvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid Due Date",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('duedate').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.txtdatecompl() != null && self.txtdatecompl() != "") {
+                var isdatecomplvalidate = isValidDate(self.txtdatecompl());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid Date Completed",
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('datecompl').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            var resnotes = self.txtnotes().replace(/</g, "|").replace(/>/g, "~");
+
+            ObjNotes = [];
+            ObjNotes = {
+                NoteId: self.txtnoteid(), mfgno: self.txtmfgno(), DistNo: self.txtdistno(), RetailerNo: self.txtretailno(),
+                //contactno: self.txtcontactno(),
+                field: 'MA', ndate: self.txtndate(),
+                //ntime: self.txtntime(),
+                ntype: self.txtntype(), nuser: self.txtnuser(), notes: resnotes, duedate: self.txtduedate(),
+                //time: self.txttime(),
+                for_: self.txtfor(), completed: self.txtcompleted(), datecompl: self.txtdatecompl()
+                
+            }
+            
+            $.ajax({
+                url: "SaveNotes",
+                data: { ObjNotesList: JSON.stringify(ObjNotes), IsAddMode: self.AddMode()},
+                type: "POST",
+                success: function (response) {
+                    self.AddMode(false);
+                    self.EditMode(true);
+                    self.SaveMode(false);
+                    self.EnableDisableMode(true);
+                    self.EnableDisableControls(false);
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.Items);
+                    }
+                    else {
+                        Newnote = response.Items;
+                        $('#TbNotes tbody tr').remove();
+                        FillGrid();
+                    }
+
+                },
+                error: function (request, status, error) {
+                    //$("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+
+            window.parent.CallEnableTabs();
+            CallEnableTabs();
+        }
+
+
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+
+            window.parent.CallEnableTabs();
+            CallEnableTabs();
+
+            self.SelectedMfgNote(self.MfgNotesGrid()[rowIndex]);
+            $('#' + rowIndex).addClass('success selected');
+            //$("#textnotes").css("margin-left", "80px");
+        }
+        self.Delete = function () {
+            if (self.SaveMode() == true || self.MfgNotesGrid().length == 0)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+            //if (self.SaveMode() == true)
+            //    return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdelete, false, true);
+        }
+        self.confirmdelete = function () {
+            //$.ajax({
+            //    url: "DeleteNotes",
+            //    type: "POST",
+            //    data: { noteid: self.txtnoteid() },
+            //    success: function (response) {
+            //        FillGrid();
+            //    }
+            //});
+        }
+
+        self.cmbchange = function () {
+            document.getElementById('ntype').title = $("#ntype option:selected").text();
+        }
+
+    }
+
+    function CallDisableTabs() {
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            if (list[0].childNodes[0].id != lis[i].childNodes[0].id) {
+                $('#' + tablist[0].id + '').addClass("nallowed");
+                $('#' + lis[i].childNodes[0].id + '').addClass("event-none");
+            }
+        }
+
+    }
+    function CallEnableTabs() {
+
+        var tablist = document.getElementsByClassName('ui-tabs-nav ui-helper-reset');
+        var lis = document.getElementsByClassName("ui-state-default ui-corner-top");
+        var list = document.getElementsByClassName("ui-tabs-active ui-state-active");
+        for (var i = 0; i < lis.length; i++) {
+            $('#' + tablist[0].id + '').removeClass("nallowed");
+            $('#' + lis[i].childNodes[0].id + '').removeClass("event-none");
+        }
+    }
+
+    function isDate(obj, evt) {
+        var phoneVal = obj.value;
+
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        else {
+            switch (phoneVal.length) {
+                case 0:
+                    if (charCode > 49) {
+                        return false;
+                    }
+                    break;
+                case 1:
+                    if (phoneVal == 1) {
+                        if (charCode > 50) {
+                            return false;
+                        }
+                    }
+                    break;
+                case 2:
+                    if (charCode > 51) {
+                        return false;
+                    }
+                    obj.value = phoneVal + "/";
+                    break;
+
+                case 4:
+                    var a = phoneVal.substr(3, 3);
+                    if (a == 3) {
+                        if (charCode > 49) {
+                            return false;
+                        }
+                    }
+                    break;
+                case 5:
+                    obj.value = phoneVal + "/";
+                    break;
+
+            }
+
+            return true;
+        }
+    }
+
+
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "Notes", tablename + "_.csv", "Screen", tablename + "_");
+    }
+
+    function GlobalExcelExportsortable(table, ActivityName, ActivityInfo2, ActivityType, filename) {
+
+        var i, j;
+        var csv = "";
+        if (table.children[0].innerText == "") {
+            var table_headings = table.children[1].children[0].children;
+            var table_body_rows = table.children[2].children;
+        }
+        else {
+
+            var table_headings = table.children[0].children[0].children;
+            var table_body_rows = table.children[1].children;
+        }
+
+        var heading;
+        var headingsArray = [];
+        var TblheadingsArray = [];
+        for (i = 0; i < table_headings.length; i++) {
+
+            var str = table_headings[i].className;
+            var clsindex = str.indexOf("sortable");
+            var clsname = str.indexOf("hide");
+            if (clsindex >= 0 || clsname < 0) {
+                if (clsname < 0) {
+                    heading = table_headings[i];
+                    if (heading.innerText == "") {
+                        headingsArray.push("Checkbox");
+                        TblheadingsArray.push({ header: "Checkbox" });
+                    }
+                    else {
+                        headingsArray.push('"' + heading.innerText + '"');
+                        TblheadingsArray.push({ header: table_headings[i].innerText });
+                    }
+                }
+            }
+        }
+
+        csv += headingsArray.join(',') + "\n";
+
+        var row;
+        var columns;
+        var column;
+        var columnsArray;
+        for (i = 0; i < table_body_rows.length; i++) {
+            row = table_body_rows[i];
+            columns = row.children;
+            columnsArray = [];
+            for (j = 0; j < columns.length; j++) {
+                var str = columns[j].className;
+                var clsindex = str.indexOf("sortable");
+                var clsname = str.indexOf("hide");
+                if (clsindex >= 0 || clsname < 0) {
+                    var column = columns[j];
+
+                    if (column.children.length > 0) {
+                        if (columns[j].innerText == "") {
+                            if (column.children[0].className == "check") {
+                                columnsArray.push('"' + column.children[0].checked + '"');
+                            }
+                            else {
+                                //  if ($("input:text").type == "text")		
+                                columnsArray.push('"' + column.children[0].value + '"');
+                                //else		
+                                //    columnsArray.push('"' + column.children[0].src + '"');		
+                            }
+                        }
+                        else {
+                            columnsArray.push('"' + column.innerText + '"');
+                        }
+                    }
+                    else {
+                        columnsArray.push('"' + column.textContent + '"');
+                    }
+
+                }
+                else if (clsname >= 0) {
+                }
+
+
+            }
+            //if (columnsArray.length > 1)
+            csv += columnsArray.join(',') + "\n";
+        }
+
+        var get_date = new Date();
+        var month = get_date.getMonth() + 1;
+        var day = get_date.getDate();
+        var CurDate =
+            (month < 10 ? '0' : '') + month + '/' +
+            (day < 10 ? '0' : '') + day + '/'
+        + get_date.getFullYear();
+        download(filename + CurDate + ".csv", csv);
+    }
+
+</script>
+<div id="tabs" class="tabbedwidget tab-primary">
+    <div class="container" style="max-width:1000px !important; ">
+        <ul id="tabevent">
+            <li><a href="#menu1" id="tab1">Notes List</a></li>
+            <li><a href="#menu2" id="tab2">Note</a></li>
+        </ul>
+    </div>
+    <div id="menu1" class="container" style="max-width:1000px">
+        <div class="widgetbox">
+            <h4 class="widgettitle" data-bind="text: NoteTitle"></h4>
+            <div class="widgetcontent">
+                <div style="width: 100%;">
+                    <table id="TbNotes" class="dytable table table-bordered table-hover tablesort" style="overflow-y: auto; overflow-x: auto;">
+                        <thead style="width:100%;">
+                            <tr class="exportclass">
+                                <th style="text-align:left;width:10%;">Note Date<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="text-align:left;width:10%;">Due Date<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="text-align:left;width:15%;">Date Completed<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="text-align:left;width:15%;">Type<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="text-align:left;width:10%;">User<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="text-align:left;width:40%;">Notes<i class="icon6" style="float: right; margin-top: -4px;"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody style="max-height: 500px;width:100%;overflow-y:overlay" data-bind="foreach: $root.MfgNotesGrid">
+                            <tr class="clickableRow" data-bind="event: { click: $root.SelectedMfgNote,dblclick: $root.SelectNotesTab},attr: { id: $index()}">
+                                <td data-bind="text:DateBind(ndate)" style="text-align: left; width: 10%;"></td>
+                                <td data-bind="text:DateBind(duedate)" style="text-align: left; width: 10%;"></td>
+                                <td data-bind="text:DateBind(datecompl)" style="text-align: left; width: 15%;"></td>
+                                <td data-bind="text:ntypedesc" style="text-align:left;width:15%;"></td>
+                                <td data-bind="text:nuser" style="text-align:left;width:10%;"></td>
+                                <td style="text-align:left;width:40%;">
+                                    <div style="height:20px;width:100%;overflow: hidden;display: block;" data-bind="text:notes, attr:{'title': notes}">
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div div id="menu2" class="container divheight" style="max-width:1000px">
+        <div class="row-fluid">
+            <div class="span4">
+                <ul class="list-nostyle list-inline tooltipsample">
+                    <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd"><i class="icon-file icon-white"></i></a></li>
+                    <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                    <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                    <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete"><i class="icon-remove icon-white"></i></a></li>
+                    <li data-bind="enable:SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="widgetbox">
+            <h4 class="widgettitle" data-bind="text: NoteTitle"></h4>
+            <div class="widgetcontent">
+                <input id="mfgno" type="hidden" class="input-small" data-bind="disable: true,value: txtmfgno" />
+                <input id="distno" type="hidden" class="input-small" data-bind="disable: true,value: txtdistno" />
+                <input id="gwno" type="hidden" class="input-small" data-bind="disable: true,value: txtretailno" />
+
+                <div class="correctborder">
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <label class="span3 mob-span">Date</label>
+                            <input id="txtdate" type="text" class="input-small" maxlength="10" required onkeypress="isDate(this, event);" data-bind="disable: EnableDisableMode,value: txtndate" />
+                            @*<input id="ntime" type="time" class="input-small" data-bind="disable: EnableDisableMode,value: txtntime" />*@
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <label class="span3 mob-span">Type</label>
+                            <select id="ntype" class="select input-medium mob-cmb" style="width:60%;" required data-bind="disable:EnableDisableMode, options:cmbntype,optionsText:'descript',optionsValue:'entry',value:txtntype"></select>
+                        </div>
+                        <div class="span6">
+                            <label class="span3 mob-span">User</label>
+                            <select id="nuser" class="select input-medium mob-cmb" data-bind="disable:EnableDisableMode, options:cmbnuser,optionsText:'name',optionsValue:'initials',value:txtnuser"></select>
+                        </div>
+
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <label class="mob-span" style="width:88px;">Notes:</label>
+                            <textarea id="textnotes" class="notelist" maxlength="8000" data-bind="disable: EnableDisableMode,value: txtnotes"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="correctborder">
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <label class="span3 mob-span">Due Date</label>
+                            <input id="duedate" type="text" class="input-small" maxlength="10" data-bind="disable: EnableDisableMode,value: txtduedate" />
+
+                        </div>
+                        <div class="span5">
+                            <label class="span4 mob-span">For</label>
+                            <select id="for" class="select input-medium mob-cmb" data-bind="disable:EnableDisableMode, options:cmbfor,optionsText:'name',optionsValue:'initials',value:txtfor"></select>
+                        </div>
+
+
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <label class="span3 mob-span" for="completed">Completed</label>
+                            <input id="completed" type="checkbox" data-bind="disable: EnableDisableMode,checked: txtcompleted" />
+
+                        </div>
+                        <div class="span5">
+                            <label class="span4 mob-span">Date Completed</label>
+                            <input id="datecompl" type="text" class="input-small" maxlength="10" data-bind="disable: EnableDisableMode,value: txtdatecompl" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

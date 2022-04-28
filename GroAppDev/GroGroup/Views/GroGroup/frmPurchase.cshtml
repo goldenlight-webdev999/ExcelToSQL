@@ -1,0 +1,323 @@
+﻿@{
+    ViewBag.Title = "frmPurchase";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:881px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(10){width:auto !important;}
+                    .dytable tr td:nth-of-type(1):before{content:'Distid';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'Purchase';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(3):before{content:'Lypurchase';font-weight: bold;text-align:left}
+
+                    .dytable1 tr td:nth-of-type(1):before{content:'Distid';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(2):before{content:'Yearmonth';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(3):before{content:'Mfgupc';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(4):before{content:'Purchase';font-weight: bold;text-align:left}
+                    .dytable1 tr td:nth-of-type(4):before{content:'Mfgname';font-weight: bold;}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+
+<script type="text/javascript">
+    var search;
+    var Totalpagecount;
+    var pagesizes = 1;
+    var search;
+   
+    $(document).ready(function () {
+        purchase = new viewModel();
+        search = purchase;
+        ko.applyBindings(purchase);
+
+        $('#PageFirst').click({ handler: purchase.PageFirst });
+        $('#PagePrevious').click({ handler: purchase.PagePrevious });
+        $('#PageNext').click({ handler: purchase.PageNext });
+        $('#PageLast').click({ handler: purchase.PageLast });
+    });
+
+
+
+    function viewModel() {
+        var self = this;
+        self.txtupc = ko.observable();
+        self.DetailsGridList = ko.observableArray([]);
+        self.txtfrom = ko.observable('@ViewBag.YM1');
+        self.txtto = ko.observable('@ViewBag.YM2');
+
+        self.totpurchase = ko.observable();
+        self.totlypurchase = ko.observable();
+        self.cnt = ko.observable();
+
+        self.totalpurchase = ko.observable();
+       
+
+        self.page = ko.observable(0);
+        self.firstenable = ko.observable(false);
+        self.lastenable = ko.observable(false);
+        self.enable = ko.observable(false);
+        self.txtDistno = ko.observable();
+        self.cmbDistno = ko.observableArray([]);
+        self.menulist = ko.observableArray([]);
+
+
+        $(".exportclass").live("contextmenu", function (event) {
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    if (evecount[i].className == 'hide') {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+            }
+
+        });
+        doublesort();
+
+        $.ajax({
+            url: "GetDistPurchaseList",
+            type: "POST",
+            success: function (response) {
+                self.cmbDistno(response.Items);
+            }
+        });
+       
+        self.btnpurchaseList = function () {
+            var totpurchase = 0, cnt = 0;
+            pagesizes = 1;
+            $.ajax({
+                url: "FillPurchaseList",
+                type: "POST",
+                data: { pagecount: '0', distid: self.txtDistno(), periodfrom: self.txtfrom(), periodto: self.txtto() },
+                success: function (response) {
+                    self.DetailsGridList(response.Itemdetail);
+                    if (response.Itemdetail.length > 0) {
+                        self.enable(true);
+                        self.firstenable(true);
+                        self.lastenable(false);
+                        for (i = 0; i < response.Itemdetail.length; i++) {
+                            totpurchase += parseFloat(response.Itemdetail[i].Purchase);
+                            cnt++;
+                        }
+                        Totalpagecount = response.count;
+                        $("#Lblpage").text(Totalpagecount + 1);
+                        $("#Lblpageno").text("1");
+                        $("#LblTotalRecords").text(response.TotalRecords);
+                        $("#LblTotalRecords").text(response.TotalRecords + " / " + numberWithCommas(response.TotalPurchase));
+                    }
+                    else {
+                        self.enable(false);
+                        self.firstenable(false);
+                        self.lastenable(true);
+                    }
+
+                }
+            });
+        }
+
+       // self.btnpurchaseList();
+
+        //***Paging Start***//
+
+        self.PageFirst = function () {
+            self.page(0);
+            pagesizes = self.page();
+            pagesizes = pagesizes + 1;
+            $("#Lblpageno").text(pagesizes);
+            Paging();
+
+            self.firstenable(true);
+            self.lastenable(false);
+
+        }
+        self.PagePrevious = function () {
+            if (self.page() == 0) return;
+            self.page(self.page() - 1);
+            pagesizes = pagesizes;
+            if (pagesizes == 0) {
+                pagesizes = pagesizes + 1;
+            }
+            else {
+                pagesizes = pagesizes - 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            check = "Previous";
+            Paging();
+            if (pagesizes == 1) {
+                self.firstenable(true);
+                self.lastenable(false);
+            }
+            else {
+                self.lastenable(false);
+            }
+        }
+        self.PageNext = function () {
+            if (self.page() == Totalpagecount) return;
+            self.page(self.page() + 1);
+            pagesizes = pagesizes;
+            if (pagesizes == Totalpagecount + 1) {
+                pagesizes = pagesizes;
+            }
+            else {
+                pagesizes = pagesizes + 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            check = "Next";
+            Paging();
+            if (pagesizes == Totalpagecount + 1) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+            else {
+                self.firstenable(false);
+
+            }
+        }
+        self.PageLast = function () {
+
+            self.page(Totalpagecount);
+            pagesizes = Totalpagecount + 1;
+            $("#Lblpageno").text(Totalpagecount + 1);
+            Paging();
+            if (pagesizes == Totalpagecount + 1) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+        }
+
+        function Paging() {
+            var totpurchase = 0, cnt = 0;
+            $.ajax({
+                url: "FillPurchaseList",
+                type: "POST",
+                data: { pagecount: self.page, periodfrom: self.txtfrom(), periodto: self.txtto() },
+                success: function (response) {
+                    self.DetailsGridList(response.Itemdetail);
+                    for (i = 0; i < response.Itemdetail.length; i++) {
+                        totpurchase += parseFloat(response.Itemdetail[i].Purchase);
+                        cnt++;
+                    }
+                    Totalpagecount = response.count;
+                    $("#Lblpage").text(Totalpagecount + 1);
+                   
+                  
+                }
+            });
+
+
+        }
+
+        //***Paging End ***//
+    }
+    function fnExcelReport() {
+        var table = document.getElementById("TblDetails");
+        GlobalExcelExportsortable(table, "Sales Details", "TblDetails_.csv", "Screen", "TblDetails_");
+    }
+</script>
+
+<center>
+    <div style="max-width:700px !important; text-align:left;">
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle">Purchase</h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">
+                        <div style="border: solid 2px  #0866c6;padding-left:20px" class="span12">
+                            <div class="row-fluid" data-bind="">
+                                <div class="row-fluid" style="margin-top:20px;">
+                                    <div class="span3">
+                                        <label class="span4">
+                                            Dist Id
+                                        </label>
+                                        <select id="Distno" class="select input-small" data-bind="options:cmbDistno,optionsText:'distid',optionsValue:'distid',value:txtDistno,event:{change:btnpurchaseList}"></select>
+                                    </div>
+                                    <div class="span8">
+                                        <label class="span4">
+                                            Periods (YYYYMM)
+                                        </label>
+                                        <input id="from" type="text" style="width:60px" class="input-medium" data-bind="value:txtfrom" maxlength="15" />
+                                        <input id="to" style="width:60px" type="text" class="input-medium" data-bind="value:txtto" maxlength="50" />
+                                        <button class="btn btn-primary" type="button" data-bind="click:btnpurchaseList">Refresh</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="pagno" class="row-fluid span-12" style="margin-top:10px">
+                            <div align="left" data-bind="visible:enable" class="span4">
+                                <label>
+                                    Page Dispaly
+                                </label>
+                                <label class="label" id="Lblpageno" style="font-size: small; font-style:oblique">
+                                </label>
+                                <label>
+                                    of
+                                </label>
+                                <label class="label" id="Lblpage" style="font-size: small; font-style: oblique;">
+                                </label>
+                            </div>
+                            <div align="left" class="span5" data-bind="visible:enable">
+                                <label style="color: blue;font-weight: bold;">
+                                    Records/Total: &nbsp;
+                                </label>
+                                <label id="LblTotalRecords" style="font-size: small;color: blue;font-weight: bold;"></label>
+                            </div>
+                            <div align="center" class="span3">
+
+                                <button class="btn-mini" id="PageFirst" data-bind="visible:enable, disable:firstenable">
+                                    <i class="icon-fast-backward">
+                                    </i>
+                                </button>
+                                <button class="btn-mini" id="PagePrevious" data-bind="visible:enable, disable:firstenable">
+                                    <i class="icon-backward"></i>
+                                </button>
+                                <button class="btn-mini" id="PageNext" data-bind="visible:enable, disable:lastenable">
+                                    <i class="icon-forward"></i>
+                                </button>
+                                <button class="btn-mini" id="PageLast" data-bind="visible:enable, disable:lastenable">
+                                    <i class="icon-fast-forward"></i>
+                                </button>
+                            </div>
+                        </div>
+                                <div style="width: 100%;" class="row-fluid">
+                                    <table id="TblDetails" class="dytable dytable1 table table-bordered table-hover tablesort" style="width: 100%;">
+                                        <thead>
+                                            <tr class="exportclass">
+                                                <th style="width:35%;">Distid<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                                @*<th>Yearmonth</th>*@
+                                                <th style="width:50%;">Mfgupc<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="text-align:right;width:15%;">Purchase<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                                @*<th>Mfgname</th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody data-bind="foreach: $root.DetailsGridList">
+                                            <tr class="clickableRow">
+                                                <td style="width:35%;" data-bind="text:distid"></td>
+                                                @*<td data-bind="text:Purchase"></td>*@
+                                                <td style="width:50%;" data-bind="text:mfgupc"></td>
+                                                <td style="text-align:right;width:15%;" data-bind="text: numberWithCommas(Purchase)"></td>
+                                                @*<td data-bind="text: mfgupc"></td>*@
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                          
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</center>

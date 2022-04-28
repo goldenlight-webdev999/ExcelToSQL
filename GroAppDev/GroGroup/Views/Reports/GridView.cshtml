@@ -1,0 +1,132 @@
+﻿@model System.Data.DataTable
+
+@{
+    ViewBag.Title = "GridView";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+    <link href="@Url.Content("~/Styles/Site.css")" rel="stylesheet" type="text/css" />
+}
+
+<style type="text/css">
+    .loading {
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+        position: fixed;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        text-align: center;
+    }
+
+    .loading-image {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 100;
+    }
+</style>
+
+<script type="text/javascript">
+    function OnBeginCallback(s, e) {
+        e.customArgs["GUID"] = '@ViewBag.GUID';
+    }
+</script>
+<script type="text/javascript">
+    var ischeckedchange = false;
+    var Gview;
+    var MemberId = "";
+    var MemberrowindexId = "";
+    var selectedtextvalue = "";
+    var memberarrylist = [];
+    var memberarrylistrowindex = [];
+    var mcheckboxselectall = "";
+    var GetFocusRowIndex;
+    var IsSelected = false;
+    $(document).ready(function () {
+        Gview = new viewModel();
+        search = Gview;
+        ko.applyBindings(Gview);
+    });
+
+    function viewModel() {
+        var self = this;
+        $("#CreateDatasetdialog").dialog({
+            draggable: false,
+            autoOpen: false,
+            autoresize: false,
+            modal: true,
+            dragable: false,
+            width: 500,
+            height: 370
+        });
+
+        self.CreateDataset = function () {
+            document.getElementById('frmdataset').src = "../Members/frmOP_ImportUserDataset?keyval=&element=report";
+            $("#CreateDatasetdialog").dialog("open");
+
+        }
+
+        self.hdnclose = function () {
+            $("#CreateDatasetdialog").dialog("close");
+        }
+    }
+
+    function CheckedChanged(status) {
+        $("#loading").fadeIn();
+        IsSelected = status;
+        $.ajax({
+            url: "SelectCheckboxEvent",
+            type: "POST",
+            data: { IsStatus: status, GuId: '@ViewBag.GUID' },
+            success: function (response) {
+                $("#loading").fadeOut();
+            }
+        });
+    }
+
+    function OnGridFocusedRowChanged(s, e) {
+        GetFocusRowIndex = s.focusedRowIndex - s.pageIndex * s.pageRowSize;
+        OnGetRowValues(s.keys[GetFocusRowIndex], s.keyName, s.GetFocusedRowIndex());
+    }
+
+    function OnGetRowValues(values, columname, valrowindex) {
+        MemberId = values;
+    }
+
+    function SelectionChanged(s, e) {
+        OnGetRowValues(s.keys[GetFocusRowIndex], s.keyName, s.GetFocusedRowIndex());
+        if (e.isSelected) {
+            memberarrylist.push(MemberId);
+        }
+        else {
+            if (ischeckedchange == false) {
+                var index = memberarrylist.indexOf(MemberId);
+                if (index > -1) {
+                    memberarrylist.splice(index, 1);
+                }
+            }
+        }
+        if (ischeckedchange == false) {
+            $.ajax({
+                url: "GridListRowindex",
+                type: "POST",
+                data: { GenMembers: JSON.stringify(memberarrylist), Selectall: IsSelected, GuId: '@ViewBag.GUID' },
+                success: function (response) {
+                    IsSelected = false;
+                }
+            });
+        }
+        ischeckedchange = false;
+    }
+
+</script>
+<div id="CreateDatasetdialog">
+    <iframe id="frmdataset" style="width:98%; height:700px;" scrolling="no" frameborder="0"></iframe>
+</div>
+<div>
+    <a id="hylnproceed" href="../Reports/GetFileFromDisk" style="width:100px; display:none; height:25px; font-family:Verdana; font-size:12px; font-style:normal; font-weight:bold; color:Blue; background-color:InfoBackground;">Open or Save</a>
+</div>
+<div>
+    @Html.Partial("GridViewPartial", Model)
+</div>

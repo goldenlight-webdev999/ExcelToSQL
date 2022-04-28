@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "CreateDBBackup";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+
+<script type="text/jscript">
+
+    var Dbmodel;
+    $(document).ready(function () {
+        Dbmodel = new viewModel();
+        ko.applyBindings(Dbmodel);
+
+    });
+
+    function viewModel() {
+
+        var res = "Are you sure you want to Create Backup ?";
+        var dbname = "GroGroup";
+        $("#loading").fadeOut();
+        $.msgBox({
+            title: "Gro Group",
+            content: res,
+            type: "confirm",
+            buttons: [{ value: "Yes" }, { value: "No"}],
+            success: function (result) {
+                if (result == "Yes") {
+                    $("#loading").fadeIn();
+                    $.ajax({
+                        url: "CreateBackup",
+                        type: "POST",
+                        data: { db: dbname },
+                        success: function (response) {
+                            $("#loading").fadeOut();
+                            if (response.Items != null && response.Items != "") {
+
+                                //alert("Gro Group", response.Items, true, false);
+                                $.msgBox({
+                                    title: "Gro Group",
+                                    content: "Database backup created successfully",
+                                    type: "info",
+                                    buttons: [{ value: "Ok" }],
+                                    afterClose: function (result) {
+                                        document.getElementById('lnkdb').target = "_blank";
+                                        document.getElementById('lnkdb').href = "GetDBFileFromServer?fname=" + response.Items;
+                                        document.getElementById('lnkdb').click();
+                                    }
+                                });
+                                $(".msgButton").focus();
+                            }
+                        },
+                        error: function (Request, textStatus, errorThrown) {
+                            $("#loading").fadeOut();
+                            alert("Gro Group", Request.responseText, true, false);
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+</script>
+<div>
+    <a id="lnkdb" style="display:none;"></a>
+</div>

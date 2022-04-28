@@ -1,0 +1,220 @@
+﻿
+@{
+    ViewBag.Title = "UpdatePDS";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+<script type="text/javascript">
+    var UpdPDS;
+    $(document).ready(function () {
+
+        UpdPDS = new viewModel();
+        ko.applyBindings(UpdPDS);
+
+        $("#btnUpd").click({ handler: UpdPDS.UpdPDSClick });
+
+    });
+
+    function viewModel() {
+        var self = this;
+
+        self.UpdPDSClick = function () {
+            document.getElementById('updbrowse').click();
+        }
+
+        self.upddatachange = function () {
+            $("#loading").fadeIn();
+            $("#Excelform").ajaxSubmit({
+                url: 'UpdatePDSExcelform',
+                type: 'post',
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    document.getElementById('updbrowse').value = "";
+                    var processfname = "";
+                    if (response.fileName != "") {
+                        processfname = response.fileName;
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: "Are you sure you want to Update PDS from Excel?",
+                            type: "confirm",
+                            parent: true,
+                            buttons: [{ value: "Yes" }, { value: "No" }],
+                            success: function (result) {
+                                if (result == "Yes") {
+                                    $("#loading").fadeIn();
+                                    $.ajax({
+                                        url: "ProcessPDS",
+                                        data: { fileName: response.fileName },
+                                        type: "POST",
+                                        success: function (response) {
+                                            $("#loading").fadeOut();
+                                            if (response.Msg != "") {
+                                                //alert("Update PDS", response.Msg, true, false);
+
+                                                $.msgBox({
+                                                    title: "Update PDS",
+                                                    content: response.Msg,
+                                                    type: "error",
+                                                    parent: true,
+                                                    buttons: [{ value: "Ok" }],
+                                                    afterClose: function (result) {
+                                                        DeletePDSTempFile(response.Items, response.chkerr);
+                                                    }
+                                                });
+
+                                            }
+                                            else {
+                                                var reccnt = 0, chkerr = 0;
+                                                if (response.upccnt != null && response.upccnt != "" && response.upccnt > 0) {
+                                                    reccnt = response.upccnt;
+                                                }
+                                                if (response.chkerr != null && response.chkerr != "" && response.chkerr > 0) {
+                                                    chkerr = response.chkerr;
+                                                    var msgtxt = "[" + response.chkerr + "] Check Digit Error UPCs found. <br/> Do you want to update remaining [" + reccnt + "] PDS rows?";
+                                                    $.msgBox({
+                                                        title: "Update PDS",
+                                                        content: msgtxt,
+                                                        type: "confirm",
+                                                        parent: true,
+                                                        buttons: [{ value: "Yes" }, { value: "No" }],
+                                                        success: function (result) {
+                                                            if (result == "Yes") {
+                                                                UpdatePDSFromTemp(response.Items, chkerr);
+                                                            }
+                                                            else {
+                                                                DeletePDSTempFile(response.Items, chkerr);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    if (reccnt > 0) {
+                                                        var msgtxt = "Are you sure you want to update [" + reccnt + "] PDS rows?";
+                                                        $.msgBox({
+                                                            title: "Update PDS",
+                                                            content: msgtxt,
+                                                            type: "confirm",
+                                                            parent: true,
+                                                            buttons: [{ value: "Yes" }, { value: "No" }],
+                                                            success: function (result) {
+                                                                if (result == "Yes") {
+                                                                    UpdatePDSFromTemp(response.Items, chkerr);
+                                                                }
+                                                                else {
+                                                                    DeletePDSTempFile(response.Items, chkerr);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+
+                                        },
+                                        error: function (Request, textStatus, errorThrown) {
+                                            $("#loading").fadeOut();
+                                            //alert("Update PDS", Request.responseText, true, false);
+
+                                            $.msgBox({
+                                                title: "Update PDS",
+                                                content: Request.responseText,
+                                                type: "error",
+                                                parent: true,
+                                                buttons: [{ value: "Ok" }],
+                                                afterClose: function (result) {
+                                                    DeletePDSTempFile(processfname, 0);
+                                                }
+                                            });
+
+                                        }
+                                    });
+
+                                }
+                                else {
+                                    DeletePDSTempFile(response.fileName, 0);
+                                }
+                                
+                            }
+                        });
+
+                    }
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    $("#loading").fadeOut();
+                    alert("Update PDS", Request.responseText, true, false);
+                }
+            });
+        }
+
+        function UpdatePDSFromTemp(name, chkerr) {
+            $("#loading").fadeIn();
+            $.ajax({
+                url: "UpdatePDSFromTemp",
+                data: { fileName: name },
+                type: "POST",
+                success: function (response) {
+                    //alert("Update PDS", "Updated successfully!", true, false);
+                    $("#loading").fadeOut();
+                    $.msgBox({
+                        title: "Update PDS",
+                        content: "Updated successfully!",
+                        type: "info",
+                        parent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            DeletePDSTempFile(name, chkerr);
+                        }
+                    });
+
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    $("#loading").fadeOut();
+                    alert("Update PDS", Request.responseText, true, false);
+                }
+            });
+        }
+
+        function DeletePDSTempFile(name, chkerr) {
+            $.ajax({
+                url: "DeletePDSTempFile",
+                data: { fname: name },
+                type: "POST",
+                success: function (response) {
+                    if (chkerr > 0) {
+                        $.ajax({
+                            url: "PrintPDSVerificationReport",
+                            type: "POST",
+                            async: false,
+                            success: function (response) {
+                                window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                                fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                            }
+                        });
+                    }
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    alert("Delete PDS TempFile", Request.responseText, true, false);
+                }
+            });
+        }
+
+    }
+
+</script>
+
+<center>
+    <div class="container" style="max-width:800px !important; text-align:left;">
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle">Update PDS from Excel</h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">                        
+                        <center><input id="btnUpd" class="btn btn-primary" type="button" value="Update PDS" /></center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</center>
+<form id="Excelform" method="post" enctype="multipart/form-data" style="width: 0px; height: 0px;">
+    <input id="updbrowse" name="file" value="browse" type="file" style="width: 0px; display:none;" data-bind="event:{ change: $root.upddatachange}" />
+</form>

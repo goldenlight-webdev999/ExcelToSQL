@@ -1,0 +1,680 @@
+﻿
+@{
+    ViewBag.Title = "RetailersContacts";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<link href="~/css/Theadscroll.css" rel="stylesheet" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;width:49%;}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable td{ text-align: left !important;}
+
+                        .dytable tr td:nth-of-type(1):before{content:'First Name';font-weight: bold;}
+                        .dytable tr td:nth-of-type(2):before{content:'Last Name';font-weight: bold;}
+                        .dytable tr td:nth-of-type(3):before{content:'Title';font-weight: bold;}
+                        .dytable tr td:nth-of-type(4):before{content:'Address';font-weight: bold;}
+                        .dytable tr td:nth-of-type(5):before{content:'Phone';font-weight: bold;}
+    @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+<style type="text/css">
+  @Html.Raw(CssStyle)
+</style>  
+<style>
+.correctborder {
+        padding: 15px 12px;
+        margin-bottom: 5px;
+    }   
+table#TbRentalContact thead {
+        flex: 0 0 auto;
+        width: 100%;
+        max-height: 450px;
+    }
+table#TbRentalContact tbody {
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: overlay;
+        overflow-x: hidden;
+         width: 100% !important;
+    }
+table#TbRentalContact tbody tr {
+            width: 100% !important;
+        }
+table#TbRentalContact tbody td {
+            word-wrap: break-word;
+        }
+table#TbRentalContact thead th {
+        word-wrap: break-word;
+    }
+table#TbRentalContact thead, table#TbRentalContact tbody tr {
+        display: table;
+        table-layout: fixed;
+    }
+</style>
+<script type="text/javascript">
+    var rowIndex = 0;
+    var search; var RCTitle = "", RetailerCont="";
+    var RetNo = ""; var RetName = "";
+    var RCArray = [];
+    var RetailerContNo;
+    var tablename = "";
+    $(document).ready(function () {
+        RC = new viewModel();
+        search = RC;
+        ko.applyBindings(RC);
+        $('#TbRentalContact tbody tr:first').addClass('success selected');       
+        $("#btnAdd").click({ handler: RC.Add });
+        $("#btnEdit").click({ handler: RC.Edit });
+        $("#btnSave").click({ handler: RC.Save });
+        $("#btnDelete").click({ handler: RC.Delete });
+        $("#btnCancel").click({ handler: RC.Cancel });
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('#TbRentalContact').css('height', $(window).height() - 420 + 'px');
+            $('table#TbRentalContact tbody').css("overflow-y", "scroll");
+            $('table#TbRentalContact thead').css("width", "98.5%");
+        }
+    });
+
+    function viewModel() {
+        var self = this;
+
+        self.EnableDisableMode = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.RcGrid = ko.observable();
+        self.cmbnsalut = ko.observableArray([]);
+        self.RetailNo = ko.observable();
+        self.RetailerContNo = ko.observable();
+        //self.bindRconts = ko.observable();
+        self.salute = ko.observable();
+        self.firstname = ko.observable();
+        self.minitial = ko.observable();
+        self.lastname = ko.observable();
+        self.greeting = ko.observable();
+        self.gwtitlecd = ko.observable();
+        self.title = ko.observable();
+        self.gwseq = ko.observable();
+        self.phone = ko.observable();
+        self.dextn = ko.observable();
+        self.evephone = ko.observable();
+        self.eextn = ko.observable();
+        self.fax = ko.observable();
+        self.cell = ko.observable();
+        self.email = ko.observable();
+        self.contactno = ko.observable();
+        self.Oldgwno = ko.observable();
+        self.RetailerNo = ko.observable();
+
+        self.hdnRcontact = ko.observableArray([]);
+        self.RcTitle = ko.observable("");
+        RetNo = window.parent.document.getElementById('RetailerNo').value;
+        RetName = window.parent.document.getElementById('company').value;
+        RCTitle = "Retailer Contacts For: " + RetNo + " - " + RetName;
+        $('#TbRentalContact').css('max-height', $(window).height() - 420 + 'px');       //420-anitha
+
+        self.RcTitle(RCTitle);
+        self.RetailNo(RetNo);
+
+        window.parent.CallEnableTabs();
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: "SALUT" },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbnsalut(response.Items);
+            }
+        });
+
+
+        $(".clickableRow").live("click", function () {
+            if (self.SaveMode() == true && self.AddMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveMode() == true && self.AddMode() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+            }
+            else {
+                rowIndex = $(this).attr("id");
+                $('.clickableRow').removeClass('selected');
+                $(this).addClass('selected');
+                $("#" + rowIndex).addClass('success selected');
+               
+            }
+        });
+
+        self.menulist = ko.observableArray([]);
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+        doublesort();
+
+
+        $("#lblemail").live("click", function () {
+            send_email(self.email());
+        });
+
+        
+
+
+        function FillGrid() {
+            $.ajax({
+                url: "FillRCGrid",
+                data: { RetailerNo: self.RetailNo(), RetailerCont: RetailerCont },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    $('#TbRentalContact th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.RcGrid(response.Items);
+                    if (response.rowindex > 0) {
+                        self.SelectedRcList(response.Items[response.rowindex]);
+                        self.hdnRcontact(response.Items[response.rowindex]);
+                        $("#" + response.rowindex).addClass('success selected');
+                        //rowIndex = response.rowindex;
+                    }
+                    else {
+                       
+                        self.SelectedRcList(response.Items[0]);
+                        self.hdnRcontact(response.Items[0]);
+                        $("#" + response.rowindex).addClass('success selected');
+                    }
+
+                    if (response.Items.length == 0) {
+                        clearfields();
+                        self.contactno("");
+                        $("#lblemail").css("color", "#333333");
+                        $("#lblemail").css("cursor", "default");
+                        $("#lblemail").css("text-decoration", "none");
+                    }
+
+                    var THIndex = $('#TbRentalContact thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        var clsname = $('#TbRentalContact thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                }
+            });
+        }
+
+        self.SelectedRcList = function (item) {
+            if (self.SaveMode() == true)
+                return false;
+            if (item != undefined) {
+                self.contactno(item.contactno);
+                RetailerContNo = item.RetailerContNo;
+                self.RetailerNo(item.RetailerNo);
+                self.Oldgwno(item.Oldgwno);
+                self.salute(item.salute);
+                self.firstname(item.firstname);
+                self.minitial(item.minitial.trim());
+                self.lastname(item.lastname);
+                self.greeting(item.greeting);
+                self.gwtitlecd(item.gwtitlecd);
+                self.title(item.title);
+                self.gwseq(item.gwseq.trim());
+                self.phone(item.phone);
+                self.dextn(item.dextn);
+                self.evephone(item.evephone);
+                self.eextn(item.eextn);
+                self.fax(item.fax);
+                self.cell(item.cell);
+                self.email(item.email);
+
+                if (item.email != null && item.email != "") {
+                    $("#lblemail").css("color", "blue");
+                    $("#lblemail").css("cursor", "pointer");
+                    $("#lblemail").css("text-decoration", "underline");
+
+                }
+                else {
+                    $("#lblemail").css("color", "#333333");
+                    $("#lblemail").css("cursor", "default");
+                    $("#lblemail").css("text-decoration", "none");
+                }
+               // $(rowid).addClass('success selected');
+            }
+            else {
+                //Add();
+                //self.bindRconts(RCArray);
+            }
+            
+        }
+
+        FillGrid();
+
+        function clearfields() {
+
+            self.salute("");
+            self.firstname("");
+            self.minitial("");
+            self.lastname("");
+            self.fax("");
+            self.greeting("");
+            self.cell("");
+            self.title("");
+            self.gwtitlecd("");
+            self.gwseq("");
+            self.phone("");
+            self.evephone("");
+            self.dextn("");
+            self.eextn("");
+            self.email("");
+
+        }
+
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+           
+            window.parent.CallDisableTabs();
+
+            clearfields();
+
+            //Add();
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            document.getElementById('salut').focus();
+            $('.clickableRow').removeClass('success selected');
+            $("#lblemail").css("color", "#333333");
+            $("#lblemail").css("cursor", "default");
+            $("#lblemail").css("text-decoration", "none");
+        }
+        self.Edit = function () {
+            if (self.RcGrid().length == 0)
+                return false;
+
+            window.parent.CallDisableTabs();
+
+            self.EditMode(false);
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EnableDisableMode(false);
+            document.getElementById('salut').focus();
+        }
+
+        self.Save = function () {
+
+            RCArray = [];
+            RCArray =
+                {
+                    RetailerContNo:self. RetailerContNo(),
+                    contactno: self.contactno(),
+                    RetailerNo: self.RetailerNo(),
+                    Oldgwno: self.Oldgwno(),
+                    salute: self.salute(),
+                    firstname: self.firstname(),
+                    minitial: self.minitial(),
+                    lastname: self.lastname(),
+                    fax: self.fax(),
+                    greeting: self.greeting(),
+                    cell: self.cell(),
+                    title: self.title(),
+                    gwtitlecd: self.gwtitlecd(),
+                    gwseq: self.gwseq(),
+                    phone: self.phone(),
+                    evephone: self.evephone(),
+                    dextn: self.dextn(),
+                    eextn: self.eextn(),
+                    email: self.email(),
+                }
+
+            if (self.firstname() == null || self.firstname() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the First Name",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('firstname').focus();
+                    }
+                });
+                return false;
+            }
+            if (self.lastname() == null || self.lastname() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the Last Name",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('lastname').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.phone() != null && self.phone() != "") {
+                if (self.phone().length < 12) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Phone no",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('phone1').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.evephone() != null && self.evephone() != "") {
+                if (self.evephone().length < 12) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Phone no",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('phone2').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.fax() != null && self.fax() != "") {
+                if (self.fax().length < 12) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Fax no",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('fax').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.cell() != null && self.cell() != "") {
+                if (self.cell().length < 12) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Cell no",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('cell').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.email() != null && self.email() != "") {
+                if (!ValidateEmail(self.email())) {
+                    $.msgBox({
+                        title: "Gro Group", content: "Invalid Email",
+                        afterClose: function (result) {
+                            document.getElementById('Email').select();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            
+            $.ajax({
+                url: "ValidateRetcontNames",
+                data: { FirstName: self.firstname(), LastName: self.lastname(), AddMode: self.AddMode(), RetailerContNo: RetailerContNo, RetailerNo: self.RetailerNo(), titlecd: self.gwtitlecd() },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items == true) {
+                        $.msgBox({
+                            title: "Gro Group", content: "Name already exists",
+                            afterClose: function (result) {
+
+                                $("#FirstName").focus();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        SaveRetailerCont();
+                    }
+                }
+            });
+            
+        }
+        function SaveRetailerCont() {
+           
+
+            $.ajax({
+                url: "SaveRetailerContact",
+                data: { ObjRCArray: JSON.stringify(RCArray), RetailNo: self.RetailNo(), IsAddMode: self.AddMode() },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null) {
+                        alert("Gro Group", response.ItemMsg);
+                    } else {
+                        RetailerCont = response.Items;
+                        
+                    }
+                    self.SaveMode(false);
+                    self.AddMode(false);
+                    self.EditMode(true);
+                    self.EnableDisableMode(true);
+                    $('#TbRentalContact tbody tr').remove();
+                    FillGrid();
+                }
+
+            });
+
+            window.parent.CallEnableTabs();
+        }
+
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+
+        self.confirmcancel = function () {
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+
+            window.parent.CallEnableTabs();
+
+            $('#TbRentalContact tbody tr').remove();
+            FillGrid();
+            if (self.RcGrid().length > 0) {
+                $('.clickableRow').removeClass('success selected');
+                self.SelectedRcList(self.RcGrid()[rowIndex]);
+                $("#" + rowIndex).addClass('success selected');
+
+            }
+
+            self.RcTitle(RCTitle);
+        }
+
+        self.Delete = function () {
+            if (self.SaveMode() == true || self.RcGrid().length == 0)
+                return false;
+            //alerterror("Denied", "Record cannot be deleted");
+            //if (self.SaveMode() == true)
+            //    return false;
+            alertconfirm("Delete", "Are you sure you want to delete this record ?", self.confirmdelete, false, true);
+        }
+        self.confirmdelete = function () {
+
+            $.ajax({
+                url: "DeleteContacts",
+                data: { RetailerNo: self.RetailerNo(), contactno: self.contactno() },
+                type: "POST",
+                success: function (response) {
+                    $('#TbRentalContact tbody tr').remove();
+                    FillGrid();
+                }
+            });
+        }
+    }
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "RetailersContacts", tablename + "_.csv", "Screen", tablename + "_");
+    }
+
+
+</script>
+<div class="container divheight" style="max-width:1200px !important; text-align:left;">
+        <div class="row-fluid">
+            <div class="span4">
+                <ul class="list-nostyle list-inline tooltipsample">
+                    <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd" ><i class="icon-file icon-white"></i></a></li>
+                    <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit" ><i class="icon-edit icon-white"></i></a></li>
+                    <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave" ><i class="icon-list-alt icon-white"></i></a></li>
+                    <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete" ><i class="icon-remove icon-white"></i></a></li>
+                    <li data-bind="enable:SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel" ><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle"><span data-bind="text:RcTitle"></span><span style="margin-left:10%">Contact No: <span  data-bind="text:contactno"></span></span><span style="float:right;margin-right: 10%;">Old GwNo: <span  data-bind="text:Oldgwno"></span></span></h4>
+                <div class="widgetcontent">
+                    <div class="correctborder" style="border: 1px#BCD8F3 solid">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="row-fluid">
+                                    <div class="span1  mfg-margin-left">
+                                        <label class="span5 mob-span">Salute</label>
+                                        <select id="salut" class="input-small mob-cmb" style="width:60px" data-bind="disable:EnableDisableMode, options:cmbnsalut,optionsText:'descript',optionsValue:'entry',value:salute"></select>
+                                    </div>
+                                    <div class="span3 mob-wd-full mfg-margin-left">
+                                        <label class="span8 mob-span">First Name</label>
+                                        <input id="FirstName" class="input-medium mob-text" style="width:240px;" maxlength="20" type="text" required data-bind="disable:EnableDisableMode, value:firstname" />
+                                    </div>
+                                    <div class="span1">
+                                        <label class="span7 mob-span">Initial</label>
+                                        <input type="text" class="mob-text" style="width:25px" maxlength="4" data-bind="disable:EnableDisableMode,value:minitial" />
+                                    </div>
+                                    <div class="span3 mob-wd-full mfg-margin-style">
+                                        <label class="span6 mob-span">Last Name</label>
+                                        <input type="text" class="input-medium mob-text" style="width:240px;" maxlength="20" required data-bind="disable:EnableDisableMode,value:lastname" />
+                                    </div>
+                                    <div class="span3 mob-wd-full retcont-style">
+                                        <label class="span6 mob-span">Nickname</label>
+                                        <input type="text" class="input-medium mob-text" style="width:240px;" maxlength="10" data-bind="disable:EnableDisableMode, value: greeting" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>                  
+                    <div class="correctborder" style="border: 1px#BCD8F3 solid">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <label class="span5 mob-span">Retailer Title Code</label>
+                                    <input type="text" class="input-medium mob-text" style="width:170px;" maxlength="24" data-bind="disable:EnableDisableMode, value: gwtitlecd" />
+                                </div>
+                                <div class="span4">
+                                    <label class="span3 mob-span">Title</label>
+                                    <input type="text" class="input-medium mob-text" style="width:240px;" maxlength="35" data-bind="disable:EnableDisableMode, value: title" />
+                                </div>
+                                <div class="span4">
+                                    <label class="span5 mob-span">Contact Seq Code</label>
+                                    <input type="text" class="input-medium mob-text" style="width:40px;" maxlength="1" data-bind="disable:EnableDisableMode, value: gwseq" />
+                                </div>
+                            </div>
+                        </div>                    
+                    <div class="correctborder" style="border: 1px#BCD8F3 solid" >
+                        <div class="row-fluid" >
+                            <div class="span3 mob-wd-full">
+                                <label class="span6 mob-span">Phone1</label>
+                                <input id="phone1" type="text" class="input-medium mob-text" style="width: 47%;" onkeypress="return numbersonly(this,event,true);" maxlength="12" data-bind="disable:EnableDisableMode,value: phone" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span3 mob-span">Ext1</label>
+                                <input id="Ext1" type="text" class="input-small mob-text" style="width: 47%;" maxlength="5" data-bind="disable:EnableDisableMode,value: dextn" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span6 mob-span">Phone2</label>
+                                <input id="phone2" type="text" class="input-medium mob-text" style="width: 47%;" onkeypress="return numbersonly(this,event,true);" maxlength="12" data-bind="disable:EnableDisableMode,value: evephone" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span3 mob-span">Ext2</label>
+                                <input id="Ext2" type="text" class="input-small mob-text" style="width: 47%;" maxlength="5" data-bind="disable:EnableDisableMode,value: eextn" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">                            
+                            <div class="span3 mob-wd-full">
+                                <label class="span6 mob-span">Fax</label>
+                                <input id="fax" type="text" class="input-small mob-text" style="width:120px;" onkeypress="return numbersonly(this,event,true);" maxlength="12" data-bind="disable:EnableDisableMode,value: fax" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span3 mob-span">Cell</label>
+                                <input id="cell" type="text" class="input-medium mob-text" style="width:120px;" onkeypress="return numbersonly(this,event,true);" maxlength="12" data-bind="disable:EnableDisableMode,value: cell" />
+                            </div>                                 
+                            <div class="span6">
+                                <label id="lblemail" class="span3 mob-span">Email</label>
+                                <input id="Email" type="text"  class="mob-text" style="width:342px" maxlength="35" data-bind="disable:EnableDisableMode, value: email" />
+                            </div>           
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row-fluid" style="margin-top:10px;">
+        <table id="TbRentalContact" class="dytable table table-bordered tablesort">
+            <thead style="width:100%">
+                <tr class="exportclass">
+                    <th class="mob-wd-full" style="width:10%;">Contact Seq Code<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                    <th class="mob-wd-full" style="width:15%;">First Nam<i class="icon1" style="float: right; margin-top: -4px;"></i>e</th>
+                    <th class="mob-wd-full" style="width:15%;">Last Name<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                    <th class="mob-wd-full" style="width:20%;">Title<i class="icon3" style="float: right; margin-top: -4px;"></i> </th>
+                    @*<th class="mob-wd-full" style="width:25%;">Address<i class="icon4" style="float: right; margin-top: -4px;"></i></th>*@                    
+                    <th class="mob-wd-full" style="width:10%;">Phone<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                    
+                </tr>
+            </thead>
+            <tbody data-bind="foreach:$root.RcGrid">
+                <tr class="clickableRow" data-bind="attr: {id:$index()}, click:$root.SelectedRcList">
+                    <td class="mob-wd-full" style="width:10%;" data-bind="text:gwseq"></td>
+                    <td class="mob-wd-full" style="width:15%;" data-bind="text:firstname"></td>
+                    <td class="mob-wd-full" style="width:15%;" data-bind="text:lastname"></td>
+                    <td class="mob-wd-full" style="width:20%;" data-bind="text:title"></td>
+                    @*<td class="mob-wd-full" style="width:25%;" data-bind="text:address1"></td>*@                    
+                    <td class="mob-wd-full" style="width:10%;" data-bind="text:phone"></td>
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+

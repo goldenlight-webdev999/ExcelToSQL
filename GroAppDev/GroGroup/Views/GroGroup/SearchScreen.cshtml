@@ -1,0 +1,598 @@
+﻿@{
+    ViewBag.Title = "SearchScreen";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+
+
+<script type="text/javascript">
+
+    var search;
+    var Totalpagecount;
+    var table;
+    var element;
+    var pagesizes = 1;
+    var totcount = 0;
+    var CallScreenObj = "";
+    var combochk = [];
+
+    function callScreen(winobj) {
+        CallScreenObj = winobj;
+    }
+    $(document).ready(function () {
+        search = new viewModel();
+        ko.applyBindings(search);
+        $("#btnSearch").click({ handler: search.search1 });
+        document.getElementById('messagegrid').style.display = 'none';
+        $('#PageFirst').click({ handler: search.first });
+        $('#PagePrevious').click({ handler: search.previous });
+        $('#PageNext').click({ handler: search.next });
+
+        $("#sort").click({ handler: search.sort });
+        $('#PageLast').click({ handler: search.last });
+        
+        $("#dyndiv").css('height', ($(window).height() - 100 + "px"));
+        $(window).resize(function () {
+            $("#dyndiv").css('height', ($(window).height() - 100 + "px"));
+        });
+
+    });
+
+    function viewModel() {
+        var self = this;
+        self.SearchList = ko.observableArray([]);
+        self.dsList = ko.observableArray([]);
+        self.Header = ko.observableArray([]);
+        self.EmployeeList = ko.observableArray([]);
+        self.page = ko.observable(0);
+        self.txtsearch = ko.observable();
+        self.combolist = ko.observableArray([]);
+        self.selectedvalue = ko.observable();
+        
+        self.CmbStatus = ko.observable();
+       
+        self.EnableDisableSearch = ko.observable(true);
+        self.firstenable = ko.observable(false);
+        self.lastenable = ko.observable(false);
+
+        self.LabelDescription = ko.observable();
+        self.RowCount = ko.observable();
+
+        self.LabelDescription('@ViewBag.LabelDescription');
+
+       
+
+        $.ajax({
+            url: "GetComboList",
+            type: "POST",
+            success: function (response) {
+                if ('@ViewBag.Schtable' == "vw_Srch_appt" && '@ViewBag.Schelement' == "Schtxtsearch") {
+                    combochk.push(['Apptno', 'Apptno']);
+                    combochk.push(['Locationid', 'Locationid']);
+                    combochk.push(['Lastname', 'MainAcct']);
+                    combochk.push(['Resource', 'Resource']);
+                    combochk.push(['Item_desc', 'Item_desc']);
+                    combochk.push(['ResourceID', 'Resourceid']);
+                    combochk.push(['Status', 'Status']);
+                    self.combolist(combochk);
+                }
+                else {
+                    self.combolist(response.Items);
+                }
+                self.selectedvalue(response.Items1);
+            }
+        });
+
+        $("#searchlist").change(function () {
+            Totalpagecount;
+            pagesizes = 1;
+            totcount = 0;
+        });
+
+        $("#searchtext").focusout(function () {
+            Totalpagecount;
+            pagesizes = 1;
+            totcount = 0;
+        });
+
+        self.fillsearch = function (bool) {
+            $("#loading").fadeIn();
+            var header = "",index="";
+            $.ajax({
+                url: "FillSearch",
+                type: "POST",
+                success: function (response) {
+                    $("#loading").fadeOut();
+                    if (response.Items != null && response.Items.length > 0) {
+                        self.Header(response.head);
+                        var tablehead = document.getElementById('dyntable').getElementsByTagName('thead')[0];
+                        for (var j = 0; j < tablehead.rows.length; j++) {
+
+                            //for (var k = 0; k < tablehead.children[j].cells.length; k++) {
+                            //    if(tablehead.children[j].cells[k].innerText=="Company")
+                            //    {
+                            //        index = k;
+                            //        header = tablehead.children[j].cells[k].innerText;
+                            //        tablehead.children[j].cells[k].style.width = "150px";
+                            //    }
+                            //}
+
+                            if (tablehead.children[j].cells[0].innerText == "Company") {
+                                header = tablehead.children[j].cells[0].innerText;
+                                tablehead.children[j].cells[0].style.width = "150px";
+                            }
+                        }
+
+                        self.SearchList(response.Items);
+                        var tableRef = document.getElementById('dyntable').getElementsByTagName('tbody')[0];
+                        for (var i = 0; i < tableRef.rows.length; i++) {
+                            if (header == "Company")
+                                tableRef.rows[i].cells[0].style.width = "150px";
+                        }
+
+                        self.dsList(response.hastable);
+                        self.RowCount('[ ' + response.rowcount + ' Rows ]');
+                        Totalpagecount = response.count;
+                        totcount = Totalpagecount + 1;
+                        $("#Lblpageno").text(1);
+                        $("#Lblpage").text(Totalpagecount + 1);
+                        if (totcount == 1) {
+                            self.firstenable(true);
+                            self.lastenable(true);
+                        }
+                        else {
+                            self.firstenable(true);
+                            self.lastenable(false);
+                        }
+                        self.selectedvalue(response.where);
+                        self.txtsearch(response.text);
+                        table = response.table;
+                        element = response.element;
+                        document.getElementById('dyndiv').style.display = 'block';
+                        document.getElementById('messagegrid').style.display = 'none';
+                        
+                    }
+                    else {
+                        if (response.text.trim() != "") {
+                            document.getElementById('messagegrid').style.display = 'block';
+                            document.getElementById('dyndiv').style.display = 'none';
+                        }
+                        else {
+                            document.getElementById('messagegrid').style.display = 'none';
+                            document.getElementById('dyndiv').style.display = 'block';
+                        }
+                        self.txtsearch(response.text.trim());
+                        self.SearchList("");
+                        $("#Lblpageno").text(0);
+                        $("#Lblpage").text(0);
+                        self.RowCount("");
+                        self.firstenable(true);
+                        self.lastenable(true);
+                    }
+                },
+                error: function (request, status, error) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", request.responseText, false, false);
+                }
+            });
+        };
+        self.fillsearch(false);
+
+
+        self.first = function () {
+            $("tbody").empty();
+            self.page(0);
+            pagesizes = self.page();
+            pagesizes = pagesizes + 1;
+            $("#Lblpageno").text(pagesizes);
+            Paging();
+            if (pagesizes == pagesizes) {
+                self.firstenable(true);
+                self.lastenable(false);
+            }
+        }
+        self.previous = function () {
+            $("tbody").empty();
+            if (self.page() == 0) return;
+            self.page(self.page() - 1);
+            pagesizes = pagesizes;
+            if (pagesizes == 0) {
+                pagesizes = pagesizes + 1;
+            }
+            else {
+                pagesizes = pagesizes - 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            Paging();
+            if (pagesizes == 1) {
+                self.firstenable(true);
+                self.lastenable(false);
+            }
+            else {
+                self.lastenable(false);
+            }
+        }
+        self.next = function () {
+            $("tbody").empty();
+            var navpage = $("#Lblpageno").text();
+            var navpagebind = parseInt(navpage) - 1;
+            self.page(navpagebind);
+            if (self.page() == Totalpagecount) return;
+            self.page(self.page() + 1);
+            pagesizes = pagesizes;
+            if (pagesizes == Totalpagecount + 1) {
+                pagesizes = pagesizes;
+            }
+            else {
+                pagesizes = pagesizes + 1;
+            }
+            $("#Lblpageno").text(pagesizes);
+            Paging();
+            if (pagesizes == totcount) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+            else {
+                self.firstenable(false);
+            }
+        }
+
+        var count = 0, no = 0;
+        $('.sortable').live('click', function (key, val) {
+            var colindex = key.currentTarget.cellIndex;
+            var findSortKey = function ($cell) {
+                return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+            };
+
+            var sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+            var $rows = $(this).parent().parent().parent().find('tbody tr').get();
+            //loop through all the rows and find
+            $.each($rows, function (index, row) {
+                row.sortKey = findSortKey($(row).children('td').eq(colindex));
+            });
+
+            var self = this;
+            var $buttons = $('.sort');
+            idx = $buttons.index(this);
+
+            $rows.sort(function (a, b) {
+                var $obj1 = $(a).find('td').eq(idx),
+                $obj2 = $(b).find('td').eq(idx),
+                value1, value2;
+                count++;
+                if (a.sortKey == b.sortKey) {
+                    no++;
+                    return 0;
+                }
+                else {
+                    if ($.isNumeric((a.sortKey)) == true) {
+                        //numeracy check
+                        if (parseFloat(a.sortKey) < parseFloat(b.sortKey)) {
+                            return -sortDirection;
+                        }
+                        if (parseFloat(a.sortKey) > parseFloat(b.sortKey)) {
+                            return sortDirection;
+                        }
+                    }
+                    else if ((a.sortKey).split(":").length - 1 == 1) {
+                        //time check
+                        var res = (a.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        var ser = (b.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        a = new Date('1970/01/01 ' + res);
+                        b = new Date('1970/01/01 ' + ser);
+                        return a < b ? -sortDirection : a > b ? sortDirection : 0;
+                    }
+                    else if ((a.sortKey).split(" ").length - 1 >= 90) {
+                        value1 = $obj1.find("input")[0].checked;
+                        value2 = $obj2.find("input")[0].checked;
+                        return value1 < value2 ? -sortDirection : value1 > value2 ? sortDirection : 0;
+                    }
+                    else {
+                        //alphabetic check
+                        if (a.sortKey < b.sortKey) {
+                            return -sortDirection;
+                        }
+                        if (a.sortKey > b.sortKey) {
+                            return sortDirection;
+                        }
+                        return 0;
+                    }
+
+                }
+            });
+            //add the rows in the correct order to the bottom of the table
+            $.each($rows, function (index, row) {
+                if (count == no) {
+
+                }
+                else {
+                    $(' tbody').append(row);
+                    row.sortKey = null;
+                }
+            });
+            //identify the collumn sort order
+            $('th').removeClass('sorted-asc sorted-desc');
+            $sortHead = $('th').filter(':nth-child(' + (colindex + 1) + ')');
+            if (count != no) {
+                if (sortDirection == 1) {
+
+                    $sortHead.addClass('sorted-asc');
+                    $('th i').css("display", "none");
+                    $sortHead.append($('<i>', { class: 'icon-white icon-chevron-up' }))
+                    $('th i').css("float", "right");
+                    $('th i').css("margin-top", "-4px");
+                }
+                else {
+                    $sortHead.addClass('sorted-desc');
+                    $('th i').css("display", "none");
+                    $sortHead.append($('<i>', { class: 'icon-white icon-chevron-down' }))
+                    $('th i').css("float", "right");
+                    $('th i').css("margin-top", "-4px");
+                }
+            }
+            count = 0; no = 0;
+            $('td').removeClass('sorted').filter(':nth-child(' + (colindex + 1) + ')').addClass('sorted');
+            aftersorting();
+            return false;
+
+        });
+
+
+        function aftersorting() {
+            var column = "";
+            var by = "";
+            var tdindex = "";
+            for (var j = 0; j < $('th').length; j++) {
+                if ($('th')[j].className == "head1 sortable sorted-asc") {
+                    column = $('th')[j].innerText;
+                    by = " asc";
+                    tdindex = j;
+                }
+                if ($('th')[j].className == "head1 sortable sorted-desc") {
+                    column = $('th')[j].innerText;
+                    by = " desc";
+                    tdindex = j;
+                }
+            }
+            var pagecnt = "";
+            if (self.page() != 0) {
+                pagecnt = self.page();
+            }
+            if ((column != null && column != "") && (by != null && by != "") && (tdindex != null && tdindex != "")) {
+                $("tbody").empty();
+                $.ajax({
+                    url: "PagingSorting",
+                    data: { pagecnt: pagecnt, Order: column, BY: by, TDIndex: tdindex },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        self.SearchList(response.Items);
+                        self.Header(response.head);
+                        self.dsList(response.hastable);
+                    }
+                });
+            }
+        }
+
+        self.last = function () {
+            $("tbody").empty();
+            self.page(Totalpagecount);
+            pagesizes = Totalpagecount + 1;
+            $("#Lblpageno").text(Totalpagecount + 1);
+            Paging();
+            if (pagesizes == totcount) {
+                self.lastenable(true);
+                self.firstenable(false);
+            }
+        }
+
+        function Paging() {
+            var header = "", index = "";
+            $.ajax({
+                url: "PagingSearch",
+                data: { pagecount: self.page },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    self.SearchList(response.Items);
+                    self.Header(response.head);
+                    self.dsList(response.Items1);
+
+                    var tablehead = document.getElementById('dyntable').getElementsByTagName('thead')[0];
+                    for (var j = 0; j < tablehead.rows.length; j++) {
+                        //for (var k = 0; k < tablehead.children[j].cells.length; k++) {
+                        //    if (tablehead.children[j].cells[k].innerText == "Company") {
+                        //        index = k;
+                        //        header = tablehead.children[j].cells[k].innerText;
+                        //        tablehead.children[j].cells[k].style.width = "150px";
+                        //    }
+                        //}
+
+                        if (tablehead.children[j].cells[0].innerText == "Company") {
+                            header = tablehead.children[j].cells[0].innerText;
+                            tablehead.children[j].cells[0].style.width = "150px";
+                        }
+                    }
+
+                    var tableRef = document.getElementById('dyntable').getElementsByTagName('tbody')[0];
+                    for (var i = 0; i < tableRef.rows.length; i++) {
+                        if (header == "Company")
+                            tableRef.rows[i].cells[0].style.width = "150px";
+                    }
+                }
+            });
+
+        }
+
+        
+
+        $('#AllLocation').click(function () {
+            Totalpagecount;
+            pagesizes = 1;
+            totcount = 0;
+            self.search1();
+        });
+
+        self.search1 = function () {
+            $("tbody").empty();
+            var searchvalue = document.getElementById('searchlist').value;
+            $.ajax({
+                url: "SearchIn",
+                data: { value: searchvalue, text: self.txtsearch, LabelDescription: '@ViewBag.LabelDescription' },
+                type: "POST",
+                success: function (response) {
+                    self.fillsearch(true);
+                    $('#dyntable thead th').removeClass('sorted-asc sorted-desc');
+                    $('#dyntable thead th i').removeClass('icon-white icon-chevron-down icon-white icon-chevron-up');
+                }
+            });
+        };
+
+
+        self.Selected = function (item, evt) {
+            var chkheaderfrmmain = "";
+            var repselected = window.parent.parent.reportSelected;
+            var HeaderMemSearch = window.parent.parent.HeaderMemberSearch;
+            var RowIndex = evt.currentTarget.rowIndex;
+            if (!repselected || HeaderMemSearch == true) {
+                window.parent.parent.HeaderMemberSearch = false;
+                var memcallist = window.parent.document.getElementById('membersearchsrn');
+                if (memcallist != null) {
+                    window.parent.search.searchselecteditem(item, element);
+                    window.parent.document.getElementById('close1').click();
+                }
+                var myIframe = window.parent.document.getElementById('ifr');
+                if (myIframe != null) {
+                    win = myIframe.contentWindow;
+                    if (win.search != null) {
+                        var rowObj = self.dsList()[RowIndex - 1];
+                        win.search.searchselecteditem(item, element, rowObj);
+                        window.parent.document.getElementById('close1').click();
+                    }
+                    else {
+                        if (win.parent != null) {
+                            win.parent.searchselecteditem(item, element);
+                            window.parent.parent.document.getElementById('close1').click();
+                        }
+                        win.GetItemInSeachSrc(item, element);
+                        window.parent.document.getElementById('close1').click();
+                    }
+                }
+                var schIframe = window.parent.document.getElementById('viewscreen');
+                if (schIframe != null && memcallist == null && myIframe == null) { //anitha
+                    //window.parent.searchselecteditem(item, element, RowIndex);
+                    window.parent.search.searchselecteditem(item, element, RowIndex); //anitha
+                    var parentdiv = window.parent.document.getElementById('dialog');
+                    window.parent.DialogClose();
+                }
+            }
+            else {
+                var rowObj = self.dsList()[RowIndex - 1];
+                if (CallScreenObj == "") {
+                    var myIframe = window.parent.document.getElementById('ifr');
+                    if (myIframe != null) {
+                        win = myIframe.contentWindow;
+                        if (win.search != null) {
+                            win.search.searchselecteditem(item, element, rowObj);
+                            window.parent.document.getElementById('close1').click();
+                        }
+                        else {
+
+                            win.GetItemInSeachSrc(item, element);
+                            window.parent.document.getElementById('close1').click();
+                        }
+                    }
+                }
+                else {
+                    if (CallScreenObj.search != null) {
+                        if (typeof CallScreenObj.search.searchselecteditem == 'function') {
+                            CallScreenObj.search.searchselecteditem(item, element, rowObj);
+                            window.parent.document.getElementById('close1').click();
+                        }
+                        else {
+                            if (typeof CallScreenObj.searchselecteditem == 'function') {
+                                CallScreenObj.searchselecteditem(item, element, rowObj);
+                                CallScreenObj.DialogClose();
+                            }
+                            else {
+                                if (typeof CallScreenObj.GetItemInSeachSrc == 'function') {
+                                    CallScreenObj.GetItemInSeachSrc(item, element);
+                                    window.parent.document.getElementById('close1').click();
+                                }
+                            }
+                        }
+
+                    }
+                    else {
+                        CallScreenObj.GetItemInSeachSrc(item, element);
+                        window.parent.document.getElementById('close1').click();
+                    }
+
+                }
+            }
+        };
+    }
+
+
+</script>
+<span data-bind="text:LabelDescription" style="padding-right:5px; font-family:Verdana; font-size:13px; font-weight:bold;color:black;"></span><label style="font-family:Verdana; font-size:13px; font-weight:bold;color:black;">Search </label><span data-bind="text:RowCount" style="padding-right:5px; font-family:Verdana; font-size:13px; font-weight:bold;color:black;"></span><br />
+<div>
+    <div class="row-fluid">
+        <div class="span12">
+            <select class="input-medium" data-bind="foreach : search.combolist,value:selectedvalue"
+                    id="searchlist">
+                <option data-bind="text : $data[1], attr:{ value : $data[0]}"></option>
+            </select>
+            <input class="input-medium" id="searchtext" type="text" style="width: 120px;" data-bind="value: txtsearch,event:{blur : search1}" />
+            <button class="btn-mini" id="PageFirst" data-bind="disable:firstenable">
+                <i class="icon-fast-backward"></i>
+            </button>
+            <button class="btn-mini" id="PagePrevious" data-bind="disable:firstenable">
+                <i class="icon-backward"></i>
+            </button>
+            <button class="btn-mini" id="PageNext" data-bind="disable:lastenable">
+                <i class="icon-forward"></i>
+            </button>
+            <button class="btn-mini" id="PageLast" data-bind="disable:lastenable">
+                <i class="icon-fast-forward"></i>
+            </button>
+            <label>
+                Page Display
+            </label>
+            <label class="label" id="Lblpageno" style="font-size: small; font-style:oblique">
+            </label>
+            <label>
+                of
+            </label>
+            <label class="label" id="Lblpage" style="font-size: small; font-style: oblique;">
+            </label>
+
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div id="dyndiv">
+            <table id="dyntable" class="table table-bordered" style="width: 100%; overflow-y: auto; overflow-x: auto;">
+                <thead style="width:100%;" id="sort">
+                    <tr data-bind="foreach : search.Header" style="cursor:pointer;">
+                        <th class="head1 sortable" data-bind="text : $data">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody style="max-height:650px!important;width:100%;overflow-y: overlay;" data-bind="foreach: search.SearchList">
+                    <tr class="clickableRow" data-bind="foreach: $data,click: $root.Selected,attr: {id:'row'+$index()}" style="cursor:default;">
+                        <td data-bind="text: $data,attr: {id:'col'+$index()}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+        <div align="center" id="messagegrid" style="border-style: solid; border-width: 1px;
+                border-color: Black; font-family: Verdana; font-size: medium; font-weight: bold;
+                color: Maroon;">
+            No records exist
+        </div>
+    </div>
+</div>
+

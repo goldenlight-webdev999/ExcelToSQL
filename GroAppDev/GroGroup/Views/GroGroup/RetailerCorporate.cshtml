@@ -1,0 +1,658 @@
+﻿@{
+    ViewBag.Title = "CorporateProfile";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border-bottom:1px solid #eee;position:relative;padding-left:50%;width:49%;}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable td{ text-align: left !important;}
+.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}
+.dytable tr td:nth-child(2){width:auto !important;text-align:left !important;}
+.dytable tr td:nth-child(3){width:auto !important;text-align:left !important;}
+.dytable tr td:nth-child(4){width:auto !important;text-align:left !important;}
+
+.dytable tr td:nth-of-type(1):before{content:'GwAccount';font-weight: bold;}.dytable tr td:nth-of-type(2):before{content:'Company';font-weight: bold;}
+.dytable tr td:nth-of-type(3):before{content:'Address1';font-weight: bold;}.dytable tr td:nth-of-type(4):before{content:'Phone';font-weight: bold;}
+
+.dytable1 tr td:nth-of-type(1):before{content:'RetailerNo';font-weight: bold;} .dytable1 tr td:nth-of-type(2):before{content:'DistNo';font-weight: bold;}
+.dytable1 tr td:nth-of-type(3):before{content:'Oldgwno';font-weight: bold;} .dytable1 tr td:nth-of-type(4):before{content:'distlink';font-weight: bold;}
+.dytable1 tr td:nth-of-type(5):before{content:'distcode';font-weight: bold;} .dytable1 tr td:nth-of-type(6):before{content:'corp_link';font-weight: bold;}
+.dytable1 tr td:nth-of-type(7):before{content:'corp_alph';font-weight: bold;} .dytable1 tr td:nth-of-type(8):before{content:'company';font-weight: bold;}
+.dytable1 tr td:nth-of-type(9):before{content:'address1';font-weight: bold;} .dytable1 tr td:nth-of-type(10):before{content:'city';font-weight: bold;}
+.dytable1 tr td:nth-of-type(11):before{content:'state';font-weight: bold;} .dytable1 tr td:nth-of-type(12):before{content:'zip';font-weight: bold;}
+.dytable1 tr td:nth-of-type(13):before{content:'country';font-weight: bold;} .dytable1 tr td:nth-of-type(14):before{content:'saddress1';font-weight: bold;}
+.dytable1 tr td:nth-of-type(15):before{content:'scity';font-weight: bold;} .dytable1 tr td:nth-of-type(16):before{content:'sstate';font-weight: bold;}
+.dytable1 tr td:nth-of-type(17):before{content:'szip';font-weight: bold;} .dytable1 tr td:nth-of-type(18):before{content:'scountry';font-weight: bold;}
+.dytable1 tr td:nth-of-type(19):before{content:'phone';font-weight: bold;}
+
+ @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+<script type="text/javascript">
+    var search; var rowIndex = 0, corpno = "", Rcorpno="",cancel="";
+    var RetCorpNum;
+    var tablename = "";
+    $(document).ready(function () {
+        corpretail = new viewModel();
+        search = corpretail;
+        ko.applyBindings(corpretail);
+
+        $('#retailerCorp tbody tr:first').addClass('success selected');
+
+        $("#btnAdd").click({ handler: corpretail.Add });
+        $("#btnEdit").click({ handler: corpretail.Edit });
+        $("#btnSave").click({ handler: corpretail.Save });
+        $("#btnDelete").click({ handler: corpretail.Delete });
+        $("#btnCancel").click({ handler: corpretail.Cancel });
+
+    });
+
+    function viewModel() {
+        var self = this;
+
+        self.EnableDisableControls = ko.observable(false);
+        self.EnableDisableMode = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+
+
+        self.selectedvalue_zip = ko.observable();
+        //self.txtRCorpNo= ko.observable();
+        self.txtRetailerNo = ko.observable();
+        self.txtSearch = ko.observable();
+        self.txtcompany = ko.observable();
+        self.txtaddress1 = ko.observable();
+        self.txtcity = ko.observable();
+        self.txtstate = ko.observable();
+        self.txtzip = ko.observable();
+        self.txtcountry = ko.observable();
+        self.txtphone = ko.observable();
+        self.txtExt = ko.observable();
+        self.txtfax = ko.observable();
+        self.txtcode = ko.observable();
+        //self.SelectRet = ko.observable();
+        self.selectcorpProf = ko.observable();
+        self.SelectRetailer = ko.observable();
+        self.RCorpNo = ko.observable();
+        self.SelectedRet = ko.observable();
+        self.CmbCountry = ko.observableArray([]);
+        self.CmbScountry = ko.observableArray([]);
+        //self.selectedvalue_zip("zip");
+        if ($(window).height() > 700)
+            $('#retailerCorp').css('max-height', $(window).height() - 420 + 'px');
+        else
+
+            $('#retailerCorp').css('max-height', $(window).height() - 100 + 'px');
+
+
+        $(".clickableRow").live("click", function () {
+
+            if (self.SaveMode() == true && self.AddMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SaveMode() == true && self.AddMode() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+            }
+            else{
+            rowIndex = $(this).attr("id");
+            $('.clickableRow').removeClass('selected');
+            $(this).addClass('selected');
+            }
+        });
+
+        /*********Export function code ***********/
+        self.menulist = ko.observableArray([]);
+
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    //if (evecount[i].className.includes("hide")) {
+                    //    $("#chk_" + [i]).attr('checked', false);
+                    //}
+                    //else {
+                    //    $("#chk_" + [i]).attr('checked', true);
+                    //}
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+        doublesort();
+        /*********End Export function code ***********/
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'CNTRY' },
+            type: "POST",
+            success: function (response) {
+                self.CmbCountry(response.Items);
+                self.CmbScountry(response.Items);
+            }
+        });
+
+
+        function Fillretail(){
+        $.ajax({
+            url: "FillCorprof",
+            data: { corpno: corpno },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                $('#retailerCorp th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                self.selectcorpProf(response.Item);
+
+                self.RCorpNo(response.Item[0].RCorpNo);
+                self.txtRetailerNo(response.Item[0].gcno);
+                self.txtcompany(response.Item[0].gwcorp);
+
+                self.txtaddress1(response.Item[0].gwcadd1);
+                self.txtcity(response.Item[0].gwccity);
+                self.txtstate(response.Item[0].gwcst);
+                self.txtzip(response.Item[0].gwczip);
+                self.txtcountry(response.Item[0].gwcountry);
+                self.txtphone(response.Item[0].gwcphone);
+                self.txtfax(response.Item[0].gwcfax);
+                self.txtcode(response.Item[0].gwccodea);
+                self.txtExt(response.Item[0].gwcext);
+
+                if (response.rowindex > 0) {
+                    //$('#retailerCorp tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+
+                    $("#" + response.rowindex).addClass('success selected');
+                    cancel = "chk";
+                    self.SelectedRetailer(response.Item[response.rowindex]);
+                    rowIndex = response.rowindex;
+                }
+                else {
+
+                    $("#" + response.rowindex).addClass('success selected');
+                    rowIndex = response.rowindex;
+
+
+                }
+
+                tab2gridfill(response.Item[0].RCorpNo);
+                var THIndex = $('#retailerCorp thead th').length;
+                for (var i = 0; i < THIndex; i++) {
+                    //if ($('#retailerCorp thead th')[i].className.includes("hide"))
+                    //    $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    var clsname = $('#retailerCorp thead th')[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                    }
+                }
+            }
+
+        });
+
+        }
+
+
+
+        Fillretail();
+
+        self.Add = function () {
+            if (self.SaveMode() == true)
+                return false;
+            self.txtSearch("");
+            self.txtRetailerNo("");
+            self.txtcompany("");
+            self.txtaddress1("");
+            self.txtcity("");
+            self.txtstate("");
+            self.txtzip("");
+            self.txtcountry("");
+            self.txtphone("");
+            self.txtfax("");
+            self.txtcode("");
+            self.txtExt("");
+            self.AddMode(true);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            $("#Company").focus();
+            $('.clickableRow').removeClass('success selected');
+        }
+
+
+        self.Edit = function () {
+            if (self.selectcorpProf().length == 0)
+                return false;
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EnableDisableControls(true);
+            $("#Company").focus();
+        }
+
+
+        //self.txtzipsearch = function () {
+
+        //    blurevent = true;
+        //    self.txtzip(document.getElementById('zip').value);
+        //    if (self.txtzip() == null || self.txtzip() == "") {
+        //        return false;
+        //    }
+        //    $.ajax({
+        //        url: "OpSearchList",
+        //        data: { searchtable: 'OP_ZipCode', searchtext: self.txtzip(), selectedvalue: self.selectedvalue_zip() },
+        //        type: "POST",
+        //        success: function (response) {
+        //            if (response.Items.length == 1) {
+        //                self.txtcity(response.Items[0].City);
+        //                self.txtstate(response.Items[0].State);
+        //            }
+        //            else {
+
+        //                self.txtcity("");
+        //                self.txtstate("");
+        //            }
+        //        }
+        //    });
+
+        //}
+
+
+        self.txtzipsearch = function () {
+            if (self.SaveMode() == true) {
+                if (self.txtstate() == "" && self.txtcity() == "") {
+                    //blurevent = true;
+                    self.txtzip(document.getElementById('zip').value);
+                    if (self.txtzip() == null || self.txtzip() == "") {
+                        return false;
+                    }
+                    $.ajax({
+                        url: "searchzip",
+                        data: { getzip: self.txtzip() },
+                        type: "POST",
+                        success: function (response) {
+                            if (response.Items.length > 0) {
+                                self.txtcity(response.Items[0].City);
+                                self.txtstate(response.Items[0].State);
+                            }
+                            else {
+                                self.txtcity("");
+                                self.txtstate("");
+                            }
+                        }
+                    });
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+
+
+        self.Save = function () {
+
+
+            if (self.txtcompany() == null || self.txtcompany() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "You must enter the Company",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('Company').focus();
+                    }
+                });
+                $(".msgButton", false).focus();
+                return false;
+            }
+
+            if (self.txtphone() == null || self.txtphone() == "") {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "You must enter the phone",
+                    type: "info",
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('phone').focus();
+                    }
+                });
+                return false;
+            }
+            
+            $.ajax({
+                url: "ValidateRetCorpCompany",
+                data: { company: self.txtcompany(), AddMode: self.AddMode(), RetCorpNum: RetCorpNum },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items == true) {
+                        $.msgBox({
+                            title: "Gro Group", content: "Company already exists",
+                            afterClose: function (result) {
+                                self.txtcompany("");
+                                $("#Company").focus();
+                                return false;
+                            }
+                        });
+                    }
+                    else {
+                        SaveRetailerCorp();
+                    }
+                }
+            });
+           
+        }
+
+        function SaveRetailerCorp() {
+            var Objretailcorp = [];
+
+            Objretailcorp = {
+                RCorpNo: self.RCorpNo(),
+                gcno: self.txtRetailerNo().trim(),
+                gwcorp: self.txtcompany().trim(),
+                gwcadd1: self.txtaddress1().trim(),
+                gwccity: self.txtcity().trim(),
+                gwcst: self.txtstate().trim(),
+                gwczip: self.txtzip(),
+                gwcountry: self.txtcountry().trim(),
+                gwcphone: self.txtphone().trim(),
+                gwcfax: self.txtfax(),
+                gwccodea: self.txtcode().trim(),
+                gwcext: self.txtExt().trim()
+
+            }
+            $.ajax({
+                url: "Saveretailcorp",
+                type: "POST",
+                data: { objret: JSON.stringify(Objretailcorp), IsAddMode: self.AddMode(), Rcorpno: Rcorpno },
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null) {
+                        alert("Gro Group", response.ItemMsg);
+                    } else {
+                        corpno = response.Item;
+                        $('#retailerCorp tbody tr').remove();
+                        Fillretail();
+                    }
+
+                }
+
+            });
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+            self.EnableDisableControls(false);
+        }
+
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EnableDisableMode(true);
+            self.EnableDisableControls(false);
+            cancel = "chk";
+            self.SelectedRetailer(self.selectcorpProf()[rowIndex]);
+            $('#retailerCorp tbody tr:eq(' + rowIndex + ')').addClass('success selected');
+
+        }
+
+        self.Delete = function () {
+            if (self.SaveMode() == true || self.selectcorpProf().length == 0)
+                return false;
+            alerterror("Denied", "Record cannot be deleted");
+        }
+
+
+
+        self.SelectedRetailer = function (item) {
+            if (self.SaveMode() == true)
+                return false;
+
+            self.RCorpNo(item.RCorpNo);
+            self.txtRetailerNo(item.gcno);
+            self.txtcompany(item.gwcorp);
+
+            self.txtaddress1(item.gwcadd1);
+            self.txtcity(item.gwccity);
+            self.txtstate(item.gwcst);
+            self.txtzip(item.gwczip);
+            self.txtcountry(item.gwcountry);
+            self.txtphone(item.gwcphone);
+            self.txtfax(item.gwcfax);
+            self.txtcode(item.gwccodea);
+            self.txtExt(item.gwcext);
+            tab2gridfill(item.RCorpNo);
+            if (cancel != "chk") {
+                $("#Retail").click();
+                cancel = "";
+            }
+            cancel = "";
+        }
+
+        self.singleclick = function (item) {
+            if (self.SaveMode() == true)
+                return false;
+
+            self.RCorpNo(item.RCorpNo);
+            RetCorpNum = item.RCorpNo;
+            self.txtRetailerNo(item.gcno);
+            self.txtcompany(item.gwcorp);
+
+            self.txtaddress1(item.gwcadd1);
+            self.txtcity(item.gwccity);
+            self.txtstate(item.gwcst);
+            self.txtzip(item.gwczip);
+            self.txtcountry(item.gwcountry);
+            self.txtphone(item.gwcphone);
+            self.txtfax(item.gwcfax);
+            self.txtcode(item.gwccodea);
+            self.txtExt(item.gwcext);
+            tab2gridfill(item.RCorpNo);
+
+
+        }
+
+
+        function tab2gridfill(RCorpNo) {
+            $.ajax({
+                url: "Fillretail",
+                type: "POST",
+                data: { Rcorpno: RCorpNo },
+                success: function (response) {
+                    self.SelectRetailer(response.Item1);
+
+                }
+            });
+        }
+
+
+
+        self.SelectedRet = function (item) {
+            self.RCorpNo(item.RCorpNo);
+            window.parent.document.getElementById('ifr').src = "../GroGroup/Retailers?RcorpNo=" + item.RetailerNo + "";
+           window.parent.document.getElementById('ifr').click();
+
+        }
+
+    }
+
+    //Export function code 
+
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "RetailerCorporate", tablename + "_.csv", "Screen", tablename + "_");
+    }
+
+</script>
+
+
+<div id="tabs" class="tabbedwidget tab-primary">
+    <ul>
+        <li><a href="#tab1" id="CorpProf">Retailers-Corporate</a></li>
+        <li><a href="#tab2" id="Retail">Retailers</a></li>
+    </ul>
+    <div id="tab1">
+        <div class="row-fluid container" style="max-width:900px !important; text-align:left;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAdd"><i class="icon-file icon-white"></i></a></li>
+                        <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDelete"><i class="icon-remove icon-white"></i></a></li>
+                        <li data-bind="enable:SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="widgetbox">
+                    <h4 class="widgettitle">Corporate Profile</h4>
+                    <div class="widgetcontent">
+                        <div class="row-fluid" style="margin-top:-2%">
+                            <div class="widgetcontent" style="border:1px#BCD8F3 solid;margin-top:1%">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <label class="span4 mob-span">Company</label>
+                                        <input id="Company" style="width:253px" class="mob-text" type="text" maxlength="40" data-bind="disable:EnableDisableMode,value:txtcompany" required />
+                                    </div>
+                                    <div class="span6">
+                                        <label class="span4 mob-span">Address</label>
+                                        <input id="address1" type="text" class="mob-text" style="width:253px" maxlength="35" data-bind="disable:EnableDisableMode,value:txtaddress1" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <label class="span4 mob-span"> City</label>
+                                        <input id="city" type="text" class="mob-text" style="width:253px" maxlength="20" data-bind="disable:EnableDisableMode, value:txtcity" />
+                                    </div>
+                                    <div class="span6">
+                                        <label class="span4 mob-span"> St-Pr/Zip/Country</label>
+                                        <input id="state" type="text" class="mob-state-width" style="width:35px;" maxlength="2" data-bind="disable:EnableDisableMode,value:txtstate" />
+                                        <input id="zip" type="text" class="mob-zip-width" style="width:80px;" maxlength="10" data-bind="disable:EnableDisableMode,value:txtzip,event:{blur:txtzipsearch}" />
+                                        <select id="country" class="mob-cntry-width" style="background-color:white;width:120px" maxlength="2" data-bind="disable:EnableDisableMode, options:CmbCountry,optionsText:'descript',optionsValue:'entry',value:txtcountry"></select>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <label class="span4 mob-span">Phone / Ext</label>
+                                        <input id="phone" type="text" style="width:145px;" class="mob-text" onkeypress="return numbersonly(this,event,true);" maxlength="12" required data-bind="disable:EnableDisableMode,value:txtphone" />
+                                        <input id="Ext" type="text" class="input-small mob-text" onkeypress="return numbers(this,event,true);" maxlength="5" data-bind="disable:EnableDisableMode,value:txtExt" />
+                                    </div>
+                                    <div class="span6">
+                                        <label class="span4 mob-span">Fax / Code A</label>
+                                        <input id="fax" type="text" class="input-small mob-text" style="width:145px;" onkeypress="return numbersonly(this,event,true);" maxlength="12" data-bind="disable:EnableDisableMode,value:txtfax" />
+                                        <input id="codea" type="text" class="input-small mob-text" maxlength="1" data-bind="disable:EnableDisableMode,value:txtcode" />
+                                    </div>
+                                </div>
+
+                                <div class="row-fluid">
+                                    <table id="retailerCorp" style="width:100%" class="dytable table table-bordered table-hover tablesort">
+                                        <thead style="width:100%">
+                                            <tr class="exportclass">
+                                                <th style="width:9%;">GwAccount<i class="icon1" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="width:18%;">Company<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="width:20%;">Address1<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                                <th style="width:11%;">Phone<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="width:100%;overflow-y:overlay" data-bind="foreach:selectcorpProf">
+                                            <tr class="clickableRow" data-bind="attr: {id:$index()},click: $root.singleclick,event : {dblclick: $root.SelectedRetailer }">
+                                                <td style="width:9%;" data-bind="text: gcno"></td>
+                                                <td style="width:18%;" data-bind="text: gwcorp"></td>
+                                                <td style="width:20%;" data-bind="text: gwcadd1"></td>
+                                                <td style="width:11%;" data-bind="text: gwcphone"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab2">
+        <div class="row-fluid">
+            <table id="TbDistContact" class="dytable dytable1 table table-bordered table-hover">
+                <thead style="width:100%">
+                    <tr>
+                        <th>RetailerNo</th>
+                        <th>DistNo</th>
+                        <th>Oldgwno</th>
+                        <th>distlink</th>
+                        <th>distcode</th>
+                        <th>corp_link</th>
+                        <th>corp_alph</th>
+                        <th>company</th>
+                        <th>address1</th>
+                        <th>city</th>
+                        <th>state</th>
+                        <th>zip</th>
+                        <th>country</th>
+                        <th>saddress1</th>
+                        <th>scity</th>
+                        <th>sstate</th>
+                        <th>szip</th>
+                        <th>scountry</th>
+                        <th>phone</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach:SelectRetailer" style="width:100%;overflow-y:overlay;">
+                    <tr class="clickableRow" data-bind="attr: {id:$index()},event : {dblclick: $root.SelectedRet }">
+                        <td data-bind="text: RetailerNo"></td>
+                        <td data-bind="text: DistNo"></td>
+                        <td data-bind="text: Oldgwno"></td>
+                        <td data-bind="text: distlink"></td>
+                        <td data-bind="text: distcode"></td>
+                        <td data-bind="text: corp_link"></td>
+                        <td data-bind="text: corp_alph"></td>
+                        <td data-bind="text: company"></td>
+                        <td data-bind="text: address1"></td>
+                        <td data-bind="text: city"></td>
+                        <td data-bind="text: state"></td>
+                        <td data-bind="text: zip"></td>
+                        <td data-bind="text: country"></td>
+                        <td data-bind="text: saddress1"></td>
+                        <td data-bind="text: scity"></td>
+                        <td data-bind="text: sstate"></td>
+                        <td data-bind="text: szip"></td>
+                        <td data-bind="text: scountry"></td>
+                        <td data-bind="text: phone"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    

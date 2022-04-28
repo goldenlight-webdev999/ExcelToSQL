@@ -1,0 +1,519 @@
+﻿
+@{
+    ViewBag.Title = "UpdateData";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;}.dytable tr td:nth-child(4){width:auto !important;}.dytable tr td:nth-child(10){width:auto !important;}
+                    .dytable tr td:nth-of-type(1):before{content:'Refcomp';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'Mfgupc';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'Upcparent';font-weight: bold;}
+                    .dytable tr td:nth-of-type(4):before{content:'Mcodea';font-weight: bold;}
+                    .dytable tr td:nth-of-type(5):before{content:'Mcodeb';font-weight: bold;}
+                    .dytable tr td:nth-of-type(6):before{content:'Sty_dists';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(7):before{content:'Sty_tot';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(8):before{content:'Pty_dists';font-weight: bold;text-align:left}
+                    .dytable tr td:nth-of-type(9):before{content:'Pty_tot';font-weight: bold;text-align:left}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+        @Html.Raw(CssStyle)
+</style>
+
+<script type="text/javascript">
+
+    var UpdPS;
+    var fid = 0;
+    var arr;
+    $(document).ready(function () {
+
+        UpdPS = new viewModel();
+        ko.applyBindings(UpdPS);
+
+        $("#btnUpd").click({ handler: UpdPS.UpdPSClick });
+        $("#btnUpload").click({ handler: UpdPS.UploadClick });
+        $("#txtyymm").blur({ handler: UpdPS.YearMonthChange });
+
+    });
+
+    function viewModel() {
+        var self = this;
+        var fname = "";
+        var defyrmn = '@ViewBag.DefYrMonth';
+        $("#txtyymm").val(defyrmn);
+
+
+        self.filelist = ko.observableArray([]);
+
+        self.UploadClick = function () {
+            if (document.getElementById('txtyymm').value == null || document.getElementById('txtyymm').value == "") {
+                alert("Update P&S Data", "Please enter yearmonth", true, false);
+                document.getElementById('txtyymm').focus();
+                return;
+            }
+
+            var isdatecomplvalidate = "";
+            if (document.getElementById('txtyymm').value != null && document.getElementById('txtyymm').value != "") {
+                if (document.getElementById('txtyymm').value.length == 6) {
+                    isdatecomplvalidate = true;
+                    isdatecomplvalidate = isValidPeriod(document.getElementById('txtyymm').value);
+                }
+                else {
+                    isdatecomplvalidate = false;
+                }
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the valid year/month",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('txtyymm').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            document.getElementById('updbrowse').click();
+        }
+
+        self.YearMonthChange = function () {
+            if (document.getElementById('txtyymm').value != null && document.getElementById('txtyymm').value != "") {
+                ProcessUpdatePSData(true);
+            }
+        }
+
+        self.UpdPSClick = function () {
+            ProcessUpdatePSData(false);
+        }
+
+
+        function ProcessUpdatePSData(isload) {
+            if (document.getElementById('txtyymm').value == null || document.getElementById('txtyymm').value == "") {
+                alert("Update P&S Data", "Please enter yearmonth", true, false);
+                document.getElementById('txtyymm').focus();
+                return;
+            }
+            else {
+                var isdatecomplvalidate="";
+                if (document.getElementById('txtyymm').value != null && document.getElementById('txtyymm').value != "") {
+                    if (document.getElementById('txtyymm').value.length == 6) {
+                        isdatecomplvalidate = true;
+                        isdatecomplvalidate = isValidPeriod(document.getElementById('txtyymm').value);
+                    }
+                    else {
+                        isdatecomplvalidate = false;
+                    }
+                    if (isdatecomplvalidate == false) {
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: "Please enter the valid year/month",
+                            type: "info",
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                document.getElementById('txtyymm').focus();
+                            }
+                        });
+                        return false;
+                    }
+                }
+                $.ajax({
+                    url: "ProcessUpdatePSData",
+                    type: "POST",
+                    async: false,
+                    data: { ym: document.getElementById('txtyymm').value },
+                    success: function (response) {
+                        self.filelist(response.StausFileList);
+                        if (response.msg == "") {
+                            arr = response.Items;
+                            if (arr.length > 0) {
+                                if(isload == false)
+                                    UpdatePSData(arr[0].fname);
+                            }
+                            else {
+                                alert("Update P&S Data", "No files found", true, false);
+                            }
+                        }
+                        else {
+                            alert("Update P&S Data", response.msg, true, false);
+                        }
+                    },
+                    error: function (Request, textStatus, errorThrown) {
+                        alert("Update P&S Data", Request.responseText, true, false);
+                    }
+                });
+
+            }
+        }
+
+        function UpdatePSData(fn) {
+            $.ajax({
+                url: 'UpdatePSData',
+                type: 'POST',
+                async: false,
+                data: { ym: document.getElementById('txtyymm').value, fname: fn },
+                success: function (response) {
+                    if (response.fileName != "") {
+                        var pfilename = response.fileName;
+                        fname = fn; 
+                        if (response.msg != null && response.msg != "") {
+
+                            var msgtext = response.msg; 
+                            $.msgBox({
+                                title: "File: " + fname,
+                                content: msgtext,
+                                type: "info",
+                                parent: true,
+                                buttons: [{ value: "Ok" }],
+                                success: function (result) {
+                                    fid = fid + 1;
+                                    if (fid < arr.length) {
+                                        UpdatePSData(arr[fid].fname);
+                                    }
+                                    else {
+                                        fid = 0;
+                                    }
+                                }
+                            });
+
+                        }
+                        else if (response.info != null && response.info != "") {
+                            if (response.info == "Data exists") {
+
+                                var tname;
+                                if (response.Ext == ".sls")
+                                    tname = "Sales";
+                                else
+                                    tname = "Purchase";
+
+                                var msgtext = tname + " Data For " + document.getElementById('txtyymm').value + " Found!. Confirm Append ?";
+                                $.msgBox({
+                                    title: "File: " + fname,
+                                    content: msgtext,
+                                    type: "confirm",
+                                    parent: true,
+                                    buttons: [{ value: "Yes" }, { value: "No" }],
+                                    success: function (result) {
+                                        if (result == "Yes") {
+                                            UpdateFileStatus(fname, msgtext, "Yes", "", "");
+                                            UpdateSLSPURData(response.Ext, pfilename, response.isDelimiter, response.fpath);
+
+                                        }
+                                        else {
+
+                                            $.ajax({
+                                                url: "DeleteTempCsvFile",
+                                                data: { fileName: pfilename },
+                                                type: "POST",
+                                                async: false,
+                                                success: function (response) {                                                    
+                                                },
+                                                error: function (Request, textStatus, errorThrown) {
+                                                    alert("Delete PS TempFile", Request.responseText, true, false);
+                                                }
+                                            });
+
+                                            fid = fid + 1;
+                                            UpdateFileStatus(fname, msgtext, "No", "", "");
+                                            if (fid < arr.length) {
+                                                UpdatePSData(arr[fid].fname);
+                                            }
+                                            else {
+                                                fid = 0;
+                                            }
+
+
+                                        }
+                                    }
+                                });
+
+                            }
+                            else if (response.info == "year month not match") {
+                                var warnmsg = "Year Month Not Match!. Data will not be updated.";
+                                $.msgBox({
+                                    title: "File: " + fname,
+                                    content: warnmsg,
+                                    type: "info",
+                                    parent: true,
+                                    buttons: [{ value: "Ok" }],
+                                    success: function (result) {
+                                        fid = fid + 1;
+                                        UpdateFileStatus(fname, warnmsg, "Ok", "Warning", "");
+                                        if (fid < arr.length) {
+                                            UpdatePSData(arr[fid].fname);
+                                        }
+                                        else {
+                                            fid = 0;
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                $.msgBox({
+                                    title: "File: " + fname,
+                                    content: response.info,
+                                    type: "info",
+                                    parent: true,
+                                    buttons: [{ value: "Ok" }],
+                                    success: function (result) {
+                                        fid = fid + 1;
+                                        UpdateFileStatus(fname, response.info, "Ok", "No", "");
+                                        if (fid < arr.length) {
+                                            UpdatePSData(arr[fid].fname);
+                                        }
+                                        else {
+                                            fid = 0;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        else {
+
+                            var msgtxt = "Are you sure want to Update Data?";
+                            $.msgBox({
+                                title: "File: " + fname,
+                                content: msgtxt,
+                                type: "confirm",
+                                parent: true,
+                                buttons: [{ value: "Yes" }, { value: "No" }],
+                                success: function (result) {
+                                    if (result == "Yes") {
+                                        UpdateFileStatus(fname, msgtxt, "Yes", "", "");
+                                        UpdateSLSPURData(response.Ext, pfilename, response.isDelimiter, response.fpath);
+                                    }
+                                    else {
+
+                                        $.ajax({
+                                            url: "DeleteTempCsvFile",
+                                            data: { fileName: pfilename },
+                                            type: "POST",
+                                            async: false,
+                                            success: function (response) {
+                                            },
+                                            error: function (Request, textStatus, errorThrown) {
+                                                alert("Delete PS TempFile", Request.responseText, true, false);
+                                            }
+                                        });
+
+
+                                        fid = fid + 1;
+                                        UpdateFileStatus(fname, msgtxt, "No", "", "");
+                                        if (fid < arr.length) {
+                                            UpdatePSData(arr[fid].fname);
+                                        }
+                                        else {
+                                            fid = 0;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    alert("Update P&S Data", Request.responseText, true, false);
+                }
+            });
+        }
+
+
+        function UpdateSLSPURData(ext, pfilename, isDelimiter, fpath) {
+
+            $("#loading").fadeIn();
+            var method;
+            if (ext == ".sls")
+                method = "UpdateSalesImport";
+            else
+                method = "UpdatePurchaseImport";
+            $.ajax({
+                url: method,
+                data: { fileName: pfilename, isDelimiter: isDelimiter, fpath: fpath, ym: document.getElementById('txtyymm').value },
+                type: "POST",
+                //async: false,
+                success: function (response) {
+
+                    $("#loading").fadeOut();
+                    if (response.Msg != null && response.Msg != "") {
+                        fid = fid + 1;
+                        UpdateFileStatus(fname, response.Msg, "Not Ok", "Error", "");
+                        if (fid < arr.length) {
+                            UpdatePSData(arr[fid].fname);
+                        }
+                        else {
+                            fid = 0;
+                            //ProcessUpdatePSData(true);
+                        }
+                    }
+                    else {
+
+                        fid = fid + 1;
+                        if (response.Items != null && response.Items != "" && response.Items > 0) {
+                            UpdateFileStatus(fname, "[" + response.Items + "] Bad records found. Please see the error file. Remaing [" + response.RowCount + "] records are updated successfully!", "Ok", "Ok with bad", response.RowCount);
+
+                            var typ = "";
+                            if (method == "UpdateSalesImport") {
+                                typ = "SALES";
+                            }
+                            else {
+                                typ = "PURCHASE";
+                            }
+
+                            $.ajax({
+                                url: "CreatePSErrorFile",
+                                type: "POST",
+                                data: { type: typ },
+                                success: function (response) {
+                                    document.getElementById('lnkfile').target = "_blank";
+                                    document.getElementById('lnkfile').href = "DownloadPSErrorFile?fname=" + response.Items;
+                                    document.getElementById('lnkfile').click();
+                                },
+                                error: function (Request, textStatus, errorThrown) {
+                                    alert("Update P&S Data", Request.responseText, true, false);
+                                }
+                            });
+
+                        }
+                        else {
+                            UpdateFileStatus(fname, "Updated successfully!", "Ok", "Ok", response.RowCount);
+                        }
+                        if (fid < arr.length) {
+                            UpdatePSData(arr[fid].fname);
+                        }
+                        else {
+                            fid = 0;
+                            //ProcessUpdatePSData(true);
+                        }
+                    }
+
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    $("#loading").fadeOut();
+                    alert(fname, Request.responseText, true, false);
+                }
+            });
+        }
+
+        
+        self.upddatachange = function () {
+            $("#Excelform").ajaxSubmit({
+                url: 'UploadPURSLSFile',
+                type: 'post',
+                data: { ym: document.getElementById('txtyymm').value },
+                success: function (response) {
+                    
+                    document.getElementById('updbrowse').value = "";
+
+                    if (response.msg != "") {
+                        alert("Upload P&S File", response.msg, true, false);
+                    }
+                    else {
+                        $.msgBox({
+                            title: "Upload P&S File",
+                            content: "Uploaded successfully!",
+                            type: "info",
+                            parent: true,
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                self.UpdPSClick();
+                            }
+                        });
+                    }
+
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    alert("Upload P&S File", Request.responseText, true, false);
+                }
+            });
+        }
+
+        function UpdateFileStatus(fname, umsg, uaction, ustatus, rows) {
+            var tableRef = document.getElementById('tblstatus').getElementsByTagName('tbody')[0];
+
+            for (var i = 0; i < tableRef.rows.length ; i++) {
+
+                if (tableRef.rows[i].cells[0].innerText != null && tableRef.rows[i].cells[0].innerText != "" && tableRef.rows[i].cells[0].innerText == fname) {
+                    if (ustatus == "Ok") {
+                        tableRef.rows[i].cells[3].innerText = ustatus; //completed
+                        tableRef.rows[i].cells[4].innerText = rows; //rows
+                    }
+                    else if (ustatus == "Ok with bad") {
+                        tableRef.rows[i].cells[1].innerText = umsg; //user msg
+                        tableRef.rows[i].cells[3].innerText = "Ok"; //completed
+                        tableRef.rows[i].cells[4].innerText = rows; //rows
+                    }
+                    else {
+
+                        tableRef.rows[i].cells[1].innerText = umsg; //user msg
+                        if (ustatus == "Error")
+                            tableRef.rows[i].cells[2].innerText = "Yes"; //user action
+                        else
+                            tableRef.rows[i].cells[2].innerText = uaction; //user action
+                        tableRef.rows[i].cells[3].innerText = ustatus; //completed
+                        tableRef.rows[i].cells[4].innerText = ""; //rows
+                    }
+                }
+
+            }
+
+        }
+
+        ProcessUpdatePSData(true);
+
+    }
+
+</script>
+
+<center>
+    <div style="max-width:1200px !important; text-align:left;">
+        <div class="row-fluid">
+            <div class="widgetbox">
+                <h4 class="widgettitle">Update P&S Data</h4>
+                <div class="widgetcontent">
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <label class="span4"></label>
+                            <label class="span2 mob-span" style="text-align:center">
+                                Year/Month
+                            </label>
+                            <input id="txtyymm" type="text" class="input-small mob-text" maxlength="6" onkeypress="return numbers(this)" placeholder="YYYYMM" />
+                            <input id="btnUpd" class="btn btn-primary" type="button" value="Update" />
+                            <input id="btnUpload" class="btn btn-primary" type="button" value="Upload" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <table id="tblstatus" class="dytable table table-bordered table-hover main-tablesort" style="width: 99%;overflow-y: auto; overflow-x: auto;">
+                <thead style="width:100%;">
+                    <tr class="main-exportclass">
+                        <th>File Name</th>
+                        <th>User Message</th>
+                        <th>User Action</th>
+                        <th>Completed</th>
+                        <th>Rows</th>
+                    </tr>
+                </thead>
+                <tbody style="overflow: overlay; max-height: 150px;" data-bind="foreach: $root.filelist">
+                    <tr style="cursor:pointer;">
+                        <td data-bind="text:filename"></td>
+                        <td data-bind="text:usermsg"></td>
+                        <td data-bind="text:useraction"></td>
+                        <td data-bind="text:status"></td>
+                        <td data-bind="text:rows"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</center>
+<form id="Excelform" method="post" enctype="multipart/form-data" style="width: 0px; height: 0px;">
+    <input id="updbrowse" name="file" value="browse" type="file" style="width: 0px; display:none;" data-bind="event:{ change: $root.upddatachange}" multiple />
+</form>
+<input id="btnStatus" class="btn btn-primary" type="button" value="" style="display:none;" />
+<a id="lnkfile" style="display:none;"></a>

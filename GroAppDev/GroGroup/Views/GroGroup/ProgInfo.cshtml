@@ -1,0 +1,3325 @@
+﻿
+@{
+    ViewBag.Title = "ProgInfo";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="@Url.Content("~/css/Theadscroll.css")" rel="stylesheet" />
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:1024px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable tr td:nth-child(1){width:auto !important;text-align:left !important;text-align:left !important;}.dytable tr td:nth-child(2){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(3){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(4){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(5){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(6){width:auto !important;text-align:left !important;}.dytable tr td:nth-child(7){width:auto !important;text-align:left !important;}
+                    .dytable tr td:nth-of-type(1):before{content:'SPP Seq. Code';font-weight: bold;}
+                    .dytable tr td:nth-of-type(2):before{content:'Description';font-weight: bold;}
+                    .dytable tr td:nth-of-type(3):before{content:'UPC';font-weight: bold;}
+                    .dytable tr td:nth-of-type(4):before{content:'Mfr.Item #';font-weight: bold;}
+                    .dytable tr td:nth-of-type(5):before{content:'Suggested Retailer';font-weight: bold;text-align:left !important;}
+                    .dytable tr td:nth-of-type(6):before{content:'Suggested Dealer';font-weight: bold;text-align:left !important;}
+                    .dytable tr td:nth-of-type(7):before{content:'Distributor Each';font-weight: bold;text-align:left !important;}
+
+                    .dytable1 tr td:nth-of-type(1):before{content:'Revision Year';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(2):before{content:'Promotion Description';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(3):before{content:'Desc';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(4):before{content:'S_status';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(5):before{content:'S_revyr';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(6):before{content:'S_revdesc';font-weight: bold;}
+                    .dytable1 tr td:nth-of-type(7):before{content:'Abc_disc';font-weight: bold;}
+                  @media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+
+<style type="text/css">
+    @Html.Raw(CssStyle)
+</style>
+<style>
+    /** {box-sizing: border-box}
+    body {font-family: "Lato", sans-serif;}*/
+
+    /* Style the tab */
+    div.tab {
+        float: left;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        width: 10%;
+    }
+
+        /* Style the buttons inside the tab */
+        div.tab button {
+            display: block;
+            /*background-color: inherit;*/
+            /*background:  #000020;*/
+            background: #142e54;
+            color: white;
+            padding: 10px 14px;
+            width: 100%;
+            border: none;
+            outline: none;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 15px;
+        }
+
+            /* Change background color of buttons on hover */
+            div.tab button:hover {
+                /*background-color: #0079C1 ;*/
+                color: #2A2;
+            }
+
+            /* Create an active/current "tab button" class */
+            div.tab button.active {
+                /*background-color: #ccc;*/
+                color: #2A2;
+            }
+
+    /* Style the tab content */
+    .tabcontent {
+        float: left;
+        padding: 0px 12px;
+        /*border: 1px solid #ccc;*/
+        width: 80%;
+        /*border-left: none;*/
+        height: 98%;
+    }
+
+    .SaveColor:hover, .SaveColor:active, .SaveColor:focus, .btn-group.open .SaveColor .dropdown-toggle {
+        background: #149216;
+    }
+
+    .SaveColor, .SaveColor:link {
+        background: #149216;
+        border-color: #daa004;
+    }
+
+    textarea {
+        overflow: hidden;
+    }
+
+     /*.ui-dialog{
+        width:1100px !important;
+        left: 320px !important;
+    }*/
+
+    /*#Comments{
+            display:inline-block !important;
+            background-color:#fff;
+        }*/
+
+    /*#ds_cmmt___livespell_proxy{
+            font-size: 14px !important;
+            height: 31px !important;
+    }
+    #jsspellcheck__element__1___livespell_proxy{
+        width: 630px !important;
+    }*/
+
+    
+</style>
+
+<script type="text/javascript">
+    var submenuname = "";
+    var rowIndex = 0, MPLrowIndex = 0;
+    var ProgInfo = "";
+    var GMfgNo = "", company = "", oldmfg = "", SppScpNo = "";
+    var search;
+    var blurevent = false, mfgblurevent = false;
+    var dbclick = false, mfgdblclick = false;
+    var mainfield = "";
+    var mainheader = "";
+    var clicked = "";
+    var tablename = "", evecount = "";
+    var dyclass = "", parents = "", sortDirection = "";
+    var menuName = 'BPO';
+
+    var PRIM = "", SEC = "", CLSCD = "";
+
+    $(document).ready(function () {
+        proginfo = new viewModel();
+        search = proginfo;
+        ko.applyBindings(proginfo);
+
+        //ProgInfo BPO Screen Code
+        $("#btnEditBpo").click({ handler: proginfo.EditBpo });
+        $("#btnSaveBpo").click({ handler: proginfo.SaveBpo });
+        $("#btnCancelBpo").click({ handler: proginfo.CancelBpo });
+
+        //Bpo Notes Screen Code
+        $("#btnEditBpoNotes").click({ handler: proginfo.EditBpoNotes });
+        $("#btnSaveBpoNotes").click({ handler: proginfo.SaveBpoNotes });
+        $("#btnCancelBpoNotes").click({ handler: proginfo.CancelBpoNotes });
+
+        //SPP
+        $("#btnSppAdd").click({ handler: proginfo.SppAdd });
+        $("#btnSppEdit").click({ handler: proginfo.SppEdit });
+        $("#btnSppSave").click({ handler: proginfo.SppSave });
+        $("#btnSppDelete").click({ handler: proginfo.SppDelete });
+        $("#btnSppCancel").click({ handler: proginfo.SppCancel });
+
+        //PRG(1 OF 2) Screen Code
+        $("#btnEditPRG1").click({ handler: proginfo.EditPRG1 });
+        $("#btnSavePRG1").click({ handler: proginfo.SavePRG1 });
+        $("#btnCancelPRG1").click({ handler: proginfo.CancelPRG1 });
+
+        //PRG(2 OF 2) Screen Code
+        $("#btnEditPRG2").click({ handler: proginfo.EditPRG2 });
+        $("#btnSavePRG2").click({ handler: proginfo.SavePRG2 });
+        $("#btnCancelPRG2").click({ handler: proginfo.CancelPRG2 });
+
+        //MDS Screen Code
+        $("#btnEditMDS").click({ handler: proginfo.EditMDS });
+        $("#btnSaveMDS").click({ handler: proginfo.SaveMDS });
+        $("#btnCancelMDS").click({ handler: proginfo.CancelMDS });
+
+        //SPPListing
+        $("#btnAddMPL").click({ handler: proginfo.AddMPL });
+        $("#btnEditMPL").click({ handler: proginfo.EditMPL });
+        $("#btnSaveMPL").click({ handler: proginfo.SaveMPL });
+        $("#btnDeleteMPL").click({ handler: proginfo.DeleteMPL });
+        $("#btnCancelMPL").click({ handler: proginfo.CancelMPL });
+        $('#TblSPPList tbody tr:first').addClass('success selected');
+
+        $("#dialog").dialog({
+            draggable: false,
+            autoOpen: false,
+            autoresize: false,
+            modal: true,
+            position: ["top", 0],
+            dragable: false,
+            width: 1100,
+            height: 500
+        })
+
+        $('#TblSPP tbody tr:first').addClass('success selected');
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('table#TblSPPList tbody').css("overflow-y", "scroll");
+            $('table#TblSPPList tbody').css("height", "30em");
+            $('table#TblSPPList thead').css("width", "98.5%");
+
+            $('table#TblSPP tbody').css("overflow-y", "scroll");
+            $('#TblSPPdiv').css('height', $(window).height() - 520 + 'px');
+            $('table#TblSPP thead').css("width", "98.5%");
+        }
+
+
+        $(".ui-dialog-titlebar-close").click(function () {
+            document.getElementById('viewscreen').src = "";
+            var upc = document.getElementById('upc').value;
+            var mfg = document.getElementById('txtmfgitem').value;
+
+            if (upc == "%") {
+                document.getElementById('upc').value="";
+            }
+            if (mfg == "%") {
+                document.getElementById('txtmfgitem').value = "";
+            }
+
+        });
+    });
+
+    function viewModel() {
+        var self = this;
+        self.cmbstatus = ko.observableArray([]);
+        window.parent.CallEnableTabs();
+
+        $(".clickableRow").live("click", function () {
+            if (self.SppSaveMode() == true && self.SppAddMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            else if (self.SppSaveMode() == true && self.SppAddMode() == false) {
+                $('.clickableRow').removeClass('success selected');
+                $('#' + rowIndex).addClass('success selected');
+
+            }
+            else {
+                rowIndex = $(this).attr("id");
+                $('.clickableRow').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+
+        /*********Export function code ***********/
+        self.menulist = ko.observableArray([]);
+
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+                    self.menulist.push(evecount[i].innerText);
+                    //if (evecount[i].className.includes("hide")) {
+                    //    $("#chk_" + [i]).attr('checked', false);
+                    //}
+                    //else {
+                    //    $("#chk_" + [i]).attr('checked', true);
+                    //}
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+
+        function sort(column) {
+            //$("#loading").fadeIn();
+            var findSortKey = function ($cell) {
+                return $cell.find('.sort-key').text().toUpperCase() + ' ' + $cell.text().toUpperCase();
+            };
+            //var sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+            var $rows = $("." + dyclass).find('tbody tr').get();
+            var bob = 0;
+            //loop through all the rows and find
+            $.each($rows, function (index, row) {
+                row.sortKey = findSortKey($(row).children('td').eq(column));
+            });
+            var self = this;
+            var $buttons = $('.sort');
+            idx = $buttons.index(this);
+            //compare and sort the rows alphabetically or numerically
+            $rows.sort(function (a, b) {
+                var $obj1 = $(a).find('td').eq(idx),
+                $obj2 = $(b).find('td').eq(idx),
+                value1, value2;
+                count++;
+                if (a.sortKey == b.sortKey) {
+                    no++;
+                    return 0;
+                }
+                else {
+                    if (a.sortKey.trim() == "" && b.sortKey.trim() == "") {
+                        return -sortDirection;
+                    }
+                    if ($.isNumeric((a.sortKey.replace(/\,/g, '').trim())) == true && $.isNumeric((b.sortKey.replace(/\,/g, '').trim())) == true) {
+                        //numeracy check
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) < parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return -sortDirection;
+                        }
+                        if (parseFloat(a.sortKey.replace(/\,/g, '').trim()) > parseFloat(b.sortKey.replace(/\,/g, '').trim())) {
+                            return sortDirection;
+                        }
+                    }
+                    else if ((a.sortKey).split(":").length - 1 == 1) {
+                        //time check
+                        var res = (a.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        var ser = (b.sortKey).replace("PM", " PM").replace("AM", " AM");
+                        a = new Date('1970/01/01 ' + res);
+                        b = new Date('1970/01/01 ' + ser);
+                        return a < b ? -sortDirection : a > b ? sortDirection : 0;
+                    }
+                    else if ((a.sortKey).split(" ").length - 1 >= 90) {
+                        value1 = $obj1.find("input")[0].checked;
+                        value2 = $obj2.find("input")[0].checked;
+                        return value1 < value2 ? -sortDirection : value1 > value2 ? sortDirection : 0;
+                    }
+                    else {
+                        //alphabetic check
+                        if (a.sortKey.replace(/\,/g, '').trim() < b.sortKey.replace(/\,/g, '').trim()) {
+                            return -sortDirection;
+                        }
+                        if (a.sortKey.replace(/\,/g, '').trim() > b.sortKey.replace(/\,/g, '').trim()) {
+                            return sortDirection;
+                        }
+                    }
+                    return 0;
+                }
+            });
+
+            //add the rows in the correct order to the bottom of the table
+            $.each($rows, function (index, row) {
+                if (count == no) {
+                }
+                else {
+                    $('.' + dyclass + ' tbody').append(row);
+                    //$('.tablesorting tbody').append();
+                    row.sortKey = null;
+                }
+            });
+            //identify the collumn sort order
+            $('.' + dyclass + ' th').removeClass('sorted-asc sorted-desc');
+            $('.' + dyclass + ' th i').removeClass('icon-white icon-chevron-down icon-white icon-chevron-up');
+
+            var $sortHead = $('.' + dyclass + ' th').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')');
+            if (count != no) {
+                if (sortDirection == 1) {
+                    $sortHead.addClass('sorted-asc');
+                    $("." + parents).addClass('icon-white icon-chevron-up');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+                else {
+                    $sortHead.addClass('sorted-desc');
+                    $("." + parents).addClass('icon-white icon-chevron-down');
+                    $("." + parents).css("margin-top", "-4px");
+                }
+            }
+            count = ""; no = "";
+            //$("#loading").fadeOut();
+            //identify the collum to be sorted by
+            $('.' + dyclass + ' td').removeClass('sorted').filter('.' + dyclass + ' :nth-child(' + (column + 1) + ')').addClass('sorted');
+        }
+
+        $('.spptablesort th').each(function (column) {
+            $('.spptablesort th').css({ "cursor": "pointer" });
+            $('.spptablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        $('.spplisttablesort th').each(function (column) {
+            $('.spplisttablesort th').css({ "cursor": "pointer" });
+            $('.spplisttablesort td').css({ "cursor": "default" });
+            $(this).addClass('sortable').click(function () {
+                sortDirection = $(this).is('.sorted-asc') ? -1 : 1;
+                parents = $(this).prevAll().find('th i').context.childNodes[1].className;
+                var n = parents.split(" ");
+                parents = n[0];
+                dyclass = $(this).closest('table')[0].className;
+                var n = dyclass.split(" ");
+                dyclass = n[n.length - 1];
+                sort(column);
+            });
+        });
+
+        /*********End Export function code ***********/
+
+        $('#Comments').spellAsYouType({ checkGrammar: true });
+        $('#ProdLines').spellAsYouType({ checkGrammar: true });
+        $('#MfgPoints').spellAsYouType({ checkGrammar: true });
+        $('#PromoOpportunity').spellAsYouType({ checkGrammar: true });
+        $('#MTeamHQDetails').spellAsYouType({ checkGrammar: true });
+        //$('#PackagingDetails').spellAsYouType({ checkGrammar: true });
+        // $('#scpnotes').spellAsYouType({ checkGrammar: true });
+        $('#bpo_notes').spellAsYouType({ checkGrammar: true });
+        $('#ds_pric').spellAsYouType({ checkGrammar: true });
+        $('#ds_cmmt').spellAsYouType({ checkGrammar: true });
+        $('#PrgCmt').spellAsYouType({ checkGrammar: true });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'BPOStat' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbstatus(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "FillSearchComboList",
+            type: "POST",
+            data: { ScreenFrom: 'ProgInfo', FormClass: 'ProgInfo' },
+            success: function (response) {
+                mainheader = "", mainfield = "";
+                var fld = "", desc = "";
+
+                if (response.Items.length > 0) {
+                    for (var i = 0; i < response.Items.length; i++) {
+                        desc += response.Items[i].Display_FName + ",";
+                        fld += response.Items[i].Field_Name + ",";
+                    }
+                    mainheader = desc.replace(/,\s*$/, "");
+                    mainfield = fld.replace(/,\s*$/, "");
+                }
+                else {
+                    mainfield = "upc,proddesc2, size, um_desc, pack, um, ship_um,mfgpartno";
+                    mainheader = "UPC,Pro Desc2, Size, UM Description, Unit Pack, Unit Measure, Ship UM,MfgPartNo";
+                }
+            }
+        });
+
+
+        //ProgInfo BPO Screen Code
+        self.mfgNo = ko.observable();
+        self.alphacd = ko.observable();
+        self.txtOldmfgno = ko.observable();
+        self.PrgInfoNo = ko.observable();
+        self.bpo_stat = ko.observable();
+        self.bpo_revyr = ko.observable();
+        self.indexcmmt = ko.observable();
+        self.ft_fob = ko.observable();
+        self.ft_pickup = ko.observable();
+        self.ft_oth = ko.observable();
+        self.ft_fobadd = ko.observable();
+        self.pt_specgg = ko.observable();
+        self.pt_eospec = ko.observable();
+        self.pt_eostnd = ko.observable();
+        self.pt_disc = ko.observable();
+        self.pt_stand = ko.observable();
+        self.eop_eod = ko.observable();
+        self.eop_op = ko.observable();
+        self.eop_sp = ko.observable();
+        self.eop_et = ko.observable();
+        self.eop_etd = ko.observable();
+        self.eop_takby = ko.observable();
+        self.ds_dmin = ko.observable();
+        self.ds_note = ko.observable();
+        self.ds_cmmt = ko.observable();
+        self.ds_dft = ko.observable();
+        self.as_isprof = ko.observable();
+        self.as_ofinv = ko.observable();
+        self.as_sr1 = ko.observable();
+        self.as_ggdist = ko.observable();
+        self.as_sdist = ko.observable();
+        self.as_coop = ko.observable();
+        //self.cmbofinv = ko.observable();
+        //self.cmbisprof = ko.observable();
+        self.dmp_fldds = ko.observable();
+        self.dmp_callm = ko.observable();
+        self.dmp_callc = ko.observable();
+        self.dmp_calln = ko.observable();
+        self.dmp_oth = ko.observable();
+
+
+        //BPO Notes
+        self.bpo_notes = ko.observable();
+
+        //PRG tab1
+        self.ProdLines = ko.observable();
+        self.prg_stat = ko.observable();
+        self.prg_revyr = ko.observable();
+        self.prg_revds = ko.observable();
+        self.MfgPoints = ko.observable();
+        self.PromoOpportunity = ko.observable();
+
+        //PRG tab2
+        self.factreps = ko.observable();
+        self.eprodinfo = ko.observable();
+        self.elineart = ko.observable();
+        self.eadcopy = ko.observable();
+        self.youtube = ko.observable();
+        self.facebook = ko.observable();
+        self.twitter = ko.observable();
+        self.mfrreps = ko.observable();
+        self.wprodinfo = ko.observable();
+        self.wlineart = ko.observable();
+        self.wadcopy = ko.observable();
+        self.cnreg = ko.observable();
+        self.cnna = ko.observable();
+        //self.bilinpkg = ko.observable();
+        self.french = ko.observable();
+        self.spanish = ko.observable();
+        self.PackagingDetails = ko.observable();
+        self.MTeamHQDetails = ko.observable();
+
+
+        //MDS Tab
+        self.SaveModeMDS = ko.observable(false);
+        self.EditModeMDS = ko.observable(true);
+        self.EnableDisableMode = ko.observable(true);
+        self.txtedi850 = ko.observable(false);
+        self.txtedi810 = ko.observable(false);
+        self.txtedi856 = ko.observable(false);
+        self.txtedi856fax = ko.observable(false);
+
+        self.txtleadtime = ko.observable("");
+        self.txtfillrate = ko.observable("");
+        self.txtsiadd1 = ko.observable("");
+        self.txtsicity1 = ko.observable("");
+        self.txtsistate1 = ko.observable("");
+        self.txtsizip1 = ko.observable("");
+        self.txtsiphone1 = ko.observable("");
+        self.txtsiext1 = ko.observable("");
+        self.txtsisuper1 = ko.observable("");
+        self.txtsidocks1 = ko.observable("");
+        self.txtsihours1 = ko.observable("");
+        self.txtsiadd2 = ko.observable("");
+        self.txtsicity2 = ko.observable("");
+        self.txtsistate2 = ko.observable("");
+        self.txtsizip2 = ko.observable("");
+        self.txtsiphone2 = ko.observable("");
+        self.txtsiext2 = ko.observable("");
+        self.txtsisuper2 = ko.observable("");
+        self.txtsidocks2 = ko.observable("");
+        self.txtsihours2 = ko.observable("");
+        self.txtsiadd3 = ko.observable("");
+        self.txtsicity3 = ko.observable("");
+        self.txtsistate3 = ko.observable("");
+        self.txtsizip3 = ko.observable("");
+        self.txtsiphone3 = ko.observable("");
+        self.txtsiext3 = ko.observable("");
+        self.txtsisuper3 = ko.observable("");
+        self.txtsidocks3 = ko.observable("");
+        self.txtsihours3 = ko.observable("");
+        self.txtsiadd4 = ko.observable("");
+        self.txtsicity4 = ko.observable("");
+        self.txtsistate4 = ko.observable("");
+        self.txtsizip4 = ko.observable("");
+        self.txtsiphone4 = ko.observable("");
+        self.txtsiext4 = ko.observable("");
+        self.txtsisuper4 = ko.observable("");
+        self.txtsidocks4 = ko.observable("");
+        self.txtsihours4 = ko.observable("");
+        self.txtComments = ko.observable("");
+
+        //common fields
+        self.ProgInfoTitle = ko.observable();
+        GMfgNo = window.parent.document.getElementById('mfgno').value;
+        company = window.parent.document.getElementById('company').value;
+
+        PRIM = window.parent.document.getElementById('primary').value;
+        SEC = window.parent.document.getElementById('secondary').value;
+        CLSCD = window.parent.document.getElementById('classcd').value;
+
+        ProgInfo = "BPO For: " + GMfgNo + " - " + company;
+        self.ProgInfoTitle(ProgInfo);
+        opentab();
+
+        //$.ajax({
+        //    url: "GetLookupList",
+        //    data: { LukpID: "STYPE" },
+        //    type: "POST",
+        //    async: false,
+        //    success: function (response) {
+        //        self.cmbofinv(response.Items);
+        //        self.cmbisprof(response.Items);
+        //    }
+        //});
+
+        //$(".tab").live("click", function () {
+        //    self.ProgInfoTitle(ProgInfo);
+        //});
+
+
+
+        if (window.parent.document.getElementById('oldmfgno') != null && window.parent.document.getElementById('oldmfgno').innerText != null)
+            oldmfg = window.parent.document.getElementById('oldmfgno').innerText;
+
+        function FillGrid() {
+            $.ajax({
+                url: "FillMfgProgInfoGrid",
+                data: { mfgNo: GMfgNo },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items.length > 0)
+                        self.SelectedMfgProgInfo(response.Items[0]);
+                    else {
+                        self.mfgNo(GMfgNo);
+                        self.alphacd(company);
+                        self.txtOldmfgno(oldmfg);
+                    }
+                }
+
+            });
+        }
+
+        self.SelectedMfgProgInfo = function (item) {
+            //BPO
+            self.mfgNo(GMfgNo);
+            self.alphacd(company);
+            self.txtOldmfgno(oldmfg);
+            self.PrgInfoNo(item.PrgInfoNo);
+            self.bpo_stat(item.bpo_stat.trim());
+            self.indexcmmt(item.indexcmmt);
+            self.bpo_revyr(item.bpo_revyr.trim());
+            self.ft_fob(item.ft_fob);
+            self.ft_pickup(item.ft_pickup);
+            self.ft_oth(item.ft_oth);
+            self.ft_fobadd(item.ft_fobadd);
+            self.pt_specgg(item.pt_specgg);
+            self.pt_eospec(item.pt_eospec);
+            self.pt_eostnd(item.pt_eostnd);
+            self.pt_disc(item.pt_disc);
+            self.pt_stand(item.pt_stand);
+            self.eop_op(item.eop_op);
+            self.eop_sp(item.eop_sp);
+            self.eop_et(item.eop_et);
+            //if (item.eop_etd=="0.0")
+            //    self.eop_etd("");
+            //else
+            self.eop_etd(item.eop_etd);
+
+            self.eop_takby(item.eop_takby);
+            self.eop_eod(item.eop_eod);
+            self.ds_dft(item.ds_dft);
+            self.ds_cmmt(item.ds_cmmt);
+            self.ds_dmin(item.ds_dmin);
+            self.ds_note(item.ds_note);
+            
+            if (item.as_isprof == "Y")
+                self.as_isprof(true);
+            else
+                self.as_isprof(false);
+
+            if (item.as_ofinv=="Y")
+                self.as_ofinv(true);
+            else
+                self.as_ofinv(false);
+
+            self.as_ggdist(item.as_ggdist);
+            self.as_sdist(item.as_sdist);
+            self.as_coop(item.as_coop);
+            self.as_sr1(item.as_sr1);
+            if (item.dmp_fldds != null && item.dmp_fldds.trim().toUpperCase() == "Y")
+                self.dmp_fldds(true);
+            else
+                self.dmp_fldds(false);
+            if (item.dmp_callc != null && item.dmp_callc.trim().toUpperCase() == "Y")
+                self.dmp_callc(true);
+            else
+                self.dmp_callc(false);
+            if (item.dmp_callm != null && item.dmp_callm.trim().toUpperCase() == "Y")
+                self.dmp_callm(true);
+            else
+                self.dmp_callm(false);
+            if (item.dmp_calln != null && item.dmp_calln.trim().toUpperCase() == "Y")
+                self.dmp_calln(true);
+            else
+                self.dmp_calln(false);
+            self.dmp_oth(item.dmp_oth);
+
+            //BPO Notes
+            self.bpo_notes(item.bpo_notes);
+
+            //PRG tab1
+            self.ProdLines(item.ProdLines);
+            self.prg_stat(item.prg_stat.trim());
+            self.prg_revyr(item.prg_revyr.trim());
+            self.prg_revds(item.prg_revds);
+            self.MfgPoints(item.MfgPoints);
+            self.PromoOpportunity(item.PromoOpportunity);
+
+            //PRG tab2
+            self.factreps(item.factreps == 'True' ? true : false);
+            self.eprodinfo(item.eprodinfo == 'True' ? true : false);
+            self.elineart(item.elineart == 'True' ? true : false);
+            self.eadcopy(item.eadcopy == 'True' ? true : false);
+            self.youtube(item.youtube == 'True' ? true : false);
+            self.facebook(item.facebook == 'True' ? true : false);
+            self.twitter(item.twitter == 'True' ? true : false);
+            self.mfrreps(item.mfrreps == 'True' ? true : false);
+            self.wprodinfo(item.wprodinfo == 'True' ? true : false);
+            self.wlineart(item.wlineart == 'True' ? true : false);
+            self.wadcopy(item.wadcopy == 'True' ? true : false);
+            self.cnreg(item.cnreg == 'True' ? true : false);
+            self.cnna(item.cnna == 'True' ? true : false);
+            //self.bilinpkg(item.bilinpkg == 'True' ? true : false);
+            self.french(item.french == 'True' ? true : false);
+            self.spanish(item.spanish == 'True' ? true : false);
+
+            //self.PackagingDetails(item.PackagingDetails);
+            self.MTeamHQDetails(item.MTeamHQDetails);
+        }
+
+        //Mds fill and select
+        function FillMDSGrid() {
+            $.ajax({
+                url: "FillMDSInfo",
+                data: { mfgNo: GMfgNo },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items.length > 0)
+                        self.SelectedMDSProgInfo(response.Items[0]);
+                    else {
+                        self.mfgNo(GMfgNo);
+                        self.alphacd(company);
+                        self.txtOldmfgno(oldmfg);
+                    }
+                }
+
+            });
+        }
+
+        self.SelectedMDSProgInfo = function (item) {
+            if (item.edi850 == "True" || item.edi850 == true)
+                self.txtedi850(true);
+            else
+                self.txtedi850(false);
+            if (item.edi810 == "True" || item.edi810 == true)
+                self.txtedi810(true);
+            else
+                self.txtedi810(false);
+            if (item.edi856 == "True" || item.edi856 == true)
+                self.txtedi856(true);
+            else
+                self.txtedi856(false);
+            if (item.edi856fax == "True" || item.edi856fax == true)
+                self.txtedi856fax(true);
+            else
+                self.txtedi856fax(false);
+            self.txtleadtime(item.leadtime); self.txtfillrate(item.fillrate); self.txtsiadd1(item.siadd1); self.txtsicity1(item.sicity1); self.txtsistate1(item.sistate1.trim());
+            self.txtsizip1(item.sizip1); self.txtsiphone1(item.siphone1); self.txtsiext1(item.siext1.trim()); self.txtsisuper1(item.sisuper1); self.txtsidocks1(item.sidocks1.trim());
+            self.txtsihours1(item.sihours1); self.txtsiadd2(item.siadd2); self.txtsicity2(item.sicity2); self.txtsistate2(item.sistate2.trim()); self.txtsizip2(item.sizip2);
+            self.txtsiphone2(item.siphone2); self.txtsiext2(item.siext2.trim()); self.txtsisuper2(item.sisuper2); self.txtsidocks2(item.sidocks2.trim()); self.txtsihours2(item.sihours2);
+            self.txtsiadd3(item.siadd3); self.txtsicity3(item.sicity3); self.txtsistate3(item.sistate3.trim()); self.txtsizip3(item.sizip3); self.txtsiphone3(item.siphone3);
+            self.txtsidocks3(item.sidocks3.trim()); self.txtsihours3(item.sihours3); self.txtsiadd4(item.siadd4); self.txtsicity4(item.sicity4); self.txtsistate4(item.sistate4.trim());
+            self.txtsizip4(item.sizip4); self.txtsiphone4(item.siphone4); self.txtsiext4(item.siext4.trim()); self.txtsisuper4(item.sisuper4); self.txtsidocks4(item.sidocks4.trim());
+            self.txtsihours4(item.sihours4); self.txtsiext3(item.siext3.trim()); self.txtsisuper3(item.sisuper3); self.txtComments(item.comments);
+        }
+
+        FillGrid();
+        FillMDSGrid();
+        /*********Bpo Screen Code***********/
+
+        self.EnableDisableModeBpo = ko.observable(true);
+        self.EditModeBpo = ko.observable(true);
+        self.SaveModeBpo = ko.observable(false);
+
+
+
+        self.EditBpo = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.SaveModeBpo(true);
+            self.EditModeBpo(false);
+            self.EnableDisableModeBpo(false);
+            $("#Status").focus();
+        }
+
+        self.SaveBpo = function () {
+
+            /*
+            var str = document.getElementById("earlytake").value;
+            var split = str.toString().split(".")[0];
+
+            if (self.eop_etd() != null && self.eop_etd() != "") {
+                if (split.length >= 4) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Invalid Early Take Discount Value",
+                        type: "info",
+                        parent: true,
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('earlytake').focus();
+                        }
+                    });
+                    return false;
+                }
+            }*/
+
+            objbpo = [];
+            objbpo = {
+                mfgNo: GMfgNo,
+                PrgInfoNo: self.PrgInfoNo(),
+                bpo_stat: document.getElementById('Status').value,
+                bpo_revyr: self.bpo_revyr(),
+                indexcmmt: self.indexcmmt(),
+                ft_fob: self.ft_fob(),
+                ft_pickup: self.ft_pickup(),
+                ft_oth: self.ft_oth(),
+                ft_fobadd: self.ft_fobadd(),
+                pt_stand: self.pt_stand(),
+                pt_specgg: self.pt_specgg(),
+                pt_eospec: self.pt_eospec(),
+                pt_eostnd: self.pt_eostnd(),
+                pt_disc: self.pt_disc(),
+                eop_op: self.eop_op(),
+                eop_et: self.eop_et(),
+                eop_etd: self.eop_etd(),
+                eop_takby: self.eop_takby(),
+                eop_eod: self.eop_eod(),
+                eop_sp: self.eop_sp(),
+                ds_dft: self.ds_dft(),
+                ds_dmin: self.ds_dmin(),
+                ds_note: self.ds_note(),
+                ds_cmmt: self.ds_cmmt(),
+                as_sr1: self.as_sr1(),
+                as_ggdist: self.as_ggdist(),
+                as_sdist: self.as_sdist(),
+                as_coop: self.as_coop(),
+                as_isprof: self.as_isprof(),
+                as_ofinv: self.as_ofinv(),
+                dmp_fldds: self.dmp_fldds(),       //document.getElementById('merchandise').value,
+                dmp_callm: self.dmp_callm(),        //document.getElementById('mgfCall').value,
+                dmp_callc: self.dmp_callc(),        //document.getElementById('dmp_callc').value,
+                dmp_calln: self.dmp_calln(),        //document.getElementById('dmp_calln').value,
+                dmp_oth: self.dmp_oth()
+            }
+            $.ajax({
+                url: "SaveProgInfoBPO",
+                data: { ObjProgInfo: JSON.stringify(objbpo).replace(/</g, "|").replace(/>/g, "~") },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg, true, true);
+                    }
+                    else {
+                        $('#TblSPPdiv tbody tr').remove();
+                        FillGrid();
+                        FillGridSPP();
+                    }
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeBpo(true);
+            self.SaveModeBpo(false);
+            self.EnableDisableModeBpo(true);
+        }
+
+        self.CancelBpo = function () {
+            if (self.SaveModeBpo() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelBpo, true, true);
+        }
+
+        self.confirmcancelBpo = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeBpo(true);
+            self.SaveModeBpo(false);
+            FillGrid();
+            self.EnableDisableModeBpo(true);
+        }
+
+        /*********End Bpo***********/
+
+
+        /*********Bpo Notes Screen Code***********/
+
+        self.EnableDisableModeBpoNotes = ko.observable(true);
+        self.EditModeBpoNotes = ko.observable(true);
+        self.SaveModeBpoNotes = ko.observable(false);
+
+        self.EditBpoNotes = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.SaveModeBpoNotes(true);
+            self.EditModeBpoNotes(false);
+            self.EnableDisableModeBpoNotes(false);
+            $("#merchandise").focus();
+        }
+
+        self.SaveBpoNotes = function () {
+            objbponotes = [];
+            objbponotes = {
+                PrgInfoNo: self.PrgInfoNo(),
+                mfgNo: self.mfgNo(),
+
+                bpo_notes: self.bpo_notes()
+            }
+            $.ajax({
+                url: "SaveProgInfoBPONotes",
+                data: { ObjProgInfo: JSON.stringify(objbponotes).replace(/</g, "|").replace(/>/g, "~") },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg, true, true);
+                    }
+                    else
+                        FillGrid();
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeBpoNotes(true);
+            self.SaveModeBpoNotes(false);
+            self.EnableDisableModeBpoNotes(true);
+        }
+
+        self.CancelBpoNotes = function () {
+            if (self.SaveModeBpoNotes() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelBpoNotes, true, true);
+        }
+
+        self.confirmcancelBpoNotes = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeBpoNotes(true);
+            self.SaveModeBpoNotes(false);
+            FillGrid();
+            self.EnableDisableModeBpoNotes(true);
+        }
+
+        /*********End Bpo Notes***********/
+
+        /*********SPP Screen Code***********/
+        self.SppAddMode = ko.observable(false);
+        self.SppEditMode = ko.observable(true);
+        self.SppSaveMode = ko.observable(false);
+        self.SppDeleteMode = ko.observable(true);
+        self.SppEnableDisableMode = ko.observable(true);
+
+        //self.scp_spp = ko.observable();
+        self.s_revyr = ko.observable();
+        self.s_status = ko.observable();
+        //self.s_revdesc = ko.observable();
+        self.desc_ = ko.observable();
+        //self.abc_disc = ko.observable();
+        self.abc_op = ko.observable();
+        self.abc_sp = ko.observable();
+        self.abc_extrm = ko.observable();
+        self.abc_oreq = ko.observable();
+        //self.abc_odsc = ko.observable();
+        //self.irc_disc = ko.observable();
+        //self.irc_op = ko.observable();
+        //self.irc_sp = ko.observable();
+        //self.irc_extrm = ko.observable();
+        //self.irc_oreq = ko.observable();
+        //self.irq_odsc = ko.observable();
+        self.FillMfgProgSPPGrid = ko.observable();
+        //self.scpnotes = ko.observable();
+        self.SmfgNo = ko.observable();
+        self.SOldmfgNo = ko.observable();
+        self.GSppScpNo = ko.observable();
+        self.SmfgNo(GMfgNo);
+        self.SOldmfgNo(oldmfg);
+        $('#TblSPPdiv').css('max-height', $(window).height() - 520 + 'px');
+
+        function FillGridSPP() {
+            $.ajax({
+                url: "FillMfgProgSPPGrid",
+                data: { SppScpNo: SppScpNo, mfgNo: GMfgNo },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    //$('#TblSPPdiv tbody tr').remove();
+                    $('#TblSPPdiv th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.FillMfgProgSPPGrid(response.Items);
+                    if (response.Items.length > 0) {
+                        if (response.rowindex > 0) {
+                            //$('#TblSPP tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                            $("#" + response.rowindex).addClass('success selected');
+                            self.SelectedMfgProgSPP(response.Items[response.rowindex]);
+                        }
+                        else {
+                            //$("#0").addClass('success selected');
+                            $("#" + response.rowindex).addClass('success selected');
+                            //$('#TblSPP tbody tr:first').addClass('success selected');
+                            self.SelectedMfgProgSPP(response.Items[0]);
+                        }
+                        rowIndex = response.rowindex;
+                    }
+                    var THIndex = $('#TblSPPdiv thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        //if ($('#TblSPPdiv thead th')[i].className.includes("hide"))
+                        //    $('#TblSPPdiv tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        var clsname = $('#TblSPPdiv thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('#TblSPPdiv tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                }
+            });
+        }
+
+        self.SelectedMfgProgSPP = function (item) {
+            if (self.SppSaveMode() == true) {
+                $('.clickableRow').removeClass('success selected');
+                return false;
+            }
+            if (item !== undefined) {
+                self.GSppScpNo(item.SppScpNo);
+                self.SmfgNo(item.MfgNo);
+                self.SOldmfgNo(item.oldmfgno);
+                //self.scp_spp(item.scp_spp);
+                self.s_revyr(item.s_revyr);
+                self.s_status(item.s_status);
+                //self.s_revdesc(item.s_revdesc);
+                self.desc_(item.desc_);
+                //self.abc_disc(item.abc_disc);
+                self.abc_op(item.abc_op);
+                self.abc_sp(item.abc_sp);
+                self.abc_extrm(item.abc_extrm);
+                self.abc_oreq(item.abc_oreq);
+                //self.abc_odsc(item.abc_odsc);
+                //self.irc_disc(item.irc_disc);
+                //self.irc_op(item.irc_op);
+                //self.irc_sp(item.irc_sp);
+                //self.irc_extrm(item.irc_extrm);
+                //self.irc_oreq(item.irc_oreq);
+                //self.abc_odsc(item.abc_odsc);
+                // self.scpnotes(item.scpnotes);
+            }
+
+        }
+
+        FillGridSPP();
+
+        self.SppAdd = function () {
+            if (self.SppSaveMode() == true)
+                return false;
+
+            window.parent.CallDisableTabs();
+
+            //self.scp_spp("");
+            self.GSppScpNo("");
+            self.s_revyr("");
+            self.s_status("");
+            //self.s_revdesc("");
+            self.desc_("");
+            //self.abc_disc("");
+            self.abc_op("");
+            self.abc_sp("");
+            self.abc_extrm("");
+            self.abc_oreq("");
+            //self.abc_odsc("");
+            //self.irc_disc("");
+            //self.irc_op("");
+            //self.irc_sp("");
+            //self.irc_extrm("");
+            //self.irc_oreq("");
+            //self.abc_odsc("");
+            // self.scpnotes("");
+            self.SppAddMode(true);
+            self.SppSaveMode(true);
+            self.SppEditMode(false);
+            self.SppEnableDisableMode(false);
+            document.getElementById('s_status').focus();
+            $('.clickableRow').removeClass('success selected');
+
+        }
+
+        self.SppEdit = function () {
+            if (self.FillMfgProgSPPGrid().length == 0)
+                return false;
+
+            window.parent.CallDisableTabs();
+
+            self.SppAddMode(false);
+            self.SppSaveMode(true);
+            self.SppEditMode(false);
+            self.SppEnableDisableMode(false);
+        }
+
+        self.SppSave = function () {
+            //if (self.scp_spp() == null || self.scp_spp() == "") {
+            //    $.msgBox({
+            //        title: "Gro Group", content: "Please enter SPP",
+            //        afterClose: function (result) {
+            //            document.getElementById("scpspp").focus();
+
+            //        }
+            //    });
+            //    return false;
+            //}
+            var ObjSppArray = [];
+            ObjSppArray =
+                {
+                    SppScpNo: self.GSppScpNo(),
+                    MfgNo: self.SmfgNo(),
+                    //scp_spp: document.getElementById('scpspp').value,
+                    s_revyr: self.s_revyr(),
+                    s_status: document.getElementById('s_status').value,
+                    //s_revdesc: self.s_revdesc(),
+                    desc_: self.desc_(),
+                    //abc_disc: self.abc_disc(),
+                    abc_op: self.abc_op(),
+                    abc_sp: self.abc_sp(),
+                    abc_extrm: self.abc_extrm(),
+                    abc_oreq: self.abc_oreq(),
+                    //abc_odsc: self.abc_odsc(),
+                    //irc_disc: self.irc_disc(),
+                    //irc_op: self.irc_op(),
+                    //irc_sp: self.irc_sp(),
+                    //irc_extrm: self.irc_extrm(),
+                    //irc_oreq: self.irc_oreq(),
+                    //abc_odsc: self.abc_odsc(),
+                    // scpnotes: self.scpnotes()
+                }
+            $.ajax({
+                url: "SaveSpp",
+                data: { ObjSpp: JSON.stringify(ObjSppArray), IsAddMode: self.SppAddMode() },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.Items.length > 0 && response.Items != "0") {
+                        self.GSppScpNo(response.Items);
+                    }
+                    SppScpNo = response.Items;
+                    $('#TblSPPdiv tbody tr').remove();
+                    FillGridSPP();
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.SppAddMode(false);
+            self.SppEditMode(true);
+            self.SppSaveMode(false);
+            self.SppEnableDisableMode(true);
+
+        }
+
+        self.SppCancel = function () {
+            if (self.SppSaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.Sppconfirmcancel, true, true);
+        }
+
+        self.Sppconfirmcancel = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.SppAddMode(false);
+            self.SppEditMode(true);
+            self.SppSaveMode(false);
+            if (self.FillMfgProgSPPGrid().length > 0) {
+                self.SelectedMfgProgSPP(self.FillMfgProgSPPGrid()[rowIndex]);
+            }
+            else {
+                //self.scp_spp("");
+                //self.GSppScpNo("");
+                self.s_revyr("");
+                self.s_status("");
+                //self.s_revdesc("");
+                self.desc_("");
+                //self.abc_disc("");
+                self.abc_op("");
+                self.abc_sp("");
+                self.abc_extrm("");
+                self.abc_oreq("");
+                //self.abc_odsc("");
+                //self.irc_disc("");
+                //self.irc_op("");
+                //self.irc_sp("");
+                //self.irc_extrm("");
+                //self.irc_oreq("");
+                //self.abc_odsc("");
+                // self.scpnotes("");
+            }
+            $("#" + rowIndex).addClass('success selected');
+            self.SppEnableDisableMode(true);
+        }
+
+        self.SppDelete = function () {
+
+            if (self.SppSaveMode() == true || self.FillMfgProgSPPGrid().length == 0)
+                return false;
+            alert("Denied", "Record cannot be deleted", true, true);
+            //if (self.SppSaveMode() == true)
+            //    return false;
+            //alertconfirm("Delete", "Are you sure you want to delete this record ?", self.Sppconfirmdelete, false, true);
+        }
+
+        self.Sppconfirmdelete = function () {
+
+        }
+
+
+        self.Showreport = function () {
+            var repname = "";
+            if (document.getElementById('chkBPO').checked == true && submenuname == "BPO") {
+                repname = "RP_BpoSign.repx";
+            }
+            else if (document.getElementById('chkBPONotes').checked == true && submenuname == "BPONotes") {
+                repname = "RP_BpoSign.repx";
+            }
+            else {
+                ischkprg = false;
+                repname = "RP_Prgoinfo.repx";
+            }
+
+            $.ajax({
+                url: "FillBPOReport",
+                type: "POST",
+                data: { Repname: repname, mfgNo: GMfgNo },
+                async: false,
+                success: function (response) {
+                    window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                }
+            });
+        }
+
+        /*********End SPP Code***********/
+
+        /*********PRG(1 OF 2) Screen Code***********/
+        self.SaveModePRG1 = ko.observable(false);
+        self.EditModePRG1 = ko.observable(true);
+        self.EnableDisableModePRG1 = ko.observable(true);
+
+        self.EditPRG1 = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.SaveModePRG1(true);
+            self.EditModePRG1(false);
+            self.EnableDisableModePRG1(false);
+            $("#prg_stat").focus();
+        }
+
+        self.SavePRG1 = function () {
+            objprg1 = [];
+            objprg1 = {
+                PrgInfoNo: self.PrgInfoNo(),
+                mfgNo: self.mfgNo(),
+                ProdLines: self.ProdLines(),
+                prg_stat: self.prg_stat(),
+                prg_revyr: self.prg_revyr(),
+                prg_revds: self.prg_revds(),
+                MfgPoints: self.MfgPoints(),
+                PromoOpportunity: self.PromoOpportunity()
+
+            }
+            $.ajax({
+                url: "SaveProgInfoPRG1",
+                data: { ObjProgInfo: JSON.stringify(objprg1).replace(/</g, "|").replace(/>/g, "~") },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg, true, true);
+                    }
+                    else
+                        FillGrid();
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.EditModePRG1(true);
+            self.SaveModePRG1(false);
+            self.EnableDisableModePRG1(true);
+        }
+
+        self.CancelPRG1 = function () {
+            if (self.SaveModePRG1() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelPRG1, true, true);
+        }
+
+        self.confirmcancelPRG1 = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.EditModePRG1(true);
+            self.SaveModePRG1(false);
+            FillGrid();
+            self.EnableDisableModePRG1(true);
+        }
+
+        self.ShowProgreport = function () {
+            var repname = "";
+            if (document.getElementById('chkprg1').checked == true && submenuname == "PRG(1 OF 2)") {
+                repname = "RP_ProgRefGuidewithSign.repx";
+            }
+            else if (document.getElementById('chkprg2').checked == true && submenuname == "PRG(2 OF 2)") {
+                repname = "RP_ProgRefGuidewithSign.repx";
+            }
+            else {
+                repname = "RP_ProgRefGuide.repx";
+            }
+
+            $.ajax({
+                url: "FillProgReport",
+                type: "POST",
+                data: { Repname: repname, mfgNo: GMfgNo },
+                async: false,
+                success: function (response) {
+                    window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                }
+            });
+        }
+
+
+
+        /*********End PRG(1 OF 2) Code***********/
+
+
+        /*********PRG(2 OF 2) Screen Code***********/
+        self.SaveModePRG2 = ko.observable(false);
+        self.EditModePRG2 = ko.observable(true);
+        self.EnableDisableModePRG2 = ko.observable(true);
+
+        self.EditPRG2 = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.SaveModePRG2(true);
+            self.EditModePRG2(false);
+            self.EnableDisableModePRG2(false);
+            $("#Factory").focus();
+        }
+
+        self.SavePRG2 = function () {
+            objprg2 = [];
+            objprg2 = {
+                PrgInfoNo: self.PrgInfoNo(),
+                mfgNo: self.mfgNo(),
+                //PackagingDetails: self.PackagingDetails(),
+                MTeamHQDetails: self.MTeamHQDetails(),
+
+                factreps: self.factreps(),
+                eprodinfo: self.eprodinfo(),
+                elineart: self.elineart(),
+                eadcopy: self.eadcopy(),
+                youtube: self.youtube(),
+                facebook: self.facebook(),
+                twitter: self.twitter(),
+                mfrreps: self.mfrreps(),
+                wprodinfo: self.wprodinfo(),
+                wlineart: self.wlineart(),
+                wadcopy: self.wadcopy(),
+                cnreg: self.cnreg(),
+                cnna: self.cnna(),
+                //bilinpkg: self.bilinpkg(),
+                french: self.french(),
+                spanish: self.spanish()
+            }
+            $.ajax({
+                url: "SaveProgInfoPRG2",
+                data: { ObjProgInfo: JSON.stringify(objprg2).replace(/</g, "|").replace(/>/g, "~") },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg, true, true);
+                    }
+                    else
+                        FillGrid();
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.EditModePRG2(true);
+            self.SaveModePRG2(false);
+            self.EnableDisableModePRG2(true);
+        }
+
+        self.CancelPRG2 = function () {
+            if (self.SaveModePRG2() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelPRG2, true, true);
+        }
+
+        self.confirmcancelPRG2 = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.EditModePRG2(true);
+            self.SaveModePRG2(false);
+            FillGrid();
+            self.EnableDisableModePRG2(true);
+        }
+
+        /*********End PRG(2 OF 2) Code***********/
+
+        /*********MDS Screen Code***********/
+
+        function zipsearch(item) {
+            $.ajax({
+                url: "searchzip",
+                data: { getzip: item },
+                type: "POST",
+                success: function (response) {
+                    if (response.Items.length > 0) {
+                        if (clicked == "sizip1") {
+                            if (self.txtsizip1() != null && self.txtsizip1() != "") {
+
+                                self.txtsicity1(response.Items[0].City);
+                                self.txtsistate1(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity1("");
+                                self.txtsistate1("");
+                            }
+                        }
+                        else if (clicked == "sizip2") {
+                            if (self.txtsizip2() != null && self.txtsizip2() != "") {
+
+                                self.txtsicity2(response.Items[0].City);
+                                self.txtsistate2(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity2("");
+                                self.txtsistate2("");
+                            }
+                        }
+                        else if (clicked == "sizip3") {
+                            if (self.txtsizip3() != null && self.txtsizip3() != "") {
+
+                                self.txtsicity3(response.Items[0].City);
+                                self.txtsistate3(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity3("");
+                                self.txtsistate3("");
+                            }
+                        }
+                        else if (clicked == "sizip4") {
+                            if (self.txtsizip4() != null && self.txtsizip4() != "") {
+
+                                self.txtsicity4(response.Items[0].City);
+                                self.txtsistate4(response.Items[0].State);
+                            }
+                            else {
+                                self.txtsicity4("");
+                                self.txtsistate4("");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        self.txtsizip1search = function () {
+            if (self.SaveModeMDS() == true) {
+                if (self.txtsistate1().trim() == "" && self.txtsicity1().trim() == "") {
+                    //blurevent = true;
+                    self.txtsizip1(document.getElementById('sizip1').value);
+                    if (self.txtsizip1() == null || self.txtsizip1() == "") {
+                        return false;
+                    }
+                    clicked = "sizip1";
+                    zipsearch(self.txtsizip1());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtsizip2search = function () {
+            if (self.SaveModeMDS() == true) {
+                if (self.txtsistate2().trim() == "" && self.txtsicity2().trim() == "") {
+                    //blurevent = true;
+                    self.txtsizip2(document.getElementById('sizip2').value);
+                    if (self.txtsizip2() == null || self.txtsizip2() == "") {
+                        return false;
+                    }
+                    clicked = "sizip2";
+                    zipsearch(self.txtsizip2());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.txtsizip3search = function () {
+            if (self.SaveModeMDS() == true) {
+                if (self.txtsistate3().trim() == "" && self.txtsicity3().trim() == "") {
+                    //blurevent = true;
+                    self.txtsizip3(document.getElementById('sizip3').value);
+                    if (self.txtsizip3() == null || self.txtsizip3() == "") {
+                        return false;
+                    }
+                    clicked = "sizip3";
+                    zipsearch(self.txtsizip3());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+
+        self.txtsizip4search = function () {
+            if (self.SaveModeMDS() == true) {
+                if (self.txtsistate4().trim() == "" && self.txtsicity4().trim() == "") {
+                    //blurevent = true;
+                    self.txtsizip4(document.getElementById('sizip4').value);
+                    if (self.txtsizip4() == null || self.txtsizip4() == "") {
+                        return false;
+                    }
+                    clicked = "sizip4";
+                    zipsearch(self.txtsizip4());
+                }
+                else {
+                    return false;
+                }
+
+            }
+        }
+
+        self.EditMDS = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.SaveModeMDS(true);
+            self.EditModeMDS(false);
+            self.EnableDisableMode(false);
+            $("#edi850").focus();
+            $("#Comments").css("display", "none !important");
+        }
+
+        self.SaveMDS = function () {
+
+            if (self.txtsiphone1().length < 12 && self.txtsiphone1().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid Phone number",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('siphone1').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.txtsiphone2().length < 12 && self.txtsiphone2().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid Phone number",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('siphone2').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.txtsiphone3().length < 12 && self.txtsiphone3().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid Phone number",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('siphone3').focus();
+                    }
+                });
+                return false;
+            }
+
+            if (self.txtsiphone4().length < 12 && self.txtsiphone4().length != 0) {
+                $.msgBox({
+                    title: "Gro Group",
+                    content: "Please enter the valid Phone number",
+                    type: "info",
+                    parent: true,
+                    subparent: true,
+                    buttons: [{ value: "Ok" }],
+                    afterClose: function (result) {
+                        document.getElementById('siphone4').focus();
+                    }
+                });
+                return false;
+            }
+
+            objMDS = [];
+            objMDS = {
+                mfgno: self.mfgNo(),
+                oldmfgno: self.txtOldmfgno(),
+                leadtime: self.txtleadtime(), fillrate: self.txtfillrate(), siadd1: self.txtsiadd1(), siphone1: self.txtsiphone1(), siext1: self.txtsiext1(),
+                sidocks1: self.txtsidocks1(), sicity1: self.txtsicity1(), sistate1: self.txtsistate1(), sizip1: self.txtsizip1(), sisuper1: self.txtsisuper1(),
+                sihours1: self.txtsihours1(), siadd2: self.txtsiadd2(), siphone2: self.txtsiphone2(), siext2: self.txtsiext2(), sidocks2: self.txtsidocks2(), sicity2: self.txtsicity2(),
+                sistate2: self.txtsistate2(), sizip2: self.txtsizip2(), sisuper2: self.txtsisuper2(), sihours2: self.txtsihours2(), siadd3: self.txtsiadd3(), siphone3: self.txtsiphone3(),
+                siext3: self.txtsiext3(), sidocks3: self.txtsidocks3(), sicity3: self.txtsicity3(), sistate3: self.txtsistate3(), sizip3: self.txtsizip3(),
+                sisuper3: self.txtsisuper3(), sihours3: self.txtsihours3(), siadd4: self.txtsiadd4(), siphone4: self.txtsiphone4(), siext4: self.txtsiext4(), sidocks4: self.txtsidocks4(),
+                sicity4: self.txtsicity4(), sistate4: self.txtsistate4(), sizip4: self.txtsizip4(), sisuper4: self.txtsisuper4(), sihours4: self.txtsihours4(),
+                edi850: self.txtedi850(), edi810: self.txtedi810(), edi856: self.txtedi856(), edi856fax: self.txtedi856fax(), comments: self.txtComments()
+            }
+            $.ajax({
+                url: "SaveMDS",
+                data: { ObjmfgList: JSON.stringify(objMDS).replace(/</g, "|").replace(/>/g, "~") },
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg, true, true);
+                    }
+                    else
+                        FillMDSGrid();
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeMDS(true);
+            self.SaveModeMDS(false);
+            self.EnableDisableMode(true);
+        }
+
+        self.CancelMDS = function () {
+            if (self.SaveModeMDS() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancelMDS, true, true);
+        }
+
+        self.confirmcancelMDS = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.EditModeMDS(true);
+            self.SaveModeMDS(false);
+            FillMDSGrid();
+            self.EnableDisableMode(true);
+        }
+
+        self.ShowMDSreport = function () {
+            var repname = "";
+            if (document.getElementById('chkmds').checked == true && submenuname == "MDS") {
+                repname = "RP_MfrDataSheetwithSign.repx";
+            }
+            else {
+                repname = "RP_MfrDataSheet.repx";
+            }
+
+            $.ajax({
+                url: "FillMdsReport",
+                //data: { mfgNo: GMfgNo, Repname: repname },
+                data: { Prim: PRIM, Sec: SEC, ClassCd: CLSCD, mfgNo: GMfgNo, Repname: repname },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    window.parent.parent.document.getElementById('reportscreen').src = "../GroGroup/FormReport";
+                    fireEvent(window.parent.parent.document.getElementById('openreport'), 'click');
+                }
+            });
+        }
+
+        /*********End PRG(2 OF 2) Code***********/
+
+
+        /*********SPPListing Screen Code***********/
+        //$(".clickableRowMPL").live("click", function () {
+        //    if (self.MPLSaveMode() == true && self.MPLAddMode() == true) {
+        //        $('.clickableRowMPL').removeClass('success selected');
+        //        return false;
+        //    }
+        //    else if (self.MPLSaveMode() == true && self.MPLAddMode() == false) {
+        //        $('.clickableRowMPL').removeClass('success selected');
+        //        if (rowIndex1.toString().indexOf("spp")) {
+        //            rowIndex1 = rowIndex1.substring(3, 7);
+        //        }
+        //        $('#spp' + rowIndex1).addClass('success selected');
+        //    }
+        //    else {
+        //        rowIndex1 = $(this).attr("id");
+        //        $('.clickableRowMPL').removeClass('success selected');
+        //        $(this).addClass('success selected');
+        //    }
+        //});
+
+        $(".clickableRowMPL").live("click", function () {
+            if (self.MPLEditMode()) {
+                MPLrowIndex = $(this).attr("id");
+                MPLrowIndex=MPLrowIndex.replace("spplist",'');
+                self.SelectedMfgProgMPL(self.FillMfgProgMPLGrid()[MPLrowIndex]);
+                $('.clickableRowMPL').removeClass('success selected');
+                $(this).addClass('success selected');
+            }
+        });
+
+
+
+        self.MPLEnableDisableMode = ko.observable(true);
+        self.MPLEnableDisable = ko.observable(true);
+        self.MPLAddMode = ko.observable(false);
+        self.MPLEditMode = ko.observable(true);
+        self.MPLSaveMode = ko.observable(false);
+        self.MPLDeleteMode = ko.observable(true);
+
+        self.upc = ko.observable();
+        self.cmbseqcode = ko.observable();
+        self.seq_cd = ko.observable();
+        self.cmbsppstat = ko.observable();
+        self.status = ko.observable();
+        self.cmbspptype = ko.observable();
+        self.spp_type = ko.observable();
+        self.std_retl = ko.observable();
+        self.std_deal = ko.observable();
+        self.std_dist = ko.observable();
+        self.mfgpart = ko.observable();
+        self.MPLDesc = ko.observable();
+        //self.UM_Desc = ko.observable();
+        self.MPLSize = ko.observable();
+        self.UnitPack = ko.observable();
+        self.UnitMeasure = ko.observable();
+        //self.Ship_UM = ko.observable();
+        self.mplno = ko.observable();
+        //self.spp_cola = ko.observable();
+        //self.spp_colb = ko.observable();
+        //self.spp_colc = ko.observable();
+        //self.colf = ko.observable();
+        //self.colg = ko.observable();
+        //self.colh = ko.observable();
+        //self.cold = ko.observable();
+        //self.cole = ko.observable();
+        //self.fall_a = ko.observable();
+        //self.fall_b = ko.observable();
+        //self.fall_c = ko.observable();
+        //self.fall_stat = ko.observable();
+        //self.category = ko.observable();
+        self.FillMfgProgMPLGrid = ko.observable();
+        self.txtname = ko.observable();
+        self.txtmfrname = ko.observable();
+        self.selectedvalue = ko.observable("");
+        self.selectedvalue("upc");
+        self.txtname("UPC");
+        self.txtmfrname("Mfr.ItemNo");
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'SPPSEQCD' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbseqcode(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'SPPSEQCD' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbsppstat(response.Items);
+            }
+        });
+
+        $.ajax({
+            url: "GetLookupList",
+            data: { LukpID: 'SPPTYPE' },
+            type: "POST",
+            async: false,
+            success: function (response) {
+                self.cmbspptype(response.Items);
+            }
+        });
+
+
+        function FillGridMPL(item) {
+            $.ajax({
+                url: "FillMfgProgMPLGrid",
+                data: { mfgNo: GMfgNo, Mplno: item },
+                type: "POST",
+                async: false,
+                success: function (response) {
+
+                    $('#TblSPPList th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.FillMfgProgMPLGrid(response.Items);
+                    if (response.Items.length > 0) {
+                        if (response.rowindex > 0) {
+                            // $('#TblSPPList tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                            $("#spplist" + response.rowindex).addClass('success selected');
+                            self.SelectedMfgProgMPL(response.Items[response.rowindex]);
+                        }
+                        else {
+                            $("#spplist" + response.rowindex).addClass('success selected');
+                            self.SelectedMfgProgMPL(response.Items[0]);
+                        }
+                        MPLrowIndex = response.rowindex;
+                    }
+                    else {
+                        self.mfgNo(GMfgNo);
+                        self.alphacd(company);
+                        self.txtOldmfgno(oldmfg);
+                    }
+                    var THIndex = $('#TblSPPList thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        //if ($('#TblSPPList thead th')[i].className.includes("hide"))
+                        //    $('#TblSPPList tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        var clsname = $('#TblSPPList thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('#TblSPPList tbody tr td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                }
+            });
+        }
+
+
+        self.AddMPL = function () {
+            if (self.MPLSaveMode() == true)
+                return false;
+
+            window.parent.CallDisableTabs();
+
+            self.mplno("");
+            self.upc("");
+            self.seq_cd("");
+            self.status("");
+            self.spp_type("");
+            self.std_retl("");
+            self.std_deal("");
+            self.std_dist("");
+            self.mfgpart("");
+            self.MPLDesc("");
+            // self.UM_Desc("");
+            self.MPLSize("");
+            self.UnitPack("");
+            self.UnitMeasure("");
+            //self.Ship_UM("");
+
+            //self.spp_cola("");
+            //self.spp_colb("");
+            //self.spp_colc("");
+
+            //self.colf("");
+            //self.colg("");
+            //self.colh("");
+            //self.cold("");
+            //self.cole("");
+
+            //self.fall_a("");
+            //self.fall_b("");
+            //self.fall_c("");
+            //self.fall_stat("");
+            //self.category("");
+
+            self.MPLAddMode(true);
+            self.MPLSaveMode(true);
+            self.MPLEditMode(false);
+            self.MPLEnableDisableMode(false);
+            document.getElementById('upc').focus();
+            $('.clickableRowMPL').removeClass('success selected');
+
+        }
+
+        self.SaveMPL = function () {
+            if (self.upc() == null || self.upc() == "") {
+                $.msgBox({
+                    title: "Gro Group", content: "Please enter UPC", parent: true, subparent: true,
+                    afterClose: function (result) {
+                        document.getElementById("upc").focus();
+
+                    }
+                });
+                return false;
+            }
+
+            if (self.upc() != null || self.upc() != "") {
+                $.ajax({
+                    url: "GetUPC",
+                    data: { upc: self.upc() },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        if (response.Items.length != 1) {
+                            $.msgBox({
+                                title: "Gro Group",
+                                content: "Invalid UPC",
+                                type: "info",
+                                parent: true,
+                                subparent: true,
+                                buttons: [{ value: "Ok" }],
+                                afterClose: function (result) {
+                                    document.getElementById('upc').focus();
+                                }
+                            });
+                            return false;
+                        }
+                        else {
+                            var objMPLlist = [];
+                            objMPLlist = {
+                                MplNo: self.mplno(),
+                                MfgNo: self.mfgNo(),
+                                upc: self.upc(), seq_cd: document.getElementById('seq_cd').value, status: document.getElementById('status').value, spp_type: document.getElementById('spp_type').value, std_retl: self.std_retl(), std_deal: self.std_deal(),
+                                std_dist: self.std_dist()
+                                //,spp_cola: self.spp_cola(), spp_colb: self.spp_colb(), spp_colc: self.spp_colc(), colf: self.colf(),
+                                //colg: self.colg(), colh: self.colh(), cold: self.cold(), cole: self.cole(), fall_a: self.fall_a(), fall_b: self.fall_b(), fall_c: self.fall_c(),
+                                //fall_stat: document.getElementById('fall_stat').value, category: self.category()
+
+                            }
+                            $.ajax({
+                                url: "SaveMPL",
+                                data: { objMPLlist: JSON.stringify(objMPLlist), IsAddMode: self.MPLAddMode() },
+                                type: "POST",
+                                async: false,
+                                success: function (response) {
+                                    self.MPLAddMode(false);
+                                    self.MPLEditMode(true);
+                                    self.MPLSaveMode(false);
+                                    self.MPLEnableDisableMode(true);
+                                    self.MPLEnableDisable(true);
+                                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                                        alert("Gro Group", response.Items, true, true);
+                                    }
+                                    else {
+                                        $('#TblSPPList tbody tr').remove();
+                                        FillGridMPL(response.Items);
+                                    }
+                                }
+                            });
+
+                            window.parent.CallEnableTabs();
+                        }
+                    }
+                });
+
+            }
+
+
+        }
+
+        self.EditMPL = function () {
+            if (self.FillMfgProgMPLGrid().length == 0)
+                return false;
+
+            window.parent.CallDisableTabs();
+
+            self.MPLAddMode(false);
+            self.MPLSaveMode(true);
+            self.MPLEditMode(false);
+            self.MPLEnableDisableMode(false);
+            self.MPLEnableDisable(true);
+        }
+
+        self.DeleteMPL = function () {
+            if (self.MPLSaveMode() == true || self.FillMfgProgMPLGrid().length == 0)
+                return false;
+            alertconfirm("Gro Group", "Are you sure you want to delete this record?", self.confirmDeleteMPL, true, true);
+        }
+
+        self.confirmDeleteMPL = function () {
+            $.ajax({
+                url: "DeleteMPL",
+                data: { mplNo: self.mplno() },
+                type: "POST",
+                success: function (response) {
+                    FillGridMPL("");
+                    if (self.FillMfgProgMPLGrid().length == 0) {
+                        self.SelectedMfgProgMPL(null);
+                    }
+                }
+            });
+        }
+
+        self.CancelMPL = function () {
+            if (self.MPLSaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmMPLcancel, true, true);
+        }
+
+        self.confirmMPLcancel = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.MPLAddMode(false);
+            self.MPLEditMode(true);
+            self.MPLSaveMode(false);
+            self.MPLEnableDisableMode(true);
+            self.MPLEnableDisable(true);
+            self.SelectedMfgProgMPL(self.FillMfgProgMPLGrid()[MPLrowIndex]);
+            $('#spplist' + MPLrowIndex).addClass('success selected');
+        }
+
+
+        self.SelectedMfgProgMPL = function (item) {
+            if (self.MPLSaveMode() == true)
+                return false;
+            if (item != null && item !== undefined) {
+                self.mplno(item.MplNo);
+                self.mfgNo(GMfgNo);
+                self.alphacd(company);
+                self.txtOldmfgno(oldmfg);
+                self.upc(item.upc);
+                self.seq_cd(item.seq_cd.trim());
+
+                self.status(item.status.trim());
+                self.spp_type(item.spp_type.trim());
+
+                /*old
+                self.std_retl(item.std_retl);
+                self.std_deal(item.std_deal);
+                self.std_dist(item.std_dist);*/
+
+                self.std_retl(item.sugg_retl);
+                self.std_deal(item.sugg_deal);
+                self.std_dist(item.dist_ea);
+
+                //self.spp_cola(item.spp_cola);
+                //self.spp_colb(item.spp_colb);
+                //self.spp_colc(item.spp_colc);
+
+                //self.colf(item.colf);
+                //self.colg(item.colg);
+                //self.colh(item.colh);
+                //self.cold(item.cold);
+                //self.cole(item.cole);
+
+                //self.fall_a(item.fall_a);
+                //self.fall_b(item.fall_b);
+                //self.fall_c(item.fall_c);
+                //self.fall_stat(item.fall_stat);
+                //self.category(item.category);
+                self.MPLDesc(item.proddesc);
+                self.MPLSize(item.size);
+                // self.UM_Desc(item.um_desc);
+                self.UnitPack(item.pack);
+                self.UnitMeasure(item.um);
+                //self.Ship_UM(item.ship_um);
+                self.mfgpart(item.mfgpartno);
+            }
+            else {
+
+                self.mplno("");
+                self.upc("");
+                self.seq_cd("");
+                self.status("");
+                self.spp_type("");
+                self.std_retl("");
+                self.std_deal("");
+                self.std_dist("");
+                self.mfgpart("");
+                self.MPLDesc("");
+                // self.UM_Desc("");
+                self.MPLSize("");
+                self.UnitPack("");
+                self.UnitMeasure("");
+                // self.Ship_UM("");
+                //self.spp_cola("");
+                //self.spp_colb("");
+                //self.spp_colc("");
+                //self.colf("");
+                //self.colg("");
+                //self.colh("");
+                //self.cold("");
+                //self.cole("");
+                //self.fall_a("");
+                //self.fall_b("");
+                //self.fall_c("");
+                //self.fall_stat("");
+                //self.category("");
+            }
+
+        }
+
+
+        //Double click to Get the UPC
+        self.Upcsearchdbclick = function () {
+            if (blurevent == true) {
+                blurevent = false;
+                return false;
+            }
+            dbclick = true;
+            self.upc(document.getElementById('upc').value);
+            //if (self.upc() == "%")
+            //    return false;
+            if (self.upc() == null || self.upc() == "")
+                self.upc("%");
+            self.selectedvalue("upc");
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'product', searchtext: self.upc(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.upc(response.Items[0].upc);
+                        self.MPLDesc(response.Items[0].proddesc);
+                        self.MPLSize(response.Items[0].size);
+                        self.UnitPack(response.Items[0].pack);
+                        self.UnitMeasure(response.Items[0].um);
+                        self.mfgpart(response.Items[0].mfgpartno);
+                        GetSuggestedInfo();
+                    }
+                    else {
+                        document.getElementById('viewscreen').src = "../GroGroup/SearchScreen?element=txtupcsrch&table=product&field=" + mainfield + "  &header=" + mainheader + " &text=" + self.upc() + "&where=upc" + "&LabelDescription=Product";
+                        $("#dialog").dialog("open");
+                    }
+                    //self.upc("");
+                }
+            });
+        }
+
+        //Find the UPC from Blur
+        self.txtUpcsearch = function () {
+            if (dbclick == true) {
+                dbclick = false;
+                return false;
+            }
+            blurevent = true;
+            self.upc(document.getElementById('upc').value);
+            if (self.upc() == null || self.upc() == "") {
+                return false;
+            }
+          
+            self.selectedvalue("upc");
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'product', searchtext: self.upc(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.upc(response.Items[0].upc);
+                        self.MPLDesc(response.Items[0].proddesc);
+                        self.MPLSize(response.Items[0].size);
+                        // self.UM_Desc(response.Items[0].um_desc);
+                        self.UnitPack(response.Items[0].pack);
+                        self.UnitMeasure(response.Items[0].um);
+                        // self.Ship_UM(response.Items[0].ship_um);
+                        self.mfgpart(response.Items[0].mfgpartno);
+                        GetSuggestedInfo();
+                    }
+                    else {
+                        document.getElementById('viewscreen').src = "../GroGroup/SearchScreen?element=txtupcsrch&table=product&field=" + mainfield + "  &header=" + mainheader + " &text=" + self.upc() + "&where=upc" + "&LabelDescription=Product";
+                        $("#dialog").dialog("open");
+                    }
+                    //self.upc("");
+                    blurevent = false;
+                }
+            });
+        }
+
+        //Find the Mfg from Blur
+        self.txtmfgsearch = function () {
+            if (mfgdblclick == true) {
+                mfgdblclick = false;
+                return false;
+            }
+            mfgblurevent = true;
+            self.mfgpart(document.getElementById('txtmfgitem').value);
+            if (self.mfgpart() == null || self.mfgpart() == "") {
+                return false;
+            }
+
+            self.selectedvalue("mfgpartno");
+            var field = "mfgpartno,upc,proddesc, size,  pack, um";
+            var header = "MfgPartNo,UPC,prod desc, Size,  Unit Pack, Unit Measure";
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'product', searchtext: self.mfgpart(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.upc(response.Items[0].upc);
+                        self.MPLDesc(response.Items[0].proddesc);
+                        self.MPLSize(response.Items[0].size);
+                        self.UnitPack(response.Items[0].pack);
+                        self.UnitMeasure(response.Items[0].um);
+                        self.mfgpart(response.Items[0].mfgpartno);
+                        GetSuggestedInfo();
+                    }
+                    else {
+                        document.getElementById('viewscreen').src = "../GroGroup/SearchScreen?element=txtmfrsrch&table=product&field=" + field + "  &header=" + header + " &text=" + self.mfgpart() + "&where=mfgpartno" + "&LabelDescription=Product";
+                        $("#dialog").dialog("open");
+                    }
+                    mfgblurevent = false;
+                }
+            });
+
+        }
+
+        //Double click to Get the Mfg
+        self.mfgsearchdbclick = function () {
+            if (mfgblurevent == true) {
+                mfgblurevent = false;
+                return false;
+            }
+            mfgdblclick = true;
+
+            self.mfgpart(document.getElementById('txtmfgitem').value);
+            if (self.mfgpart() == null || self.mfgpart() == "") {
+                self.mfgpart("%");
+            }
+
+            self.selectedvalue("mfgpartno");
+            var field = "mfgpartno,upc,proddesc, size,  pack, um";
+            var header = "MfgPartNo,UPC,prod desc, Size,  Unit Pack, Unit Measure";
+
+            $.ajax({
+                url: "OpSearchList",
+                type: "POST",
+                data: { searchtable: 'product', searchtext: self.mfgpart(), selectedvalue: self.selectedvalue() },
+                success: function (response) {
+                    if (response.Items.length == 1) {
+                        self.upc(response.Items[0].upc);
+                        self.MPLDesc(response.Items[0].proddesc);
+                        self.MPLSize(response.Items[0].size);
+                        self.UnitPack(response.Items[0].pack);
+                        self.UnitMeasure(response.Items[0].um);
+                        self.mfgpart(response.Items[0].mfgpartno);
+                        GetSuggestedInfo();
+                    }
+                    else {
+                        document.getElementById('viewscreen').src = "../GroGroup/SearchScreen?element=txtmfrsrch&table=product&field=" + field + "  &header=" + header + " &text=" + self.mfgpart() + "&where=mfgpartno" + "&LabelDescription=Product";
+                        $("#dialog").dialog("open");
+                    }
+                }
+            });
+        }
+
+        self.searchselecteditem = function (item, element) {
+            if (element == "txtupcsrch") {
+                self.upc(item[0]);
+                self.MPLDesc(item[1]);
+                self.MPLSize(item[2]);
+                //self.UM_Desc(item[3]);
+                self.UnitPack(item[3]);
+                self.UnitMeasure(item[4]);
+                //self.Ship_UM(item[6]);
+                self.mfgpart(item[5]);
+                GetSuggestedInfo();
+                $("#dialog").dialog("close");
+
+            }
+            else if (element == "txtmfrsrch") {
+                self.mfgpart(item[0]);
+                self.upc(item[1]);
+                self.MPLDesc(item[2]);
+                self.MPLSize(item[3]);
+                self.UnitPack(item[4]);
+                self.UnitMeasure(item[5]);
+
+                GetSuggestedInfo();
+                $("#dialog").dialog("close");
+            }
+        }
+
+        function GetSuggestedInfo()
+        {
+            $.ajax({
+                url: "GetSuggestedInfo",
+                data: { UPC: self.upc() },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    if (response.Items.length > 0)
+                    {
+                        self.std_dist(response.Items[0].dist_ea);
+                        self.std_retl(response.Items[0].sugg_retl);
+                        self.std_deal(response.Items[0].sugg_deal);
+                    }
+                    else
+                    {
+                        self.std_dist("");
+                        self.std_retl("");
+                        self.std_deal("");
+                    }
+                   
+                }
+            });
+        }
+
+        $(".upCase").live("blur", function () {
+            var currVal = $(this).val();
+            $(this).val(currVal.toUpperCase());
+        });
+
+        FillGridMPL("");
+
+        /*********End SPPListing********************/
+
+        $("#spp").live("click", function () {
+            $('#TblSPPdiv thead th').removeClass("hide");
+            $('#TblSPPdiv tbody tr td').removeClass("hide");
+            $('#TblSPPdiv th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+        $("#spplist").live("click", function () {
+            $('#TblSPPList thead th').removeClass("hide");
+            $('#TblSPPList tbody tr td').removeClass("hide");
+            $('#TblSPPList th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+        });
+
+
+        $("#ftpickup").live("mouseover", function () {
+            $('#ftpickup').attr('title', $('#ftpickup').val());
+        });
+
+        $("#ftoth").live("mouseover", function () {
+            $('#ftoth').attr('title', $('#ftoth').val());
+        });
+
+
+        $("#ptstand").live("mouseover", function () {
+            $('#ptstand').attr('title', $('#ptstand').val());
+        });
+
+        $("#ptspecgg").live("mouseover", function () {
+            $('#ptspecgg').attr('title', $('#ptspecgg').val());
+        })
+
+        $("#pteospec").live("mouseover", function () {
+            $('#pteospec').attr('title', $('#pteospec').val());
+        });
+
+        $("#pteostnd").live("mouseover", function () {
+            $('#pteostnd').attr('title', $('#pteostnd').val());
+        });
+
+        $('.tablinks').live('click', function (evt) {
+            menuName = evt.currentTarget.innerHTML;
+            if (self.EditModeBpo() == false || self.EditModeBpoNotes() == false || self.EditModeMDS() == false || self.EditModePRG1() == false || self.EditModePRG2() == false || self.SppEditMode() == false || self.MPLEditMode() == false) {
+                if (menuName != submenuname) {
+                    content = "Leave " + submenuname + " page?";
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: content,
+                        type: "info",
+                        parent: true,
+                        subparent: true,
+                        buttons: [{ value: "Yes" }, { value: "No" }],
+                        success: function (result) {
+                            if (result == "Yes") {
+                                self.confirmcancelBpo();
+                                self.confirmcancelBpoNotes();
+                                self.confirmcancelMDS();
+                                self.confirmcancelPRG1();
+                                self.confirmcancelPRG2();
+                                self.Sppconfirmcancel();
+                                self.confirmMPLcancel();
+                                opentab();
+                            }
+                        }
+                    });
+                }
+                else
+                    return false;
+            }
+            else {
+                opentab();
+            }
+        });
+
+        function opentab() {
+            submenuname = menuName;
+            // Declare all variables
+            var i, tabcontent, tablinks;
+            ProgInfo = menuName + " For: " + GMfgNo + " - " + company;
+            self.ProgInfoTitle(ProgInfo);
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+                if (tablinks[i].innerText == menuName) {
+                    tablinks[i].className = "tablinks active";
+                }
+            }
+            if (menuName == "PRG(1 OF 2)")
+                document.getElementById('chkprg1').checked = false;
+            else if (menuName == "PRG(2 OF 2)")
+                document.getElementById('chkprg2').checked = false;
+            else if (menuName == "MDS")
+                document.getElementById('chkmds').checked = false;
+            else if (menuName == "BPO")
+                document.getElementById('chkBPO').checked = false;
+            else if (menuName == "BPO Notes")
+                document.getElementById('chkBPONotes').checked = false;
+
+            // Show the current tab, and add an "active" class to the link that opened the tab
+            document.getElementById(menuName).style.display = "block";
+        }
+
+    }   
+
+    //Export function code
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "ProgInfo", tablename + "_.csv", "Screen", tablename + "_");
+    }
+
+    
+
+</script>
+
+@*<link href="~/css/Theadscroll.css" rel="stylesheet" />*@
+
+<div>
+
+    <div class="tab tabon">
+        <button class="tablinks">BPO</button>
+        <button class="tablinks">BPO Notes</button>
+        <button class="tablinks">MDS</button>
+        <button class="tablinks">PRG(1 OF 2)</button>
+        <button class="tablinks">PRG(2 OF 2)</button>
+        <button class="tablinks" id="spp">SPP</button>
+        <button class="tablinks" id="spplist">SPP Listing</button>
+    </div>
+    <div class="span8">
+        <h4>
+            <span class="mob-wd-full" data-bind="text: ProgInfoTitle"></span>
+        </h4>
+    </div>
+    <div class="span4">
+        <h4>
+            <span class="mob-wd-full" style="margin-left:47%">Old MfgNo: </span>
+            <span style="color:#800909;" data-bind="text:txtOldmfgno"></span>
+        </h4>
+    </div>    
+    <div id="BPO" class="tabcontent">
+        <div class="row-fluid" style="max-width: 100em; text-align: left;">
+            <div class="row-fluid" style="margin-top:10px;">
+                <div class="span2">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="visible: EditModeBpo"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditBpo"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModeBpo"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSaveBpo"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModeBpo"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelBpo"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                <div class="span3">
+                    <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="click: $root.Showreport" title="BASIC PROGRAM OUTLINE (BPO)" /></a>
+                    <input type="checkbox" class="checkreport" id="chkBPO" title="Include Signature Block" /><label for="chkBPO">Include Signature Block</label>
+                </div>
+            </div>
+            <div class="row-fluid" style="height:55em;">
+                <div style="border:1px#BCD8F3 solid;padding:5px;margin-bottom:5px">
+                    <div class="row-fluid">
+                        <div class="span3 mob-wd-full">
+                            <label class="span4 divlabel mob-span">Status</label>
+                            <select id="Status" class="mob-cmb upCase" style="background-color:white;width:100px" data-bind="disable:EnableDisableModeBpo, options:cmbstatus,optionsText:'descript',optionsValue:'entry',value:bpo_stat"></select>
+                        </div>
+                        <div class="span4  mob-wd-full">
+                            <label class="span4 divlabel mob-span">Revision Year</label>
+                            <input type="text" class="input-small mob-text" maxlength="2" onkeypress="return numbers(this)" data-bind="disable: EnableDisableModeBpo,value: bpo_revyr" />
+                        </div>
+                        <div class="span5">
+                            <label class="span3 divlabel mob-span">Comments</label>
+                            <textarea class="mob-text" style="resize:none;width:68%;height:25px;font-weight: bold;color: black; font-size: 14px;" maxlength="30" data-bind="disable: EnableDisableModeBpo,value: indexcmmt"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="widgettitle">Freight Terms (FT)</h4>
+                <div style="border:1px#BCD8F3 solid;padding:5px;margin-bottom:5px">
+                    <div class="row-fluid">
+                        <div class="span6 mob-wd-full">
+                            <label class="span5 divlabel mob-span">PPD FOB Destination</label>
+                            <input type="text" class="mob-text" style="width:280px;" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: ft_fob" />
+                        </div>
+                        <div class="span6 mob-div-span">
+                            <label class="span4 divlabel mob-span">Pick-up Allowance</label>
+                            <input id="ftpickup" type="text" class="mob-text" style="width:61%;" maxlength="75" data-bind="disable: EnableDisableModeBpo,value: ft_pickup" />
+                        </div>
+
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6 mob-wd-full">
+                            <label class="span5 divlabel mob-span">PPD FOB Destination Add to Inv.</label>
+                            <input type="text" class="mob-text" style="width:280px;" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: ft_fobadd" />
+                        </div>
+                        <div class="span6 mob-top-5" style="float:left">
+                            <label class="span4 divlabel mob-span">Freight Comment</label>
+                            <input id="ftoth" type="text" class="mob-text" style="width:61%;" maxlength="75" data-bind="disable: EnableDisableModeBpo,value: ft_oth" />
+                        </div>
+                    </div>
+                </div>
+                <h4 class="widgettitle">Payment Terms (PT)</h4>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <label class="span6 divlabel mob-span">In Season Standard</label>
+                            <input id="ptstand" type="text" class="input-medium mob-text" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: pt_stand" />
+                        </div>
+                        <div class="span4">
+                            <label class="span6 divlabel mob-span">Early Order Standard</label>
+                            <input id="pteostnd" type="text" class="input-medium mob-text" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: pt_eostnd" />
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <label class="span6 divlabel mob-span">In Season Special GG</label>
+                            <input id="ptspecgg" type="text" class="input-medium mob-text" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: pt_specgg" />
+                        </div>
+                        <div class="span4 mob-div-span">
+                            <label class="span6 divlabel mob-span">Early Order Special GG</label>
+                            <input id="pteospec" type="text" class="input-medium mob-text" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: pt_eospec" />
+                        </div>
+                        <div class="span4 mob-top-5">
+                            <label class="span6 divlabel mob-span">Anticipated Discount % </label>
+                            <input type="text" class="mob-text" style="width: 150px;" maxlength="25" data-bind="disable: EnableDisableModeBpo,value: pt_disc" />
+                        </div>
+                    </div>
+                </div>
+                <h4 class="widgettitle">Early Order Program (EOP)</h4>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                    <div class="row-fluid">
+                        <div class="span4 mob-wd-full">
+                            <label class="span6 divlabel mob-span">EarlyOrder Discount(EOD)</label>
+                            <input type="text" class="input-medium mob-text" maxlength="30" data-bind="disable: EnableDisableModeBpo,value: eop_eod" />
+                        </div>
+                        <div class="span4 mob-wd-full mob-top-5">
+                            <label class="span7 divlabel mob-span">Order Period</label>
+                            <input type="text" class="mob-text" maxlength="13"  style="width: 120px;" data-bind="disable: EnableDisableModeBpo,value: eop_op" />
+                        </div>
+
+                        <div class="span4 mob-wd-full">
+                            <label class="span6 divlabel mob-span">Ship Period</label>
+                            <input type="text" class="mob-text" style="width: 153px;" maxlength="13" data-bind="disable: EnableDisableModeBpo,value: eop_sp" />
+                        </div>
+
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span4 mob-wd-full">
+                            <label class="span6 divlabel mob-span">Extended Terms</label>
+                            <input type="text" class="input-medium mob-text" maxlength="30" data-bind="disable: EnableDisableModeBpo,value: eop_et" />
+                        </div>
+                        <div class="span4 mob-wd-full">
+                            <label class="span7 divlabel mob-span">Early Take Discount % (ETD)</label>
+                            <input id="earlytake" type="text" class="mob-text" style="width: 120px;" maxlength="6" data-bind="disable: EnableDisableModeBpo,value: eop_etd" />
+                        </div>
+                        <div class="span4 mob-div-span">
+                            <label class="span6 divlabel mob-span">Take by</label>
+                            <input type="text" class="mob-text" style="width: 153px;" maxlength="25" data-bind="disable: EnableDisableModeBpo,value: eop_takby" />
+                        </div>
+                    </div>
+                </div>
+                <h4 class="widgettitle">Advertising Support (AS)</h4>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label class="span4 divlabel mob-span">Standard Retailer</label>
+                            <input type="text" class="mob-text" style="width:320px;" maxlength="75" data-bind="disable: EnableDisableModeBpo,value: as_sr1" />
+                        </div>
+                        <div class="span6">
+                            <label class="span5 divlabel mob-span"> Co-Op Claim Procedure</label>
+                            <input type="text" class="mob-text" style="width:307px;" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: as_coop" />
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label class="span4 divlabel mob-span">Standard Distributor</label>
+                            <input type="text" class="mob-text" style="width:320px;" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: as_sdist" />
+                        </div>
+                        <div class="span6 mob-wd-full">
+                            <label class="span5 divlabel mob-span">Deduct off Invoice</label>
+                            <input id="as_ofinv" type="checkbox" class="input-small" data-bind="disable: EnableDisableModeBpo,checked: as_ofinv" />
+                            @*<select id="as_ofinv" class="select input-medium cmb-yn" style="width:100px" data-bind="disable:EnableDisableModeBpo, options:cmbofinv,optionsText:'entry',optionsValue:'entry',value:as_ofinv"></select>*@
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label class="span4 divlabel mob-span">GG Distributor</label>
+                            <input type="text" class="mob-text" style="width:320px;" maxlength="40" data-bind="disable: EnableDisableModeBpo,value: as_ggdist" />
+                        </div>
+                        <div class="span6">
+                            <label class="span5 divlabel mob-span">Proof of Performance required</label>
+                            <input id="as_isprof" type="checkbox"  class="input-small" data-bind="disable: EnableDisableModeBpo,checked: as_isprof" />
+                            @*<select id="as_isprof" class="select input-medium cmb-yn" style="width:100px;" data-bind="disable:EnableDisableModeBpo, options:cmbisprof,optionsText:'entry',optionsValue:'entry',value:as_isprof"></select>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="row-fluid">
+                        <h4 class="widgettitle">Defective Merchandise Policy (DMP)</h4>
+                        <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <label class="span9 divlabel mob-span" for="merchandise">Field Destroy</label>
+                                    <input id="merchandise" type="checkbox" maxlength="1" class="input-small upCase" data-bind="disable: EnableDisableModeBpo,checked: dmp_fldds" />
+                                </div>
+                                <div class="span4">
+                                    <label class="span9 divlabel mob-span" for="mgfCall">Call Mfgr. Rep. for authorization</label>
+                                    <input id="mgfCall" type="checkbox" class="input-small upCase" maxlength="1" data-bind="disable: EnableDisableModeBpo,checked: dmp_callm" />
+                                </div>
+                                <div class="span4 mob-div-span">
+                                    <label class="span9 divlabeletc mob-span" for="dmp_callc">Call customer service for authorization</label>
+                                    <input id="dmp_callc" type="checkbox" class="input-small upCase" maxlength="1" data-bind="disable: EnableDisableModeBpo,checked: dmp_callc" />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+
+
+                                <div class="span4 mob-div-span">
+                                    <label class="span9 divlabel mob-span" for="dmp_calln">Do Not Call. Itemize and Debit</label>
+                                    <input id="dmp_calln" type="checkbox" class="input-small upCase" maxlength="1" data-bind="disable: EnableDisableModeBpo,checked: dmp_calln" />
+                                </div>
+                                <div class="span8 mob-wd-full mob-div-span">
+                                    <label class="span2 divlabel mob-span">Comment</label>
+                                    <textarea class="mob-text" style="width:630px;height:25px;font-size:14px;font-weight:bold;color: black;resize:none" maxlength="500" data-bind="disable: EnableDisableModeBpo,value: dmp_oth"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="widgettitle">Drop Ship Program (DSP)</h4>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label class="span4 divlabel mob-span">Distributor Minimum Order</label>
+                            <input type="text" class="input-large" style="width:65%" maxlength="50" data-bind="disable: EnableDisableModeBpo,value: ds_dmin" />
+                        </div>
+                        <div class="span6 mob-top-5">
+                            <label class="span4 divlabel mob-span">Freight Terms</label>
+                            <input type="text" class="input-large" maxlength="35" data-bind="disable: EnableDisableModeBpo,value: ds_dft" />
+                        </div>
+
+
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6 mob-wd-full">
+                            <label class="span4 divlabel mob-span">Drop Ship Pricing</label>
+                            <textarea id="ds_pric" class="input-text mob-text" style="width:65%;font-weight: bold;color: black; font-size: 14px; resize: none;" maxlength="8000" data-bind="disable: EnableDisableModeBpo,value: ds_note"></textarea>
+                        </div>
+                        <div class="span6 mob-wd-full">
+                            <label class="span4 divlabel mob-span">Drop Ship Comment</label>
+                            <textarea id="ds_cmmt" class="input-text mob-text" style="width:358px;height:31px; font-weight: bold;color: black; font-size: 14px; resize: none;" maxlength="8000" data-bind="disable: EnableDisableModeBpo,value: ds_cmmt"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="BPO Notes" class="tabcontent">
+        <div style="max-width:100em; text-align:left;">
+            <div class="row-fluid" style="margin-top:10px;">
+                <div class="span2">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="visible: EditModeBpoNotes"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditBpoNotes"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModeBpoNotes"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSaveBpoNotes"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModeBpoNotes"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelBpoNotes"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                <div class="span3">
+                    <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="click: $root.Showreport" title="BASIC PROGRAM OUTLINE (BPO)" /></a>
+                    <input type="checkbox" class="checkreport" id="chkBPONotes" title="Include Signature Block" /><label for="chkBPONotes">Include Signature Block</label>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="row-fluid">
+                    <div style="border:1px#BCD8F3 solid;padding:5px">
+                        <div class="row-fluid">
+                            <div class="span10">
+                                <label class="span12 divlabel mob-span" style="font-weight:bold">BPO Notes</label>
+                                <textarea id="bpo_notes" style="height: 300px; width: 75%; resize: none;" maxlength="8000" data-bind="disable: EnableDisableModeBpoNotes,value: bpo_notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="SPP" class="tabcontent">
+        <div style="max-width:100em; text-align:left;margin-top:10px;">
+            <div class="row-fluid" style="margin-top:5px;">
+                <div class="span4">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="enable:SppEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnSppAdd"><i class="icon-file icon-white"></i></a></li>
+                        <li data-bind="visible:SppEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnSppEdit"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible:SppSaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSppSave"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SppEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnSppDelete"><i class="icon-remove icon-white"></i></a></li>
+                        <li data-bind="enable:SppSaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnSppCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div style="border:1px#BCD8F3 solid;padding:5px;margin-bottom:5px">
+                <div class="row-fluid">
+                    <div class="span4 mob-wd-full">
+                        <label class="span6 divlabel mob-span">Status</label>
+                        <input id="s_status" type="text" class="input-small upCase mob-text" maxlength="1" data-bind="disable: SppEnableDisableMode,value: s_status" />
+                    </div>
+                    <div class="span3 mob-wd-full">
+                        <label class="span6 divlabel mob-span">Revision Year</label>
+                        <input type="text" class="input-small mob-text" maxlength="2" onkeypress="return numbers(this)" data-bind="disable: SppEnableDisableMode,value: s_revyr" />
+                    </div>
+                    <div class="span4">
+                        <label class="span6 divlabel mob-span">Promotion Description</label>
+                        <input type="text" class="input-medium mob-text" maxlength="25" data-bind="disable: SppEnableDisableMode,value: desc_" />
+                    </div>
+
+                </div>
+            </div>
+            <h4 class="widgettitle">Advanced Booking Components (ABC)</h4>
+            <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                <div class="row-fluid">
+                    <div class="row-fluid">
+                        <div class="span4 mob-wd-full">
+                            <label class="span6 divlabel mob-span">Order Period</label>
+                            <input type="text" class="input-medium mob-text" style="width:90px" maxlength="13" data-bind="disable: SppEnableDisableMode,value: abc_op" />
+                        </div>
+                        <div class="span3 mob-wd-full">
+                            <label class="span6 divlabel mob-span">Shipment Period</label>
+                            <input type="text" class="input-medium mob-text" style="width:90px" maxlength="13" data-bind="disable: SppEnableDisableMode,value: abc_sp" />
+                        </div>
+                        <div class="span4 mob-wd-full">
+                            <label class="span6 divlabel mob-span">Extended Terms</label>
+                            <input type="text" class="input-medium mob-text" maxlength="15" data-bind="disable: SppEnableDisableMode,value: abc_extrm" />
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span6 mob-wd-full">
+                            <label class="span4 divlabel mob-span">Order Requirement</label>
+                            <input type="text" class="input-medium mob-text" style="width:295px" maxlength="20" data-bind="disable: SppEnableDisableMode,value: abc_oreq" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<h4 class="widgettitle">Comments</h4>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                    <textarea id="scpnotes" style="width:85%; resize: none;" maxlength="500" data-bind="disable: SppEnableDisableMode,value: scpnotes"></textarea>
+                </div>*@
+            <div id="TblSPPdiv" style="width: 100%;" >
+                <table id="TblSPP" class="dytable dytable1 table table-bordered table-hover tablesort spptablesort" style="width: 100%;">
+                    <thead style="width: 100%">
+                        <tr class="exportclass">
+                            @*<th>Mfgno<i class="tog0" style="float: right; margin-top: -4px;"></i></th>
+                                <th>Scp_spp<i class="tog1" style="float: right; margin-top: -4px;"></i></th>
+                                <th>Desc<i class="tog2" style="float: right; margin-top: -4px;"></i></th>
+                                <th>S_status<i class="tog3" style="float: right; margin-top: -4px;"></i></th>*@
+                            <th>Revision Year<i class="tog4" style="float: right; margin-top: -4px;"></i></th>
+                            <th>Promotion Description<i class="tog5" style="float: right; margin-top: -4px;"></i></th>
+                            @* <th>Abc_disc<i class="tog6" style="float: right; margin-top: -4px;"></i></th>*@
+                        </tr>
+                    </thead>
+                    <tbody style="width: 100%; overflow-y:overlay;border: 1px solid #ddd;" data-bind="foreach: $root.FillMfgProgSPPGrid">
+                        <tr class="clickableRow" data-bind="click:$root.SelectedMfgProgSPP,attr: { id: $index()}">
+                            @*<td data-bind="text:oldmfgno"></td>
+                                <td data-bind="text:scp_spp"></td>
+
+                                <td data-bind="text: s_status"></td>*@
+                            <td data-bind="text: s_revyr"></td>
+                            <td data-bind="text:desc_"></td>
+                            @*<td data-bind="text: s_revdesc"></td>*@
+                            @*<td data-bind="text: abc_disc"></td>*@
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="PRG(1 OF 2)" class="tabcontent">
+        <div style="max-width:100em; text-align:left;">
+            <div class="row-fluid" style="margin-top:10px;">
+                <div class="span2">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="visible: EditModePRG1"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditPRG1"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModePRG1"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSavePRG1"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModePRG1"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelPRG1"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                <div class="span3">
+                    <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="click: $root.ShowProgreport" title="Program Reference Guide(PRG)" /></a>
+                    <input type="checkbox" class="checkreport" id="chkprg1" title="Include Signature Block" /><label for="chkprg1">Include Signature Block</label>
+                </div>
+            </div>
+            <div style="border:1px#BCD8F3 solid;padding:5px;margin-bottom:5px">
+                <div class="row-fluid">
+                    <div class="span3 mob-wd-full">
+                        <label class="span3 mob-span">Status</label>
+                        <input id="prg_stat" type="text" maxlength="1" class="input-small mob-text" data-bind="disable: EnableDisableModePRG1,value: prg_stat" />
+                    </div>
+                    <div class="span4 mob-wd-full">
+                        <label class="span4 mob-span">Revision Year</label>
+                        <input type="text" class="input-small mob-text" maxlength="2" onkeypress="return numbers(this)" data-bind="disable: EnableDisableModePRG1,value: prg_revyr" />
+                    </div>
+
+                    <div class="span5 mob-wd-full">
+                        <label class="span3 mob-span">Comments</label>
+                        <textarea  id="PrgCmt" maxlength="30"  data-bind="disable: EnableDisableModePRG1,value: prg_revds" class="mob-text" style="resize:none;width:68%;height:25px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <h4 class="widgettitle">Section A - Product Line Description</h4>
+            <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+                <textarea id="ProdLines" style="height:180px; resize: none;" class="span10" maxlength="8000" data-bind="disable: EnableDisableModePRG1,value: ProdLines"></textarea>
+            </div>
+            <h4 class="widgettitle">Section B - Manufacturer Points</h4>
+            <div style="border:1px#BCD8F3 solid;padding:5px">
+                <textarea id="MfgPoints" style="height:180px; resize: none;" class="span10" maxlength="8000" data-bind="disable: EnableDisableModePRG1,value: MfgPoints"></textarea>
+            </div>
+            <h4 class="widgettitle">Section C - Promotional Opportunities</h4>
+            <div style="border:1px#BCD8F3 solid;padding:5px">
+                <textarea id="PromoOpportunity" style="min-height:150px; resize: none;" class="span10" maxlength="8000" data-bind="disable: EnableDisableModePRG1,value: PromoOpportunity"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div id="PRG(2 OF 2)" class="tabcontent" style="height: 60em; margin-top: 10px; max-width: 100em; text-align: left;">
+        <div class="row-fluid">
+            <div class="span2">
+                <ul class="list-nostyle list-inline tooltipsample">
+                    <li data-bind="visible: EditModePRG2"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditPRG2"><i class="icon-edit icon-white"></i></a></li>
+                    <li data-bind="visible: SaveModePRG2"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSavePRG2"><i class="icon-list-alt icon-white"></i></a></li>
+                    <li data-bind="enable:SaveModePRG2"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelPRG2"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                </ul>
+            </div>
+            <div class="span3">
+                <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="click: $root.ShowProgreport" title="Program Reference Guide(PRG)" /></a>
+                <input type="checkbox" class="checkreport" id="chkprg2" title="Include Signature Block" /><label for="chkprg2">Include Signature Block</label>
+            </div>
+        </div>
+        <h4 class="widgettitle">Section D - Sales Support</h4>
+        <div style="border:1px#BCD8F3 solid;padding:5px;margin-bottom:5px">
+            <div class="row-fluid">
+                <div class="span3 mob-check-2">
+                    <label class="span7 " for="Factory">Factory Sales Reps:</label>
+                    <input id="Factory" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: factreps" />
+                </div>
+                <div class="span2">
+                    <label class="span12">Electronically Provided:</label>
+                </div>
+                <div class="span3 mob-check-2">
+                    <label class="span6" for="chkpdinfo">Product Info:</label>
+                    <input id="chkpdinfo" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: eprodinfo" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chklineart">Line Art:</label>
+                    <input id="chklineart" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: elineart" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkad">Ad Copy:</label>
+                    <input id="chkad" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: eadcopy" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span3">
+                    <label class="span5"></label>
+                    <input type="checkbox" data-bind="disable: EnableDisableModePRG2" style="display:none" />
+                </div>
+                <div class="span2">
+                    <label class="span12">Social Media:</label>
+                </div>
+                <div class="span3 mob-check-2">
+                    <label class="span6" for="chkyoutube">You Tube:</label>
+                    <input id="chkyoutube" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: youtube" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkfacebook">Facebook:</label>
+                    <input id="chkfacebook" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: facebook" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chktwitter">Twitter:</label>
+                    <input id="chktwitter" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: twitter" />
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span3 mob-check-2">
+                    <label class="span7" for="chkmfgreps">Manufacturer Reps:</label>
+                    <input id="chkmfgreps" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: mfrreps" />
+                </div>
+                <div class="span2">
+                    <label class="span12">Web Page Access:</label>
+                </div>
+                <div class="span3 mob-check-2">
+                    <label class="span6" for="chkwpapdinfo">Product Info:</label>
+                    <input id="chkwpapdinfo" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: wprodinfo" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkwpalineart">Line Art:</label>
+                    <input id="chkwpalineart" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: wlineart" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkwpaadcopy">Ad Copy:</label>
+                    <input id="chkwpaadcopy" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: wadcopy" />
+                </div>
+            </div>
+        </div>
+
+        <h4 class="widgettitle">Section E - Packaging/Registration</h4>
+        <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-bottom: 5px">
+            <div class="row-fluid">
+                <div class="span3 mob-check-2">
+                    <label class="span8" for="chkcanadian">Canadian Registration:</label>
+                    <input id="chkcanadian" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: cnreg" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkna">N/A:</label>
+                    <input id="chkna" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: cnna" />
+                </div>
+                <div class="span3 mob-check-2">
+                    <label class="span12 pri-btn" for="chkbillpkg" style="text-align:right">Bilingual Packaging:</label>
+                    @*<input id=chkbillpkg type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: bilinpkg" />*@
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkfrench">French:</label>
+                    <input id="chkfrench" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: french" />
+                </div>
+                <div class="span2 mob-check-2">
+                    <label class="span5" for="chkspanish">Spanish:</label>
+                    <input id="chkspanish" type="checkbox" data-bind="disable: EnableDisableModePRG2,checked: spanish" />
+                </div>
+            </div>
+        </div>
+        @*<div class="row-fluid" style="border: 1px#BCD8F3 solid;  margin-bottom: 5px">
+                <div class="span10" style="padding: 5px;">
+                    <label class="span2 divlabel">Comments</label>
+                    <textarea id="PackagingDetails" style="height:140px;resize: none;" class="span10" data-bind="disable: EnableDisableModePRG2,value: PackagingDetails"></textarea>
+                </div>
+            </div>*@
+        <h4 class="widgettitle">Section F - Comments</h4> @*Section F - Merchandise Team/Headquarters*@
+        <div style="border:1px#BCD8F3 solid;padding:5px">
+            <textarea id="MTeamHQDetails" style="min-height:270px;resize: none;" class="span10" maxlength="8000" data-bind="disable: EnableDisableModePRG2,value: MTeamHQDetails"></textarea>
+        </div>
+    </div>
+
+    <div id="SPP Listing" class="tabcontent">
+        <div style="max-width:100em; text-align:left;margin-top:10px;">
+            <div class="row-fluid">
+                <div class="span4">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="enable:MPLEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Add" title="Add" class="btn btn-primary" id="btnAddMPL"><i class="icon-file icon-white"></i></a></li>
+                        <li data-bind="visible: MPLEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditMPL"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: MPLSaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSaveMPL"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:MPLEditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Delete" title="Delete" class="btn btn-danger" id="btnDeleteMPL"><i class="icon-remove icon-white"></i></a></li>
+                        <li data-bind="enable:MPLSaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelMPL"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row-fluid" style="height:55em;">
+                <div style="border:1px#BCD8F3 solid;padding:5px; ">
+                    <div class="row-fluid">
+                        <div class="span5 mob-wd-full">
+                            <label class="span4 mob-span">UPC</label>
+                            <input id="upc" type="text" class="mob-text"  style="background-color: #C7F3AD;width:210px" data-bind="disable: MPLEnableDisableMode,value: upc,event:{blur:txtUpcsearch,dblclick:Upcsearchdbclick},attr:{placeholder:txtname}" required />
+                        </div>
+                        <div class="span4 mob-wd-full">
+                            <label class="span3 mob-span">Mfr.Item #</label>
+                            <input id="txtmfgitem" type="text" class="input-medium mob-text" style="background-color: #C7F3AD;" data-bind="disable: MPLEnableDisableMode,value:mfgpart,event:{blur:txtmfgsearch,dblclick:mfgsearchdbclick},attr:{placeholder:txtmfrname}" />
+                        </div>
+                        <div class="span3 mob-wd-full">
+                            <label class="span6 mob-span">SPP Seq. Code</label>
+                            <select id="seq_cd" class="mob-cmb" style="background-color:white;width:120px" data-bind="disable:MPLEnableDisableMode, options:cmbseqcode,optionsText:'descript',optionsValue:'entry',value:seq_cd"></select>
+                        </div>
+                    </div>
+                </div>
+                <div style="border:1px#BCD8F3 solid;padding:5px;margin-top:5px">
+                    <div class="row-fluid">
+                        <div class="span5 mob-wd-full">
+                            <label class="span4 mob-span ">Description</label>
+                            <input type="text" class="mob-text" style="width:315px" maxlength="40" data-bind="disable: MPLEnableDisable,value:MPLDesc" />
+                        </div>
+                        <div class="span3 mob-wd-full">
+                            <label class="span4 mob-span ">Size</label>
+                            <input type="text" class="input-medium mob-text" maxlength="50" data-bind="disable: MPLEnableDisable,value:MPLSize" />
+                        </div>
+                        <div class="span2 mob-wd-full">
+                            <label class="span6 mob-span">Case Pack</label>
+                            <input type="text" class="mob-text" style="width:60px" maxlength="6" data-bind="disable: MPLEnableDisable,value:UnitPack" />
+                        </div>
+                        <div class="span2 mob-wd-full">
+                            <label class="span7 mob-span ">Unit Measure</label>
+                            <input type="text" class="mob-text" style="width:50px" maxlength="2" data-bind="disable: MPLEnableDisable,value:UnitMeasure" />
+                        </div>
+                    </div>
+                </div>
+                <div style="border: 1px#BCD8F3 solid; padding: 5px; margin-top: 5px">
+                    <div class="row-fluid">
+                        <div class="span4 mob-wd-full">
+                            <label class="span5 mob-span">Status</label>
+                            <select id="status" class="mob-cmb" style="background-color:white;width:100px" data-bind="disable:MPLEnableDisableMode, options:cmbsppstat,optionsText:'descript',optionsValue:'entry',value:status"></select>
+                        </div>
+                        <div class="span4 mob-wd-full">
+                            <label class="span5 mob-span">Type SPP</label>
+                            <select id="spp_type" class="input-medium mob-cmb" style="background-color:white;" data-bind="disable:MPLEnableDisableMode, options:cmbspptype,optionsText:'descript',optionsValue:'entry',value:spp_type"></select>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <label class="span5 mob-span">Distributor Each</label>
+                            <input type="text" class="input-small mob-text" onkeypress="return numberswithdot(this, event, true,3);" maxlength="8" data-bind="disable: true, value: std_dist" />
+                        </div>
+                        <div class="span4">
+                            <label class="span5 mob-span">Suggested Retailer</label>
+                            <input type="text" class="input-small mob-text" onkeypress="return numberswithdot(this, event, true,3);" maxlength="8" data-bind="disable: true, value: std_retl" />
+                        </div>
+                        <div class="span4">
+                            <label class="span5 mob-span">Suggested Dealer</label>
+                            <input type="text" class="input-small mob-text" onkeypress="return numberswithdot(this, event, true,3);" maxlength="8" data-bind="disable: true, value: std_deal" />
+                        </div>
+                    </div>
+                    @*<div class="row-fluid">
+                            <div class="span3 mob-wd-full">
+                                <label class="span4 mob-span">Columns A:</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: colf" />
+                            </div>
+
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span">B</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: colg" />
+                            </div>
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span">C</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: colh" />
+                            </div>
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span">D</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: cold" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span4 mob-span">E</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: cole" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span3 mob-wd-full">
+                                <label class="span4 mob-span ">SPP-A</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: spp_cola" />
+                            </div>
+
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span ">SPP-B</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: spp_colb" />
+                            </div>
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span ">SPP-C</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: spp_colc" />
+                            </div>
+
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span3 mob-wd-full">
+                                <label class="span4 mob-span ">Fall Status</label>
+                                <input id="fall_stat" type="text" class="input-small upCase" maxlength="1" data-bind="disable: MPLEnableDisableMode,value: fall_stat" />
+                            </div>
+
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span ">Fall A:</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: fall_a" />
+                            </div>
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span ">Fall B:</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: fall_b" />
+                            </div>
+                            <div class="span2 mob-wd-full">
+                                <label class="span4 mob-span ">Fall C:</label>
+                                <input type="text" class="input-small" onkeypress="return isNumberKey(event);" data-bind="disable: MPLEnableDisableMode,value: fall_c" />
+                            </div>
+                            <div class="span3 mob-wd-full">
+                                <label class="span4 mob-span ">Category:</label>
+                                <input type="text" maxlength="6" class="input-small" data-bind="disable: MPLEnableDisableMode,value: category" />
+                            </div>
+                        </div>*@
+                </div>
+                <div style="width: 100%; margin-top: 5px">
+                    <table id="TblSPPList" class="dytable table table-bordered table-hover tablesort spplisttablesort" style="width: 100%; border: solid 1px #ddd;max-height:40%">
+                        <thead style="width: 100%;">
+                            <tr class="exportclass">
+                                <th style="width:8%;">SPP Seq. Code<i class="tog0" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width:25%;">Description<i class="tog1" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width:10%;">UPC<i class="tog2" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width:6%;">Mfr.Item #<i class="tog3" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width: 10%; text-align: right">Suggested Retailer<i class="tog4" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width: 10%; text-align: right">Suggested Dealer<i class="tog5" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width: 10%; text-align: right">Distributor Each<i class="tog6" style="float: right; margin-top: -4px;"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: $root.FillMfgProgMPLGrid" style="width: 100%;max-height:30em; overflow-y:overlay;">
+                            <tr class="clickableRowMPL" data-bind="attr:{ id:'spplist'+ $index()}">
+                                <td style="width:8%;" data-bind="text:seq_cd"></td>
+                                <td style="width:25%;" data-bind="text:proddesc"></td>
+                                <td style="width:10%;" data-bind="text:upc"></td>
+                                <td style="width:6%;" data-bind="text:mfgpartno"></td>
+                                @*<td style="width: 15%; text-align: right" data-bind="text:std_retl"></td>
+                                <td style="width: 15%; text-align: right" data-bind="text: std_deal"></td>
+                                <td style="width: 15%; text-align: right;padding-right: 20px;" data-bind="text: std_dist"></td>*@
+
+                                <td style="width: 10%; text-align: right" data-bind="text:sugg_retl"></td>
+                                <td style="width: 10%; text-align: right" data-bind="text: sugg_deal"></td>
+                                <td style="width: 10%; text-align: right;padding-right: 20px;" data-bind="text: dist_ea"></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="MDS" class="tabcontent">
+        <div style="max-width:100em; text-align:left;">
+            <div class="row-fluid" style="margin-top:10px;">
+                <div class="span2">
+                    <ul class="list-nostyle list-inline tooltipsample">
+                        <li data-bind="visible: EditModeMDS"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEditMDS"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveModeMDS"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning SaveColor" id="btnSaveMDS"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li data-bind="enable:SaveModeMDS"><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancelMDS"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                <div class="span3">
+                    <a href="#"><img style="width:30px; height:30px;vertical-align:bottom" src="@Url.Content("~/images/report.png")" data-bind="click: $root.ShowMDSreport" title="Manufacturer Data Sheet(MDS)" /></a>
+                    <input type="checkbox" class="checkreport" id="chkmds" title="Include Signature Block" /><label for="chkmds">Include Signature Block</label>
+                </div>
+            </div>
+            <div class="row-fluid" style="margin-top: 3px;">
+                <div class="span12">
+                    <div class="widgetbox">
+                        <h4 class="widgettitle">Mfg Information</h4>
+                        <div class="widgetcontent">
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span12" style="font-weight:bold">EDI Information</label>
+                                    <div class="row-fluid">
+                                        <div class="span2 mob-wd-full">
+                                            <input id="edi850" class="input-small" type="checkbox" maxlength="1" data-bind="disable: EnableDisableMode, checked: txtedi850" />
+                                            <label for="edi850">PO(850)</label>
+                                        </div>
+                                        <div class="span2 mob-wd-full">
+                                            <input id="edi810" class="input-small" type="checkbox" maxlength="1" data-bind="disable: EnableDisableMode, checked: txtedi810" />
+                                            <label for="edi810">Invoice(810)</label>
+                                        </div>
+
+                                        <div class="span3 mob-wd-full">
+                                            <input id="edi856" class="input-small" type="checkbox" maxlength="1" data-bind="disable: EnableDisableMode, checked: txtedi856" />
+                                            <label for="edi856">Advance Shipping Notice(856)</label>
+                                        </div>
+                                        <div class="span3 mob-wd-full">
+                                            <input id="edi856fax" class="input-small" type="checkbox" maxlength="1" data-bind="disable: EnableDisableMode, checked: txtedi856fax" />
+                                            <label for="edi856fax">Advance Shipping Notice(856) Fax</label>
+                                        </div>
+                                    </div>
+                                    @*<div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span2" style="margin-left:0;">Comments</label>
+                                                <textarea id="Comments" rows="2" cols="10" style="resize:none;margin-left: 0px; width:62%;" data-bind="disable: EnableDisableMode, value:txtComments"></textarea>
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid" style="margin-top:3px;">
+                <div class="span12">
+                    <div class="widgetbox profile-photo">
+                        <div class="headtitle">
+                            <h2 class="widgettitle">
+                                Shipping Information
+                            </h2>
+                        </div>
+                        <div class="" style="border: 1px#BCD8F3 solid;padding:4px">
+                            <div class="row-fluid">
+                                <div class="span6" style="margin-top:3px">
+                                    <label>In Season Average Lead Time</label>
+                                    <input id="leadtime" style="width:40px" maxlength="3" onkeypress="return numbers(this)" type="text" class="input-large" data-bind="disable: EnableDisableMode,value:txtleadtime " />&nbsp; days
+                                </div>
+                                <div class="span6" style="margin-top:3px">
+                                    <label style="margin-left:10px">In Season Average Fill Rate </label>
+                                    <input id="fillrate" style="width:40px" maxlength="3" onkeypress="return numbers(this)" type="text" class="input-large" data-bind="disable: EnableDisableMode,value:txtfillrate " />&nbsp;%
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <label class="span3" style="font-weight:bold;margin:0px;">Address</label>
+                                    <label class="span2" style="font-weight:bold; margin-left: 2%;">Phone</label>
+                                    <label class="span1" style="font-weight: bold; margin-left: -1%;"> Ext</label>
+                                    <label class="span2" style="font-weight:bold; margin:0px;">Supervisor</label>
+                                    <label class="span2 mob-wd-full" style="font-weight:bold;margin-left: 0%;width:8%">No. of Docks</label>
+                                    <label class="span2" style="font-weight: bold;margin-left: 0%">Ship Hours</label>
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <label class="span2" style="font-weight:bold;margin:0px; width:200px;">City</label>
+                                    <label class="span1" style="font-weight:bold;">State</label>
+                                    <label class="span2" style="font-weight:bold;margin:0px;">Zip</label>
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold;text-align:center;">1</label>
+                                    <input id="siadd1" class="span3" maxlength="35" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiadd1 " />
+                                    <input id="siphone1" class="span2" maxlength="12" style="min-height: 21px !important;" onkeypress="return numbersonly(this,event,true);" type="text" data-bind="disable: EnableDisableMode, value:txtsiphone1 " />
+                                    <input id="siext1" class="span1" maxlength="4" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiext1 " />
+                                    <input id="sisuper1" class="span2" maxlength="20" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsisuper1 " />
+                                    <input id="sidocks1" class="span2" maxlength="3" style="min-height: 21px !important;width:8%" type="text" data-bind="disable: EnableDisableMode, value:txtsidocks1 " />
+                                    <input id="sihours1" class="span1" maxlength="11" style="min-height: 21px !important;width: 8%" type="text" data-bind="disable: EnableDisableMode, value:txtsihours1 " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <input id="sicity1" class="span2" maxlength="20" style="min-height: 21px !important;width: 220px;" type="text" data-bind="disable: EnableDisableMode, value:txtsicity1 " />
+                                    <input id="sistate1" class="span1" maxlength="2" style="min-height: 21px !important;width: 50px;" type="text" data-bind="disable: EnableDisableMode, value:txtsistate1 " />
+                                    <input id="sizip1" class="span2" maxlength="10" style="min-height: 21px !important;width: 100px;" type="text" data-bind="disable: EnableDisableMode, value: txtsizip1,event:{blur:txtsizip1search} " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold;text-align:center;">2</label>
+                                    <input id="siadd2" class="span3" maxlength="35" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiadd2 " />
+                                    <input id="siphone2" class="span2" maxlength="12" style="min-height: 21px !important;" onkeypress="return numbersonly(this,event,true);" type="text" data-bind="disable: EnableDisableMode, value:txtsiphone2 " />
+                                    <input id="siext2" class="span1" maxlength="4" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiext2 " />
+                                    <input id="sisuper2" class="span2" maxlength="20" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsisuper2 " />
+                                    <input id="sidocks2" class="span2" maxlength="3" style="min-height: 21px !important;width:8%" type="text" data-bind="disable: EnableDisableMode, value:txtsidocks2 " />
+                                    <input id="sihours2" class="span1" maxlength="11" style="min-height: 21px !important;width: 8%" type="text" data-bind="disable: EnableDisableMode, value:txtsihours2 " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <input id="sicity2" class="span2" maxlength="20" style="min-height: 21px !important;width:220px;" type="text" data-bind="disable: EnableDisableMode, value:txtsicity2 " />
+                                    <input id="sistate2" class="span1" maxlength="2" style="min-height: 21px !important;width: 50px;" type="text" data-bind="disable: EnableDisableMode, value:txtsistate2 " />
+                                    <input id="sizip2" class="span2" maxlength="10" style="min-height: 21px !important;width: 100px;" type="text" data-bind="disable: EnableDisableMode, value: txtsizip2,event:{blur:txtsizip2search} " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold;text-align:center;">3</label>
+                                    <input id="siadd3" class="span3" maxlength="35" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiadd3 " />
+                                    <input id="siphone3" class="span2" maxlength="12" style="min-height: 21px !important;" onkeypress="return numbersonly(this,event,true);" type="text" data-bind="disable: EnableDisableMode, value:txtsiphone3 " />
+                                    <input id="siext3" class="span1" maxlength="4" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiext3 " />
+                                    <input id="sisuper3" class="span2" maxlength="20" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsisuper3 " />
+                                    <input id="sidocks3" class="span2" maxlength="3" style="min-height: 21px !important;width:8%" type="text" data-bind="disable: EnableDisableMode, value:txtsidocks3 " />
+                                    <input id="sihours3" class="span1" maxlength="11" style="min-height: 21px !important;width: 8%" type="text" data-bind="disable: EnableDisableMode, value:txtsihours3 " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <input id="sicity3" class="span2" maxlength="20" style="min-height: 21px !important;width: 220px;" type="text" data-bind="disable: EnableDisableMode, value:txtsicity3 " />
+                                    <input id="sistate3" class="span1" maxlength="2" style="min-height: 21px !important;width: 50px;" type="text" data-bind="disable: EnableDisableMode, value:txtsistate3 " />
+                                    <input id="sizip3" class="span2" maxlength="10" style="min-height: 21px !important;width: 100px;" type="text" data-bind="disable: EnableDisableMode, value: txtsizip3,event:{blur:txtsizip3search} " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold;text-align:center;">4</label>
+                                    <input id="siadd4" class="span3" maxlength="35" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiadd4 " />
+                                    <input id="siphone4" class="span2" maxlength="12" style="min-height: 21px !important;" onkeypress="return numbersonly(this,event,true);" type="text" data-bind="disable: EnableDisableMode, value:txtsiphone4 " />
+                                    <input id="siext4" class="span1" maxlength="4" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsiext4 " />
+                                    <input id="sisuper4" class="span2" maxlength="20" style="min-height: 21px !important;" type="text" data-bind="disable: EnableDisableMode, value:txtsisuper4 " />
+                                    <input id="sidocks4" class="span2" maxlength="3" style="min-height: 21px !important;width:8%" type="text" data-bind="disable: EnableDisableMode, value:txtsidocks4 " />
+                                    <input id="sihours4" class="span1" maxlength="11" style="min-height: 21px !important;width: 8%" type="text" data-bind="disable: EnableDisableMode, value:txtsihours4 " />
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <label class="span1" style="font-weight:bold"></label>
+                                    <input id="sicity4" class="span2" maxlength="20" style="min-height: 21px !important;width:220px;" type="text" data-bind="disable: EnableDisableMode, value:txtsicity4 " />
+                                    <input id="sistate4" class="span1" maxlength="2" style="min-height: 21px !important;width: 50px;" type="text" data-bind="disable: EnableDisableMode, value:txtsistate4 " />
+                                    <input id="sizip4" class="span2" maxlength="10" style="min-height: 21px !important;width: 100px;" type="text" data-bind="disable: EnableDisableMode, value: txtsizip4,event:{blur:txtsizip4search}  " />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid" style="margin-top: 3px;">
+                <div class="widgetbox">
+                    <h4 class="widgettitle">Comments</h4>
+                    <div class="widgetcontent" style="padding:4px">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <laleb class="span1"></laleb>
+                                <textarea id="Comments" rows="2" cols="10" style="resize:none;margin-left: 0px; width:62%;" data-bind="disable: EnableDisableMode, value:txtComments"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="dialog" title="" style="overflow:hidden">
+    <iframe id="viewscreen" src="" style="width:100%; height:100%" scrolling="no" frameborder="0"></iframe>
+</div>

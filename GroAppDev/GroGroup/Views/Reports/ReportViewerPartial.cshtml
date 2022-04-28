@@ -1,0 +1,14 @@
+﻿
+@Html.DevExpress().ReportViewer(settings =>{
+    // The following settings are necessary for a Report Viewer.
+    settings.Name = "reportViewer1";
+    settings.ShowLoadingPanelImage = false;
+    settings.LoadingPanelText = "";
+    settings.Report = (GroGroup.XtraReport1)ViewData["Report"];
+    // Callback and export route values specify the corresponding controllers and their actions.
+    // These settings are necessary as well.
+
+    settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+    settings.CallbackRouteValues = new { Controller = "Reports", Action = "ReportViewerPartial", GuId = Request.Params["GUID"] };
+    settings.ExportRouteValues = new { Controller = "Reports", Action = "ExportReportViewerPartial", GuId = Request.Params["GUID"] };
+}).GetHtml()

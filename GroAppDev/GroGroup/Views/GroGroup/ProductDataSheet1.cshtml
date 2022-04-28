@@ -1,0 +1,434 @@
+﻿
+@{
+    ViewBag.Title = "ProductDataSheet1";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+
+<style type="text/css">
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width: 253px;
+    }
+   .ui-datepicker-calendar {
+        width: 100% !important;
+    }
+</style>
+
+<script type="text/javascript">
+    var companyname = "", desc2 = "";
+    var tblname = "", mfgno = "";
+    $(document).ready(function () {
+        PDS = new viewModel();
+        search = PDS;
+        ko.applyBindings(PDS);
+        $("#btnEdit").click({ handler: PDS.Edit });
+        $("#btnSave").click({ handler: PDS.Save });
+        $("#btnCancel").click({ handler: PDS.Cancel });
+
+        $("#lastupd").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+        $("#Priceeffdate").datepicker({ dateFormat: 'mm/dd/yy', changeMonth: true, changeYear: true });
+
+    });
+
+    function viewModel() {
+        var self = this;
+        var dblclic = false;
+       
+        self.EnableDisableControls = ko.observable(false);
+        self.EnableDisableMode = ko.observable(true);
+        self.EditEnableDisable = ko.observable(true);
+        self.AddMode = ko.observable(false);
+        self.EditMode = ko.observable(true);
+        self.SaveMode = ko.observable(false);
+        self.DeleteMode = ko.observable(true);
+        var Upc = '@ViewBag.PDSUPC';       
+        companyname = window.parent.document.getElementById('company').value;
+        desc2 = window.parent.document.getElementById('desc2').value;
+        
+        self.PdsNo = ko.observable();
+        self.txtmfgname = ko.observable();
+        self.txtdesc1 = ko.observable();
+        self.txtdesc2 = ko.observable();
+        self.txtmfgitem = ko.observable();
+        self.txtupc = ko.observable();
+        self.txtsugg_retl = ko.observable();
+        self.txtsugg_deal = ko.observable();
+        self.txtdist_ea = ko.observable();
+        self.txtdropship = ko.observable();
+        self.txtdriveitem = ko.observable();
+        self.txtprice_a = ko.observable();
+        self.txta_desc = ko.observable();
+        self.txtprice_b = ko.observable();
+        self.txtb_desc = ko.observable();
+        self.txtprice_c = ko.observable();
+        self.txtc_desc = ko.observable();
+        self.txtprice_d = ko.observable();
+        self.txtd_desc = ko.observable();
+        self.txtprice_d = ko.observable();
+        self.txtprice_e = ko.observable();
+        self.txte_desc = ko.observable();
+        self.txtlastupdt = ko.observable();
+        self.txteff_date = ko.observable();
+        self.txtnewchng = ko.observable();
+
+        self.Selecteditems = ko.observableArray([]);
+
+        window.parent.CallEnableTabs();
+
+        self.Selecteditems = function (Item) {
+            if (tblname == "product") {
+                self.PdsNo(0);
+                self.txtmfgname(companyname);
+                self.txtdesc1(Item.proddesc.trim());
+                self.txtdesc2(desc2);
+                self.txtmfgitem(Item.mfgpartno.trim());
+                self.txtupc(Item.upc);
+                mfgno = Item.MfgNo;
+            }
+            else
+            {
+                self.PdsNo(Item.PdsNo);
+                mfgno = Item.mfgno;
+                self.txtmfgname(companyname);
+                self.txtdesc1(Item.prod_desc.trim());
+                self.txtdesc2(desc2);
+                self.txtmfgitem(Item.mfgitem.trim());
+                self.txtupc(Item.upc);
+
+                suggretl = "";
+
+                if (Item.sugg_retl != "" && !isNaN(Item.sugg_retl)) {
+                    suggretl = parseFloat(Item.sugg_retl).toFixed(2);
+                }
+
+                suggdeal = "";
+
+                if (Item.sugg_deal != "" && !isNaN(Item.sugg_deal)) {
+                    suggdeal = parseFloat(Item.sugg_deal).toFixed(2);
+                }
+
+                distea = "";
+
+                if (Item.dist_ea != "" && !isNaN(Item.dist_ea)) {
+                    distea = parseFloat(Item.dist_ea).toFixed(2);
+                }
+
+                self.txtsugg_retl(suggretl);//  self.txtsugg_retl(Item.sugg_retl);
+
+                self.txtsugg_deal(suggdeal);
+                self.txtdist_ea(distea);
+                self.txtdropship(Item.dropship);
+
+               // self.txtdriveitem(Item.f01BH_dealerDropShip); 
+                self.txtdriveitem(Item.driveitem);
+
+                driveitem = "";
+
+                if (Item.driveitem != "" && !isNaN(Item.driveitem)) {
+                    driveitem = parseFloat(Item.driveitem).toFixed(2);
+                }
+
+                self.txtdriveitem(driveitem);
+
+                self.txtprice_a(Item.price_a);
+
+                self.txta_desc(Item.a_desc.trim());;
+                self.txtprice_b(Item.price_b);
+                self.txtb_desc(Item.b_desc.trim());
+                self.txtprice_c(Item.price_c);
+                self.txtc_desc(Item.c_desc.trim());
+                self.txtprice_d(Item.price_d);
+                self.txtd_desc(Item.d_desc.trim());
+                self.txtprice_e(Item.price_e);
+                self.txte_desc(Item.e_desc.trim());
+                self.txtlastupdt(DateBind(Item.lastupdt));
+                self.txteff_date(DateBind(Item.eff_date));
+                self.txtnewchng(Item.newchng.trim());
+            }
+            
+        }
+
+        function FillPDS(){
+        $.ajax({
+            url: "FillPds",
+            type: "POST",
+            data: { Upc: Upc },
+            success: function (response) {
+                var pars = response.Items;
+                tblname = response.tablename;
+                self.Selecteditems(response.Items[0]);
+                
+            }
+        });
+        }
+        FillPDS();
+
+        self.Edit = function () {
+
+            window.parent.CallDisableTabs();
+
+            self.AddMode(false);
+            self.SaveMode(true);
+            self.EditMode(false);
+            self.EnableDisableMode(false);
+            self.EditEnableDisable(true);
+            self.EnableDisableControls(true);
+            $("#Manuname").focus();
+        }
+
+
+        self.Save = function () {
+
+            if (self.txtlastupdt() != null && self.txtlastupdt() != "") {
+                var isdatecomplvalidate = isValidDate(self.txtlastupdt());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Last Update",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('lastupd').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+            if (self.txteff_date() != null && self.txteff_date() != "") {
+                var isdatecomplvalidate = isValidDate(self.txteff_date());
+                if (isdatecomplvalidate == false) {
+                    $.msgBox({
+                        title: "Gro Group",
+                        content: "Please enter the Valid Price Effective Date",
+                        type: "info",
+                        buttons: [{ value: "Ok" }],
+                        afterClose: function (result) {
+                            document.getElementById('Priceeffdate').focus();
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            var objpds = [];
+            objpds = {
+                PdsNo: self.PdsNo(),
+                mfgno: mfgno,
+                mfgname: self.txtmfgname(),
+                prod_desc: self.txtdesc1(),
+                upc: self.txtupc(),
+                mfgitem: self.txtmfgitem(),
+                sugg_retl: self.txtsugg_retl(),
+                sugg_deal: self.txtsugg_deal(),
+                dist_ea: self.txtdist_ea(),
+                dropship: self.txtdropship(),
+                driveitem: self.txtdriveitem(),
+                price_a: self.txtprice_a(),
+                a_desc: self.txta_desc(),
+                price_b: self.txtprice_b(),
+                b_desc: self.txtb_desc(),
+                price_c: self.txtprice_c(),
+                c_desc: self.txtc_desc(),
+                price_d: self.txtprice_d(),
+                d_desc: self.txtd_desc(),
+                price_e: self.txtprice_e(),
+                e_desc: self.txte_desc(),
+                lastupdt:self.txtlastupdt(),
+                eff_date: self.txteff_date(),
+                newchng: self.txtnewchng()
+            }
+            
+
+            $.ajax({
+                url: "Savepds",
+                data: { objpds: JSON.stringify(objpds), Scrname: "ProductDataSheet1"},
+                type: "POST",
+                success: function (response) {
+                    if (response.ItemMsg != undefined && response.ItemMsg != null && response.ItemMsg != "") {
+                        alert("Gro Group", response.ItemMsg);
+                    }
+                    else {
+                        self.AddMode(false);
+                        self.EditMode(true);
+                        self.SaveMode(false);
+                        self.EnableDisableMode(true);
+                        self.EditEnableDisable(true);
+                        self.EnableDisableControls(false);
+                        FillPDS();
+                    }
+                }
+            });
+
+            window.parent.CallEnableTabs();
+
+        }
+        self.Cancel = function () {
+            if (self.SaveMode() != true)
+                return false;
+            alertconfirm("Are You Sure", "Do you want to cancel current changes ?", self.confirmcancel, true, false);
+        }
+        self.confirmcancel = function () {
+
+            window.parent.CallEnableTabs();
+
+            self.AddMode(false);
+            self.EditMode(true);
+            self.SaveMode(false);
+            self.EditEnableDisable(true);
+            self.EnableDisableMode(true);
+            self.EnableDisableControls(false);
+            FillPDS();
+        }
+    }
+</script>
+
+        <div class="widgetbox container" style="max-width:950px !important; text-align:left;height: 780px;overflow:auto">
+            <div class="row-fluid ">
+                <div class="span3">
+                    <ul class="list-nostyle list-inline tooltipsample mob-top">
+                         <li data-bind="visible: EditMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Edit" title="Edit" class="btn btn-warning" id="btnEdit"><i class="icon-edit icon-white"></i></a></li>
+                        <li data-bind="visible: SaveMode"><a data-placement="bottom" data-rel="tooltip" data-original-title="Save" title="Save" class="btn btn-warning" id="btnSave"><i class="icon-list-alt icon-white"></i></a></li>
+                        <li><a data-placement="bottom" data-rel="tooltip" data-original-title="Cancel" title="Cancel" class="btn btn-info" id="btnCancel"><i class="iconsweets-arrowleft iconsweets-white"></i></a></li>
+                    </ul>
+                </div>
+                </div>
+                <h4 class="widgettitle">Product Data Sheet</h4>
+                <div class="widgetcontent">
+                    <div class="correctborder">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span3 mob-span">Mfr. Name</label>
+                                <input id="Manuname" tabindex="1" maxlength="35" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtmfgname" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span3 mob-span">Mfr. Item #</label>
+                                <input id="mfgritem" tabindex="3" maxlength="15" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtmfgitem" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span3 mob-span">Description 1</label>
+                                <input id="desc1" tabindex="2" maxlength="40" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtdesc1,attr:{title:txtdesc1}" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span3 mob-span">Description 2</label>
+                                <input id="desc2" tabindex="2" maxlength="40" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtdesc2,attr:{title:txtdesc2}" />
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <label class="span3 mob-span">UPC #</label>
+                                <input id="upcnum" tabindex="4" maxlength="14" type="text" style="width:25%;" class="input-medium mob-text" data-bind="disable: EditEnableDisable, value: txtupc" />
+                            </div>
+                        </div>
+                    </div>              
+                    
+
+                    <div class="row-fluid">
+                        <div class="widgetbox">
+                            <h4 class="widgettitle">PRICING</h4>
+                            <div class="correctborder">
+                                <div class="row-fluid">
+                                    <div class="span6" style="float:left;">
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span6 mob-span">Suggested Retail Each</label>
+                                                <input id="sugretail" tabindex="8" maxlength="13" type="text" class="input-medium mob-text" onkeypress="return numberswithdot(this, event, true,8);" data-bind="    disable: EnableDisableMode, value: txtsugg_retl" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span6 mob-span">Suggested Dealer Each</label>
+                                                <input id="suggdelea" tabindex="9" maxlength="13" type="text" class="input-medium mob-text" onkeypress="return numberswithdot(this, event, true,8);" data-bind="    disable: EnableDisableMode, value: txtsugg_deal" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span6 mob-span">Distributor Each</label>
+                                                <input id="destibutea" tabindex="10" maxlength="13" type="text" class="input-medium mob-text" onkeypress="return numberswithdot(this, event, true,8);" data-bind="    disable: EnableDisableMode, value: txtdist_ea" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span6 mob-span">Drop Ship Each</label>
+                                                <input id="dropshipea" tabindex="11" maxlength="13" type="text" class="input-medium mob-text" onkeypress="return numberswithdot(this, event, true,8);" data-bind="    disable: EnableDisableMode, value: txtdropship" />
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <label class="span6 mob-span">Drive Item Each</label>
+                                                <input id="driveitem" tabindex="12" maxlength="13" type="text" class="input-medium mob-text" onkeypress="return numberswithdot(this, event, true,8);" data-bind="    disable: EnableDisableMode, value: txtdriveitem" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span6">
+                                        <div class="span6">
+                                            <div class="span12">
+                                                <label class="span2"></label>
+                                                <label style="font-weight:bold">Price Distributor Each</label>
+                                            </div>
+                                            <div class="row-fluid">
+
+                                                <label class="span2 mob-span mob-div">A</label>
+                                                <input id="PricedistA1" tabindex="13" maxlength="13" type="text" onkeypress="return numberswithdot(this, event, true,8);" class="input-medium mob-text" data-bind="    disable: EnableDisableMode, value: txtprice_a" />
+                                            </div>
+                                            <div class="row-fluid">
+
+                                                <label class="span2 mob-span mob-div">B</label>
+                                                <input id="PricedistB1" tabindex="15" maxlength="13" type="text" onkeypress="return numberswithdot(this, event, true,8);" class="input-medium mob-text" data-bind="    disable: EnableDisableMode, value: txtprice_b" />
+                                            </div>
+                                            <div class="row-fluid">
+
+                                                <label class="span2 mob-span mob-div">C</label>
+                                                <input id="PricedistC1" tabindex="17" maxlength="13" type="text" onkeypress="return numberswithdot(this, event, true,8);" class="input-medium mob-text" data-bind="    disable: EnableDisableMode, value: txtprice_c" />
+                                            </div>
+                                            <div class="row-fluid">
+
+
+                                                <label class="span2 mob-span mob-div">D</label>
+                                                <input id="PricedistD1" tabindex="19" maxlength="13" type="text" onkeypress="return numberswithdot(this, event, true,8);" class="input-medium mob-text" data-bind="    disable: EnableDisableMode, value: txtprice_d" />
+                                            </div>
+                                            <div class="row-fluid">
+
+                                                <label class="span2 mob-span mob-div">E</label>
+                                                <input id="PricedistE1" tabindex="21" maxlength="13" type="text" onkeypress="return numberswithdot(this, event, true,8);" class="input-medium mob-text" data-bind="    disable: EnableDisableMode, value: txtprice_e" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="correctborder">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <label class="span10 mob-span" style="font-weight:bold">Last Update</label>
+                                <input id="lastupd" tabindex="23" maxlength="10" type="text" class="input-medium mob-text" data-bind="disable: EnableDisableMode, value: txtlastupdt" disabled="">
+                            </div>
+                            <div class="span4">
+                                <label class="span10 mob-span" style="font-weight:bold">Price Effective Date</label>
+                                <input id="Priceeffdate" tabindex="24" maxlength="10" type="text" class="input-medium mob-text" data-bind="disable: EnableDisableMode, value: txteff_date" disabled="">
+                            </div>
+                            <div class="span4">                               
+                                <label class="span10 mob-span" style="font-weight:bold">Item Type</label>
+                                <input id="ncudid" tabindex="25" maxlength="1" type="text" class="input-medium mob-text" data-bind="disable: EnableDisableMode, value: txtnewchng" disabled="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+    </div>
+  
+   

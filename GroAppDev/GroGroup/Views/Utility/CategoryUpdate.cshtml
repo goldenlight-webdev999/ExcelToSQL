@@ -1,0 +1,510 @@
+﻿
+@{
+    ViewBag.Title = "CategoryUpdate";
+    Layout = "~/Views/Shared/ContentLayout.cshtml";
+}
+<link href="~/css/Theadscroll.css" rel="stylesheet" />
+@*<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>*@
+@*<script src="~/js/jquery/1.4.2/jquery.min.js"></script>*@
+@*<link href="~/Styles/jquery.flexbox.css" rel="stylesheet" />
+<script src="~/Scripts/jquery.flexbox.js"></script>*@
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@{
+    var CssStyle = @"@media only screen and (max-width:760px),(min-device-width:768px) and (max-device-width:881px){.dytable table,.dytable tbody,.dytable td,.dytable th,.dytable thead,.dytable tr{display:block} .dytable thead tr{position:absolute;top:-9999px;left:-9999px}.dytable tr{border:1px solid #ccc}.dytable td{border-bottom:1px solid #eee;position:relative;padding-left:50%;width:49%;}.dytable td:before{position:absolute;top:6px;left:6px;width:45%;padding-right:10px;white-space:nowrap}.dytable td{ text-align: left !important;} .dytable tr td:nth-child(4){width:auto !important;}
+.dytable tr td:nth-child(3){width:auto !important;text-align:left !important;}
+.dytable tr td:nth-of-type(1):before{content:'Cat Code';font-weight: bold;}
+.dytable tr td:nth-of-type(2):before{content:'UPC';font-weight: bold;}
+.dytable tr td:nth-of-type(3):before{content:'Product Description';font-weight: bold;}
+.dytable tr td:nth-of-type(4):before{content:'PDS Date';font-weight: bold;}
+.dytable tr td:nth-of-type(5):before{content:'Mfg Company';font-weight: bold;}
+.dytable tr td:nth-of-type(6):before{content:'CurrentYTD';font-weight: bold;}
+.dytable tr td:nth-of-type(7):before{content:'LastYearTotal';font-weight: bold;}
+
+@media only screen and (min-device-width :320px) and (max-device-width :480px){body{padding:0;margin:0;width:100%}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){body{width:100%}}";
+}
+<style type="text/css">
+            @Html.Raw(CssStyle)
+</style>
+<style type="text/css">
+
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    .ui-datepicker-year {
+        width: 80px !important;
+    }
+
+    .ui-datepicker-month {
+        width: 70px !important;
+    }
+
+    #ui-datepicker-div {
+        z-index: 2000 !important;
+        width: 253px;
+    }
+
+    .ui-datepicker-calendar thead {
+        width: 100% !important;
+    }
+
+    .ui-datepicker-calendar tbody {
+        width: 100% !important;
+    }
+
+    table#TblcatUpdate {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+    }
+
+        table#TblcatUpdate thead {
+            flex: 0 0 auto;
+            width: 100%;
+        }
+
+        table#TblcatUpdate tbody {
+            flex: 1 1 auto;
+            display: block;
+            overflow-y: overlay;
+            overflow-x: hidden;
+        }
+
+            table#TblcatUpdate tbody tr {
+                width: 100%;
+            }
+
+            table#TblcatUpdate tbody td {
+                word-wrap: break-word;
+            }
+
+        table#TblcatUpdate thead th {
+            word-wrap: break-word;
+        }
+
+        table#TblcatUpdate thead, table#TblcatUpdate tbody tr {
+            display: table;
+            table-layout: fixed;
+        }
+
+    #Upcsearch {
+        background-color: #C7F3AD;
+    }
+
+    #RefCatid {
+        text-align: right;
+    }
+</style>
+
+
+
+<script type="text/javascript">
+    var CategoryUpdate;
+    var rowIndex = 0;
+    var search;
+    var tablename = "";
+    var availableCatCodes = [];
+    $(document).ready(function () {
+        CategoryUpdate = new viewModel();
+        search = CategoryUpdate;
+        ko.applyBindings(CategoryUpdate);
+        
+
+        $("#Upprocat").click({ handler: CategoryUpdate.Updateprocat });
+        $("#btnRefCatUpd").click({ handler: CategoryUpdate.RefCatUpd });
+        $("#btnSaveCatCode").click({ handler: CategoryUpdate.SaveCatCode });
+
+        //For IE
+        var isIE = !!navigator.userAgent.match(/Trident/g) || !!navigator.userAgent.match(/MSIE/g);
+        if (isIE) {
+            $('table#TblcatUpdate tbody').css("overflow-y", "scroll");
+            if ($(window).height() > 700)
+                $('#TblcatUpdate').css('height', $(window).height() - 320 + 'px');
+            else $('#TblcatUpdate').css('height', $(window).height() - 80 + 'px');
+            $('table#TblcatUpdate thead').css("width", "98.5%");
+        }
+
+        
+        //$('#cmbcatcode').flexbox('../Utility/FillCatCode', {
+        //    resultTemplate: '<table><tr><td style="width:50px">{entry}</td><td style="width:50px">{entry}</td></tr></table>',
+        //    displayValue: "entry",
+        //    searchValue: "entry",
+        //    hiddenValue: "entry",
+        //    resultsProperty: "Items",
+        //    width: 150,
+        //    divwidth: 150,
+        //    onSelect: function () {
+
+        //    }
+
+        //});
+
+    })
+    function viewModel() {
+        var self = this;
+
+        
+
+        self.CatCodelist = ko.observable();
+        self.SelectedCatcode = ko.observable()
+
+        self.menulist = ko.observableArray([]);
+        self.mlineno = ko.observable();
+        self.CatUpdategrid = ko.observable();
+
+        if ($(window).height() > 700)
+            $('#TblcatUpdate').css('max-height', $(window).height() - 180 + 'px');
+        else
+            $('#TblcatUpdate').css('max-height', $(window).height() - 80 + 'px');
+
+        FillCatCode();
+
+        function FillCatCode() {
+
+            //CatUpdate();
+            
+            $.ajax({
+                url: "FillCatCode",
+                type: "POST",
+                success: function (response) {
+                    self.CatCodelist(response.Items);
+
+                    for (var i = 0; i < response.Items.length; i++) {
+                        availableCatCodes.push(response.Items[i].entry);
+                    }
+
+                    CatUpdate();
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    alert("Gro Group", Request.responseText, true, false);
+                }
+            });
+        }
+
+        $(".clickableRow").live("click", function () {
+            
+            rowIndex = $(this).attr("id");
+            $('.clickableRow').removeClass('selected');
+            $(this).addClass('selected');
+        });
+        $(".exportclass").live("contextmenu", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            tablename = $(this).closest('table').attr('id');
+            $('#export').remove();
+            if (event.which == 3) {
+                self.menulist().length = 0;
+                evecount = event.currentTarget.children;
+                for (var i = 0; i < evecount.length; i++) {
+
+                    if (evecount[i].style.display == "none") {
+
+                    }
+                    else {
+                        self.menulist.push(evecount[i].innerText);
+                    }
+                    var clsname = evecount[i].className;
+                    var clsindex = clsname.indexOf("hide");
+                    if (clsindex >= 0) {
+                        $("#chk_" + [i]).attr('checked', false);
+                    }
+                    else {
+                        $("#chk_" + [i]).attr('checked', true);
+                    }
+                }
+                self.menulist();
+                $("#NotesDialog").dialog("open");
+                $('#ui-id-1').prepend('<img id="export" style="width:20px; height:20px;float:right" src="../images/Export.png" title="Export Data" onclick="fnExcelReport();" />');
+
+            }
+
+        });
+        doublesort();
+
+        // Fill the Catogery Update Grid
+        function CatUpdate() {
+            $("#loading").fadeIn();
+            $.ajax({
+                url: "FillcategoryUpdate",
+                type: "POST",
+                success: function (response) {
+                    $("#loading").fadeOut();
+
+                    $('#TblcatUpdate tbody tr').remove();
+                    $('#TblcatUpdate th i').removeClass("icon-white icon-chevron-up icon-white icon-chevron-down");
+                    self.CatUpdategrid(response.Items);
+
+                    var tableRef = document.getElementById('TblcatUpdate').getElementsByTagName('tbody')[0];
+                    for (var i = 0; i < tableRef.rows.length; i++) {
+                        tableRef.rows[i].cells[0].children[0].id = "catcode" + i;
+                        var catel = tableRef.rows[i].cells[0].children[0].id;
+                        $("#" + catel).autocomplete({
+                            source: availableCatCodes
+                        });
+
+
+                    }
+
+
+                    //var tableRef = document.getElementById('TblcatUpdate').getElementsByTagName('tbody')[0];
+                    //for (var i = 0; i < tableRef.rows.length; i++) {
+                    //    var catel = tableRef.rows[i].cells[0].children[0].id;
+
+                    //    $('#' + catel).flexbox('../Utility/FillCatCode', {
+                    //        resultTemplate: '<table><tr><td style="width:50px">{entry}</td></tr></table>',
+                    //        displayValue: "entry",
+                    //        searchValue: "entry",
+                    //        hiddenValue: "entry",
+                    //        resultsProperty: "Items",
+                    //        width: 150,
+                    //        divwidth: 150,
+                    //        onSelect: function () {
+
+                    //        }
+
+                    //    });
+                    //}
+
+                    if (response.rowindex > 0) {
+                        $('#TblcatUpdate tbody tr:eq(' + response.rowindex + ')').addClass('success selected');
+                        self.Selectcategory(response.Items[response.rowindex]);
+                        rowIndex = response.rowindex;
+                    }
+                    else if (response.rowindex < 0) {
+                        $('#TblcatUpdate tbody tr:first').addClass('success selected');
+                        self.Selectcategory(response.Items[0]);
+                        rowIndex = response.rowindex;
+                    }
+                    else {
+                        $('#TblcatUpdate tbody tr:first').addClass('success selected');
+                        self.Selectcategory(response.Items[0]);
+                        rowIndex = response.rowindex;
+                    }
+                    var THIndex = $('#TblcatUpdate thead th').length;
+                    for (var i = 0; i < THIndex; i++) {
+                        var clsname = $('#TblcatUpdate thead th')[i].className;
+                        var clsindex = clsname.indexOf("hide");
+                        if (clsindex >= 0) {
+                            $('td').filter(':nth-child(' + (i + 1) + ')').addClass('hide');
+                        }
+                    }
+                },
+                error: function (Request, textStatus, errorThrown) {
+                    $("#loading").fadeOut();
+                    alert("Gro Group", Request.responseText, true, false);
+                }
+            });
+        }
+
+
+       
+
+        //bind the selected row inputs
+        self.Selectcategory = function (item) {
+            
+
+        }
+
+        //Calling the Procedure to Update the catcode to Product
+        self.Updateprocat = function () {
+            alertconfirm("Gro Group", "Are you sure you want to Update Product Category?", self.confirmupdate, true, false);
+            if (false) { return; }
+        }
+        self.confirmupdate = function () {
+            $.ajax({
+                url: "ProCategoryUpdate",
+                type: "POST",
+                success: function (response) {
+                    FillCatCode();
+                }
+
+            });
+        }
+
+        self.RefCatUpd = function () {
+
+            var res = "Are you sure you want to delete existing data ?";
+            $.msgBox({
+                title: "Gro Group",
+                content: res,
+                type: "confirm",
+                parent: true,
+                buttons: [{ value: "Yes" }, { value: "No" }],
+                success: function (result) {
+                    if (result == "Yes") {
+                        res = "Are you sure you want to update Category Update table with new data?";
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: res,
+                            type: "confirm",
+                            parent: true,
+                            buttons: [{ value: "Yes" }, { value: "No" }],
+                            success: function (result) {
+                                if (result == "Yes") {
+                                    $.ajax({
+                                        url: "CategoryUpdateTable",
+                                        type: "POST",
+                                        success: function (response) {
+                                            FillCatCode();
+                                        },
+                                        error: function (Request, textStatus, errorThrown) {
+                                            alert("Gro Group", Request.responseText, true, false);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+        }
+
+        self.SaveCatCode = function () {
+            var CatCodArr = [];
+            var tableRef = document.getElementById('TblcatUpdate').getElementsByTagName('tbody')[0];
+
+
+            //validate valid catcode
+            var matchcode = "";
+            
+            for (var i = 0; i < tableRef.rows.length ; i++) {
+                var oldcat = "";
+                oldcat = tableRef.rows[i].cells[7].innerText;
+                oldcat = oldcat.trim();
+                if (tableRef.rows[i].cells[0].children[0].value != oldcat) {
+                    var sCatCode = "", matchcode = "";
+                    sCatCode = tableRef.rows[i].cells[0].children[0].value;
+                    for (var c = 0; c < self.CatCodelist().length; c++) {
+                        if (sCatCode == "" || sCatCode == self.CatCodelist()[c].entry) {
+                            matchcode = sCatCode;
+                            //break;
+                        }
+                    }
+
+                    if (sCatCode == "" || matchcode != "") {
+                        CatCodArr.push({
+
+                            upc: tableRef.rows[i].cells[1].innerText,
+                            catcode: tableRef.rows[i].cells[0].children[0].value
+
+                        })
+                    }
+                    else {
+                        var catel = tableRef.rows[i].cells[0].children[0].id;
+                        $.msgBox({
+                            title: "Gro Group",
+                            content: "Invalid CatCode [" + sCatCode + "]",
+                            type: "info",
+                            parent: true,
+                            buttons: [{ value: "Ok" }],
+                            afterClose: function (result) {
+                                
+                                document.getElementById(catel).focus();
+                            }
+                        });
+                        return false;
+                    }
+                }
+
+            }
+
+            if (CatCodArr.length > 0) {
+
+                var res = "Are you sure you want to update Category Code for " + CatCodArr.length + " UPC(s) ?";
+                $.msgBox({
+                    title: "Gro Group",
+                    content: res,
+                    type: "confirm",
+                    parent: true,
+                    buttons: [{ value: "Yes" }, { value: "No" }],
+                    success: function (result) {
+                        if (result == "Yes") {
+                            $.ajax({
+                                url: "SaveCatCodeUpdate",
+                                type: "POST",
+                                data: { catcodelist: JSON.stringify(CatCodArr) },
+                                success: function (response) {
+                                    FillCatCode();
+                                },
+                                error: function (Request, textStatus, errorThrown) {
+                                    alert("Gro Group", Request.responseText, true, false);
+                                }
+                            });
+                        }
+                    }
+                });
+
+            }
+        }
+
+        
+
+    }
+    function fnExcelReport() {
+        var table = document.getElementById(tablename);
+        GlobalExcelExportsortable(table, "CategoryUpdate", tablename + "_.csv", "Screen", tablename + "_");
+    }
+</script>
+<div class="container divheight">
+    <div class="row-fluid">
+        <div class="span4 mob-div">
+            <button id="btnSaveCatCode" class="btn btn-primary pri-btn" type="button">Save</button>
+            @*<input id="tags">*@
+            @*<div id="cmbcatcode" style="width:110px;"></div>*@
+            @*<input data-bind="jqAuto: { source: CatCodelist, value: SelectedCatcode }" />*@
+            @*<input style="width: 78px; font-family: Verdana; font-size: small;" id="txtcatcode" data-bind="jqAuto: { autoFocus: true }, jqAutoSource: CatCodelist, jqAutoValue: SelectedCatcode, jqAutoSourceLabel: 'entry', jqAutoSourceInputValue: 'entry', jqAutoSourceValue: 'entry'" />*@
+        </div>
+        <div id="RefCatid" class="span8 mob-div">
+            <button id="btnRefCatUpd" class="btn btn-primary pri-btn" type="button">Refresh Category Table</button>@*data-bind="disable:EnableDisableBtn"*@
+            <button id="Upprocat" class="btn btn-primary pri-btn" type="button">Update Product Category</button>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="widgetbox">
+            <h4 class="widgettitle">Category Update</h4>
+            <div class="widgetcontent">
+                
+                <div class="row-fluid">
+                    <table id="TblcatUpdate" class="dytable table table-bordered table-hover tablesort">
+                        <thead>
+                            <tr class="exportclass">
+                                <th>Cat Code</th>
+                                <th>UPC<i class="icon2" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="width:30%">Product Description<i class="icon3" style="float: right; margin-top: -4px;"></i></th>
+                                <th>PDS Date<i class="icon4" style="float: right; margin-top: -4px;"></i></th>
+                                <th>Mfg Company<i class="icon5" style="float: right; margin-top: -4px;"></i></th>
+                                <th>Current YTD<i class="icon6" style="float: right; margin-top: -4px;"></i></th>
+                                <th>Last Year Total<i class="icon7" style="float: right; margin-top: -4px;"></i></th>
+                                <th style="display:none;">Old Cat Code<i class="icon8" style="float: right; margin-top: -4px;"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach:$root.CatUpdategrid">
+                            <tr class="clickableRow" data-bind="click:$root.Selectcategory,attr:{id: $index()}">
+                                @*<td><select class="pri-btn" style="width:100%;" data-bind="options:$root.CatCodelist,optionsText: 'entry',optionsValue: 'entry',value:catdesc"></select></td>*@
+                                @*<td><div style="width:100%"></div></td>*@
+                                <td><input style="width:100%;" data-bind="value: catdesc"></td>
+                                <td data-bind="text:upc"></td>
+                                <td data-bind="text:ProductDescription" style="width:30%"></td>
+                                <td data-bind="text:DateBind(pds_date)"></td>
+                                <td data-bind="text:MfgCompany"></td>
+                                <td data-bind="text:CurrentYTD"></td>
+                                <td data-bind="text:LastYearTotal"></td>
+                                <td data-bind="text:catcode" style="display:none;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
