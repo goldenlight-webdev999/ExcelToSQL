@@ -1,6 +1,6 @@
 
-GroAppDev/.vs/*
-GroAppDev/GroGroup/bin/*
-GroAppDev/GroGroup/bin-copy/*
+GroAppDev/.vs
+GroAppDev/GroGroup/bin
+GroAppDev/GroGroup/bin-copy
 GroAppDev/GroGroup.sln
-GroAppDev/GroGroup/obj/*
+GroAppDev/GroGroup/obj
