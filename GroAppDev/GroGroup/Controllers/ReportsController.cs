@@ -1,5 +1,4 @@
-﻿using DevExpress.Web;
-using DevExpress.XtraPrinting;
+﻿using DevExpress.XtraPrinting;
 using DevExpress.XtraPrinting.InternalAccess;
 using DevExpress.XtraReports.UI;
 using GroGroup.Class;

@@ -1490,8 +1490,8 @@ namespace GroGroup.Controllers
 
 
                     string TypeColName = "";
-                    if (PDSDS.Tables["PDS"].Columns.Contains("Item Type  Required"))
-                        drUpd = PDSDS.Tables["PDS"].Select("isnull([Item Type  Required],'') <> ''");
+                    if (PDSDS.Tables["PDS"].Columns.Contains("Item Type Required"))
+                        drUpd = PDSDS.Tables["PDS"].Select("isnull([Item Type Required],'') <> ''");
                     else
                     {
                         TypeColName = PDSDS.Tables["PDS"].Columns[0].ToString();
@@ -1530,7 +1530,7 @@ namespace GroGroup.Controllers
 
                             DataRow dr;
                             dr = lds.Tables[0].NewRow();
-                            string mfgno = "", oldmfgno = "", mfgname = "", mfgupc = "", mfgtitle = "", mfgitem = "", sType = "", PriceChange = "", OtherChange = "", CaseUCC = "", prod_desc = "", dist_ea = "", eff_date = "";
+                            string mfgno = "", oldmfgno = "", mfgname = "", mfgupc = "", mfgtitle = "", mfgitem = "", sType = "", CaseUCC = "", prod_desc = "", dist_ea = "", eff_date = "";
 
                             if (!string.IsNullOrEmpty(upcno))
                             {
@@ -1575,38 +1575,33 @@ namespace GroGroup.Controllers
 
                             mfgtitle = mfgname.Trim() + "   " + mfgupc.Trim();
 
-                            mfgitem = drUpd[i]["Mfr# Item number"].ToString();
+                            mfgitem = drUpd[i]["Mfr# Item number -( 15 Characters)"].ToString();
                             dr["mfgitem"] = mfgitem;
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Item Type  Required"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Item Type Required"))
                             {
-                                sType = drUpd[i]["Item Type  Required"].ToString();
+                                sType = drUpd[i]["Item Type Required"].ToString();
                                 dr["f01A_itemType"] = sType;
                                 dr["cp_cube"] = drUpd[i]["Case Pack Cubic / Feet"].ToString();
                             }
+                            
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price Changes"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("SCC 14 - Case Code Number"))
                             {
-                                PriceChange = drUpd[i]["Price Changes"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Other Changes"))
-                            {
-                                OtherChange = drUpd[i]["Other Changes"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Code Number"))
-                            {
-                                CaseUCC = drUpd[i]["Case Code Number"].ToString();
+                                CaseUCC = drUpd[i]["SCC 14 - Case Code Number"].ToString();
                                 dr["cp_upc"] = CaseUCC;
                             }
 
-                            prod_desc = drUpd[i][" Product Description (Inc# color, size, unit meas#)"].ToString();
+                            prod_desc = drUpd[i][" Product Description 1 (Inc# color, size, unit meas#) (30 Charac"].ToString();
                             dr["prod_desc"] = prod_desc;
                             dr["upc"] = upcno;
 
-                            if (drUpd[i]["Price Effective Date  Required"] != DBNull.Value && drUpd[i]["Price Effective Date  Required"].ToString() != "")
-                                eff_date = drUpd[i]["Price Effective Date  Required"].ToString();
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Price Effective Date Required"))
+                            {
+                                if (drUpd[i]["Price Effective Date Required"] != DBNull.Value && drUpd[i]["Price Effective Date Required"].ToString() != "")
+                                    eff_date = drUpd[i]["Price Effective Date Required"].ToString();
+                            }
 
                             if (!string.IsNullOrEmpty(eff_date))
                             {
@@ -1615,10 +1610,10 @@ namespace GroGroup.Controllers
 
                             if (drUpd[i]["Case Pack Cubic / Feet"] != DBNull.Value && drUpd[i]["Case Pack Cubic / Feet"].ToString() != "")
                                 dr["cp_cube"] = drUpd[i]["Case Pack Cubic / Feet"].ToString();
-                            if (drUpd[i]["Case Pack Weight / lbs"] != DBNull.Value && drUpd[i]["Case Pack Weight / lbs"].ToString() != "")
-                                dr["cp_wt"] = drUpd[i]["Case Pack Weight / lbs"].ToString();
-                            if (drUpd[i]["Case Pallet Quantity / cases "] != DBNull.Value && drUpd[i]["Case Pallet Quantity / cases "].ToString() != "")
-                                dr["cp_palqty"] = drUpd[i]["Case Pallet Quantity / cases "].ToString();
+                            if (drUpd[i]["Case Pack Weight / lbs#"] != DBNull.Value && drUpd[i]["Case Pack Weight / lbs#"].ToString() != "")
+                                dr["cp_wt"] = drUpd[i]["Case Pack Weight / lbs#"].ToString();
+                            if (drUpd[i]["Case Quantity on Pallet"] != DBNull.Value && drUpd[i]["Case Quantity on Pallet"].ToString() != "")
+                                dr["cp_palqty"] = drUpd[i]["Case Quantity on Pallet"].ToString();
                             if (drUpd[i]["Case Pack Height / inches "] != DBNull.Value && drUpd[i]["Case Pack Height / inches "].ToString() != "")
                                 dr["cp_ht"] = drUpd[i]["Case Pack Height / inches "].ToString();
                             if (drUpd[i]["Case Pack Width / inches"] != DBNull.Value && drUpd[i]["Case Pack Width / inches"].ToString() != "")
@@ -1629,16 +1624,12 @@ namespace GroGroup.Controllers
                                 dr["mp_qty"] = drUpd[i]["Master Carton Quantity "].ToString();
                             dr["h_importc"] = drUpd[i]["Country of Origin  Required if not USA"].ToString();
                             dr["country"] = drUpd[i]["Country of Origin  Required if not USA"].ToString();
-
-                            /* 
-                             if(drUpd[i]["Case Pack Quantity / Ea#"] != DBNull.Value && drUpd[i]["Case Pack Quantity / Ea#"].ToString() != "")
-                                 dr["cp_qty"] = drUpd[i]["Case Pack Quantity / Ea#"].ToString();
-                              */
+                            
 
                             try
                             {
-                                if (drUpd[i]["Case Pack Quantity / Ea#"] != DBNull.Value && drUpd[i]["Case Pack Quantity / Ea#"].ToString() != "")
-                                    dr["cp_qty"] = drUpd[i]["Case Pack Quantity / Ea#"].ToString();
+                                if (drUpd[i]["Case Pack Quantity / Each"] != DBNull.Value && drUpd[i]["Case Pack Quantity / Each"].ToString() != "")
+                                    dr["cp_qty"] = drUpd[i]["Case Pack Quantity / Each"].ToString();
                             }
                             catch { }
 
@@ -1649,43 +1640,20 @@ namespace GroGroup.Controllers
                             {
                                 dr["dist_ea"] = dist_ea;
                             }
-
-                            /*
-                            if(drUpd[i]["Drive Item Price / Ea#"] != DBNull.Value && drUpd[i]["Drive Item Price / Ea#"].ToString() != "")
-                                dr["driveitem"] = drUpd[i]["Drive Item Price / Ea#"].ToString();
-                                */
-
+                           
                             try
                             {
-                                if (drUpd[i]["Drive Item Price / Ea#"] != DBNull.Value && drUpd[i]["Drive Item Price / Ea#"].ToString() != "")
-                                    dr["driveitem"] = drUpd[i]["Drive Item Price / Ea#"].ToString();
+                                if (drUpd[i]["Hot Buy/Drive Item Price / Ea#"] != DBNull.Value && drUpd[i]["Hot Buy/Drive Item Price / Ea#"].ToString() != "")
+                                    dr["driveitem"] = drUpd[i]["Hot Buy/Drive Item Price / Ea#"].ToString();
 
                             }
                             catch { }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Full Case Price ea#"))
-                            {
-                                if (drUpd[i]["Full Case Price ea#"] != DBNull.Value && drUpd[i]["Full Case Price ea#"].ToString() != "")
-                                    dr["price_a"] = drUpd[i]["Full Case Price ea#"].ToString();
-                            }
-
-                            /*
                             if (PDSDS.Tables["PDS"].Columns.Contains("Price A - Distributor / Ea#"))
                             {
                                 if (drUpd[i]["Price A - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price A - Distributor / Ea#"].ToString() != "")
                                     dr["price_a"] = drUpd[i]["Price A - Distributor / Ea#"].ToString();
                             }
-                            */
-
-                            try
-                            {
-                                if (PDSDS.Tables["PDS"].Columns.Contains("Price A - Distributor / Ea#"))
-                                {
-                                    if (drUpd[i]["Price A - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price A - Distributor / Ea#"].ToString() != "")
-                                        dr["price_a"] = drUpd[i]["Price A - Distributor / Ea#"].ToString();
-                                }
-                            }
-                            catch { }
 
 
                             try
@@ -1726,7 +1694,7 @@ namespace GroGroup.Controllers
                             }
                             catch { }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Full Case Price"))
+                            /*if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Full Case Price"))
                             {
                                 if (drUpd[i]["Early Order Full Case Price"] != DBNull.Value && drUpd[i]["Early Order Full Case Price"].ToString() != "")
                                     dr["price_b"] = drUpd[i]["Early Order Full Case Price"].ToString();
@@ -1735,47 +1703,8 @@ namespace GroGroup.Controllers
                             {
                                 if (drUpd[i]["Early Order Broken Case Price"] != DBNull.Value && drUpd[i]["Early Order Broken Case Price"].ToString() != "")
                                     dr["price_d"] = drUpd[i]["Early Order Broken Case Price"].ToString();
-                            }
-
-                            /*
-
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price B - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price B - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price B - Distributor / Ea#"].ToString() != "")
-                                    dr["price_b"] = drUpd[i]["Price B - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price C - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price C - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price C - Distributor / Ea#"].ToString() != "")
-                                    dr["price_c"] = drUpd[i]["Price C - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Full Case Price"))
-                            {
-                                if (drUpd[i]["Early Order Full Case Price"] != DBNull.Value && drUpd[i]["Early Order Full Case Price"].ToString() != "")
-                                    dr["price_b"] = drUpd[i]["Early Order Full Case Price"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price D - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price D - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price D - Distributor / Ea#"].ToString() != "")
-                                    dr["price_d"] = drUpd[i]["Price D - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Broken Case Price"))
-                            {
-                                if (drUpd[i]["Early Order Broken Case Price"] != DBNull.Value && drUpd[i]["Early Order Broken Case Price"].ToString() != "")
-                                    dr["price_d"] = drUpd[i]["Early Order Broken Case Price"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price E - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price E - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price E - Distributor / Ea#"].ToString() != "")
-                                    dr["price_e"] = drUpd[i]["Price E - Distributor / Ea#"].ToString();
-                            }
-                            */
-
-                            /*
-                            if(drUpd[i]["Suggested Retail / Ea# "] != null && drUpd[i]["Suggested Retail / Ea# "].ToString().Trim() != "")
-                                dr["sugg_retl"] = drUpd[i]["Suggested Retail / Ea# "].ToString();
-                                */
+                            }*/
+                            
 
                             try
                             {
@@ -1786,10 +1715,7 @@ namespace GroGroup.Controllers
                             {
 
                             }
-                            /*
-                            if (drUpd[i]["Suggested Dealer / Ea# "] != null && drUpd[i]["Suggested Dealer / Ea# "].ToString().Trim() != "")
-                                dr["sugg_deal"] = drUpd[i]["Suggested Dealer / Ea# "].ToString();
-*/
+                            
 
                             try
                             {
@@ -1799,10 +1725,7 @@ namespace GroGroup.Controllers
                             catch { }
 
                             try
-                            {
-                                /*
-                                if (drUpd[i]["Drop Ship Price / Ea#"] != null && drUpd[i]["Drop Ship Price / Ea#"].ToString().Trim() != "")
-                                    dr["dropship"] = drUpd[i]["Drop Ship Price / Ea#"].ToString();*/
+                            {                                
 
                                 if (drUpd[i]["Drop Ship Price / Ea#"] != null && drUpd[i]["Drop Ship Price / Ea#"].ToString().Trim() != "")
                                     dr["dropship"] = drUpd[i]["Drop Ship Price / Ea#"].ToString();
@@ -1811,22 +1734,12 @@ namespace GroGroup.Controllers
 
 
                             //==========================================================================  NEW COMMANDS APRIL'20 by bekingo@gmail.com
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Code #"))
+                            /*if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Code #"))
                             {
                                 if (drUpd[i]["Distributor Code #"] != DBNull.Value && drUpd[i]["Distributor Code #"].ToString() != "")
                                     dr["f01H_distCode"] = drUpd[i]["Distributor Code #"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack / Tier"))
-                            {
-                                if (drUpd[i]["Pack / Tier"] != DBNull.Value && drUpd[i]["Pack / Tier"].ToString() != "")
-                                    dr["f01M_packTier"] = drUpd[i]["Pack / Tier"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Tier / Pit"))
-                            {
-                                if (drUpd[i]["Tier / Pit"] != DBNull.Value && drUpd[i]["Tier / Pit"].ToString() != "")
-                                    dr["f01N_tierPit"] = drUpd[i]["Tier / Pit"].ToString();
-                            }
+                            }*/
+                            
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("Item Height - Each"))
                             {
@@ -1887,80 +1800,24 @@ namespace GroGroup.Controllers
                                     dr["f01AE_weightFeePurchasingUOM"] = drUpd[i]["Weight - Purchasing UOM"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Purchasing UOM Quantity"))
+                        
+                            if (PDSDS.Tables["PDS"].Columns.Contains("TI HI Bottom Layer # of Cases"))
                             {
-                                if (drUpd[i]["Purchasing UOM Quantity"] != DBNull.Value && drUpd[i]["Purchasing UOM Quantity"].ToString() != "")
-                                    dr["f01AF_purchasingUOMQty"] = drUpd[i]["Purchasing UOM Quantity"].ToString();
+                                if (drUpd[i]["TI HI Bottom Layer # of Cases"] != DBNull.Value && drUpd[i]["TI HI Bottom Layer # of Cases"].ToString() != "")
+                                    dr["f01AM_tihiBottomLayerQty"] = drUpd[i]["TI HI Bottom Layer # of Cases"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Purchasing Unit of Measure Code"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("TI HI # of layers "))
                             {
-                                if (drUpd[i]["Purchasing Unit of Measure Code"] != DBNull.Value && drUpd[i]["Purchasing Unit of Measure Code"].ToString() != "")
-                                    dr["f01AG_purchasingUOMCode"] = drUpd[i]["Purchasing Unit of Measure Code"].ToString();
+                                if (drUpd[i]["TI HI # of layers "] != DBNull.Value && drUpd[i]["TI HI # of layers "].ToString() != "")
+                                    dr["f01AN_tihiRowHighQty1"] = drUpd[i]["TI HI # of layers "].ToString();
                             }
+                            
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack Cu Ft"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("EPA Registration Number"))
                             {
-                                if (drUpd[i]["Pack Cu Ft"] != DBNull.Value && drUpd[i]["Pack Cu Ft"].ToString() != "")
-                                    dr["f01AH_packCuFt"] = drUpd[i]["Pack Cu Ft"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack Weight"))
-                            {
-                                if (drUpd[i]["Pack Weight"] != DBNull.Value && drUpd[i]["Pack Weight"].ToString() != "")
-                                    dr["f01AI_packWeight"] = drUpd[i]["Pack Weight"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack Width"))
-                            {
-                                if (drUpd[i]["Pack Width"] != DBNull.Value && drUpd[i]["Pack Width"].ToString() != "")
-                                    dr["f01AJ_packWidth"] = drUpd[i]["Pack Width"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack Depth"))
-                            {
-                                if (drUpd[i]["Pack Depth"] != DBNull.Value && drUpd[i]["Pack Depth"].ToString() != "")
-                                    dr["f01AK_packDepth"] = drUpd[i]["Pack Depth"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack Height"))
-                            {
-                                if (drUpd[i]["Pack Height"] != DBNull.Value && drUpd[i]["Pack Height"].ToString() != "")
-                                    dr["f01AL_packHeigth"] = drUpd[i]["Pack Height"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Ti Hi Bottom Layer Qty"))
-                            {
-                                if (drUpd[i]["Ti Hi Bottom Layer Qty"] != DBNull.Value && drUpd[i]["Ti Hi Bottom Layer Qty"].ToString() != "")
-                                    dr["f01AM_tihiBottomLayerQty"] = drUpd[i]["Ti Hi Bottom Layer Qty"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Ti Hi Row High Qty"))
-                            {
-                                if (drUpd[i]["Ti Hi Row High Qty"] != DBNull.Value && drUpd[i]["Ti Hi Row High Qty"].ToString() != "")
-                                    dr["f01AN_tihiRowHighQty1"] = drUpd[i]["Ti Hi Row High Qty"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Ti Hi Bottom UOM (cs or bg)"))
-                            {
-                                if (drUpd[i]["Ti Hi Bottom UOM (cs or bg)"] != DBNull.Value && drUpd[i]["Ti Hi Bottom UOM (cs or bg)"].ToString() != "")
-                                    dr["f01AO_tihiBottomLayerType"] = drUpd[i]["Ti Hi Bottom UOM (cs or bg)"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Pack/Tier"))
-                            {
-                                if (drUpd[i]["Pack/Tier"] != DBNull.Value && drUpd[i]["Pack/Tier"].ToString() != "")
-                                    dr["f01AP_packTier"] = drUpd[i]["Pack/Tier"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Tier/ PLT"))
-                            {
-                                if (drUpd[i]["Tier/ PLT"] != DBNull.Value && drUpd[i]["Tier/ PLT"].ToString() != "")
-                                    dr["f01AQ_tierPLT"] = drUpd[i]["Tier/ PLT"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("EPA Regulation Code/Registratiom #"))
-                            {
-                                if (drUpd[i]["EPA Regulation Code/Registratiom #"] != DBNull.Value && drUpd[i]["EPA Regulation Code/Registratiom #"].ToString() != "")
-                                    dr["f01AR_epaRegulationCode"] = drUpd[i]["EPA Regulation Code/Registratiom #"].ToString();
+                                if (drUpd[i]["EPA Registration Number"] != DBNull.Value && drUpd[i]["EPA Registration Number"].ToString() != "")
+                                    dr["f01AR_epaRegulationCode"] = drUpd[i]["EPA Registration Number"].ToString();
                             }
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("Insurance Class Code"))
@@ -2000,10 +1857,10 @@ namespace GroGroup.Controllers
                                     dr["f01AX_frtClass"] = drUpd[i]["FRT Class"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("US Harmonized Tariff Number"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("US Harmonized Tariff Schedule or HTS Number"))
                             {
-                                if (drUpd[i]["US Harmonized Tariff Number"] != DBNull.Value && drUpd[i]["US Harmonized Tariff Number"].ToString() != "")
-                                    dr["f01AY_usHamonizedTariffNbr"] = drUpd[i]["US Harmonized Tariff Number"].ToString();
+                                if (drUpd[i]["US Harmonized Tariff Schedule or HTS Number"] != DBNull.Value && drUpd[i]["US Harmonized Tariff Schedule or HTS Number"].ToString() != "")
+                                    dr["f01AY_usHamonizedTariffNbr"] = drUpd[i]["US Harmonized Tariff Schedule or HTS Number"].ToString();
                             }
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("HTS 301 Tariff Number"))
@@ -2012,18 +1869,18 @@ namespace GroGroup.Controllers
                                     dr["f01AZ_hts301TariffNbr"] = drUpd[i]["HTS 301 Tariff Number"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("MSDS Document Date"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("SDS Document Date"))
                             {
-                                if (drUpd[i]["MSDS Document Date"] != DBNull.Value && drUpd[i]["MSDS Document Date"].ToString() != "")
-                                    dr["f01BA_msdsDocDate"] = drUpd[i]["MSDS Document Date"].ToString();
+                                if (drUpd[i]["SDS Document Date"] != DBNull.Value && drUpd[i]["SDS Document Date"].ToString() != "")
+                                    dr["f01BA_msdsDocDate"] = drUpd[i]["SDS Document Date"].ToString();
                             }
 
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("List Price"))
+                            /*if (PDSDS.Tables["PDS"].Columns.Contains("List Price"))
                             {
                                 if (drUpd[i]["List Price"] != DBNull.Value && drUpd[i]["List Price"].ToString() != "")
                                     dr["f01BD_listPrice"] = drUpd[i]["List Price"].ToString();
-                            }
+                            }*/
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("Dealer Drop Ship / EA"))
                             {
@@ -2043,20 +1900,16 @@ namespace GroGroup.Controllers
                                     dr["f01BJ_distributionDomesticFOB"] = drUpd[i]["Distributor Domestic FOB/EA"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Manufacturer Item Number_(If longer than 10 digits allowed in co"))
-                            {
-                                /*
-                                if (drUpd[i]["Manufacturer Item Number_(If longer than 10 digits allowed in co"] != DBNull.Value && drUpd[i]["Manufacturer Item Number_(If longer than 10 digits allowed in co"].ToString() != "")
-                                    dr["f01BR_mItemNbr"] = drUpd[i]["Manufacturer Item Number_(If longer than 10 digits allowed in co"].ToString();
-                                 */
+                            /*if (PDSDS.Tables["PDS"].Columns.Contains("Manufacturer Item Number_(If longer than 10 digits allowed in co"))
+                            {                                
                                 if (drUpd[i][69] != DBNull.Value && drUpd[i][69].ToString() != "")
                                     dr["f01BR_mItemNbr"] = drUpd[i][69].ToString();
-                            }
+                            }*/
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("EAN Number  (13 digits)"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("EAN Number (13 digits)"))
                             {
-                                if (drUpd[i]["EAN Number  (13 digits)"] != DBNull.Value && drUpd[i]["EAN Number  (13 digits)"].ToString() != "")
-                                    dr["f01BS_eanNbr"] = drUpd[i]["EAN Number  (13 digits)"].ToString();
+                                if (drUpd[i]["EAN Number (13 digits)"] != DBNull.Value && drUpd[i]["EAN Number (13 digits)"].ToString() != "")
+                                    dr["f01BS_eanNbr"] = drUpd[i]["EAN Number (13 digits)"].ToString();
                             }
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("Image Available Y/N"))
@@ -2070,46 +1923,47 @@ namespace GroGroup.Controllers
                                 if (drUpd[i]["Image Format PDF/Jpeg Format"] != DBNull.Value && drUpd[i]["Image Format PDF/Jpeg Format"].ToString() != "")
                                     dr["f01BV_imageFormat"] = drUpd[i]["Image Format PDF/Jpeg Format"].ToString();
                             }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Product Shelf Life"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Product Shelf Life (has Expiration Date) Yes or NO"))
                             {
-                                if (drUpd[i]["Product Shelf Life"] != DBNull.Value && drUpd[i]["Product Shelf Life"].ToString() != "")
-                                    dr["f01BW_productShelfLine"] = drUpd[i]["Product Shelf Life"].ToString();
+                                if (drUpd[i]["Product Shelf Life (has Expiration Date) Yes or NO"] != DBNull.Value && drUpd[i]["Product Shelf Life (has Expiration Date) Yes or NO"].ToString() != "")
+                                    dr["f01BW_productShelfLine"] = drUpd[i]["Product Shelf Life (has Expiration Date) Yes or NO"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("P-65"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("P-65 Y/N"))
                             {
-                                if (drUpd[i]["P-65"] != DBNull.Value && drUpd[i]["P-65"].ToString() != "")
-                                    dr["f01BX_P65"] = drUpd[i]["P-65"].ToString();
+                                if (drUpd[i]["P-65 Y/N"] != DBNull.Value && drUpd[i]["P-65 Y/N"].ToString() != "")
+                                    dr["f01BX_P65"] = drUpd[i]["P-65 Y/N"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("SDS"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("SDS Required enter \"Y\" if required"))
                             {
-                                if (drUpd[i]["SDS"] != DBNull.Value && drUpd[i]["SDS"].ToString() != "")
-                                    dr["f01BY_SDS"] = drUpd[i]["SDS"].ToString();
+                                if (drUpd[i]["SDS Required enter \"Y\" if required"] != DBNull.Value && drUpd[i]["SDS Required enter \"Y\" if required"].ToString() != "")
+                                    dr["f01BY_SDS"] = drUpd[i]["SDS Required enter \"Y\" if required"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("WA Haz"))
+                            /*if (PDSDS.Tables["PDS"].Columns.Contains("WA Haz"))
                             {
                                 if (drUpd[i]["WA Haz"] != DBNull.Value && drUpd[i]["WA Haz"].ToString() != "")
                                     dr["f01BZ_waHaz"] = drUpd[i]["WA Haz"].ToString();
+                            }*/
+                            
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("California Registration Number"))
+                            {
+                                if (drUpd[i]["California Registration Number"] != DBNull.Value && drUpd[i]["California Registration Number"].ToString() != "")
+                                    dr["f01CA_califirniaRegNbr"] = drUpd[i]["California Registration Number"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Califirnia Reg #"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Product Description 2 (Overflow from Column L) (30 Characters)"))
                             {
-                                if (drUpd[i]["WA Haz"] != DBNull.Value && drUpd[i]["Califirnia Reg #"].ToString() != "")
-                                    dr["f01CA_califirniaRegNbr"] = drUpd[i]["Califirnia Reg #"].ToString();
+                                if (drUpd[i]["Product Description 2 (Overflow from Column L) (30 Characters)"] != DBNull.Value && drUpd[i]["Product Description 2 (Overflow from Column L) (30 Characters)"].ToString() != "")
+                                    dr["f01J_prodcDesc2"] = drUpd[i]["Product Description 2 (Overflow from Column L) (30 Characters)"].ToString();
                             }
 
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Product Description (Overflow from Column J)"))
+                            if (PDSDS.Tables["PDS"].Columns.Contains("SDS Required enter \"Y\" if required"))
                             {
-                                if (drUpd[i]["Product Description (Overflow from Column J)"] != DBNull.Value && drUpd[i]["Product Description (Overflow from Column J)"].ToString() != "")
-                                    dr["f01J_prodcDesc2"] = drUpd[i]["Product Description (Overflow from Column J)"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("SDS Required (IF YES ONLY)"))
-                            {
-                                if (drUpd[i]["SDS Required (IF YES ONLY)"] != DBNull.Value && drUpd[i]["SDS Required (IF YES ONLY)"].ToString() != "")
-                                    dr["h_msdsreq"] = drUpd[i]["SDS Required (IF YES ONLY)"].ToString().Equals("Y");
+                                if (drUpd[i]["SDS Required enter \"Y\" if required"] != DBNull.Value && drUpd[i]["SDS Required enter \"Y\" if required"].ToString() != "")
+                                    dr["h_msdsreq"] = drUpd[i]["SDS Required enter \"Y\" if required"].ToString().Equals("Y");
                             }
 
                             if (PDSDS.Tables["PDS"].Columns.Contains("Search Keywords"))
@@ -2118,6 +1972,279 @@ namespace GroGroup.Controllers
                                     dr["f01BW_SearchKw"] = drUpd[i]["Search Keywords"].ToString();
                             }
 
+                            //==========START Add New fields by Rado ====================//
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Manufacturer -  from Home Tab (NEW)"))
+                            {
+                                if (drUpd[i]["Manufacturer -  from Home Tab (NEW)"] != DBNull.Value && drUpd[i]["Manufacturer -  from Home Tab (NEW)"].ToString() != "")
+                                    dr["manufacturer_from_home_tab"] = drUpd[i]["Manufacturer -  from Home Tab (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Item Number - To be completed by Distributor (NEW)"))
+                            {
+                                if (drUpd[i]["Distributor Item Number - To be completed by Distributor (NEW)"] != DBNull.Value && drUpd[i]["Distributor Item Number - To be completed by Distributor (NEW)"].ToString() != "")
+                                    dr["distributor_item_number"] = drUpd[i]["Distributor Item Number - To be completed by Distributor (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Replacement Manufacturer Item # for Discontinued Item# If No Rep"))
+                            {
+                                if (drUpd[i]["Replacement Manufacturer Item # for Discontinued Item# If No Rep"] != DBNull.Value && drUpd[i]["Replacement Manufacturer Item # for Discontinued Item# If No Rep"].ToString() != "")
+                                    dr["replacement_manufacturer_item_for_discontinued"] = drUpd[i]["Replacement Manufacturer Item # for Discontinued Item# If No Rep"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Validate # of characters - NEW (15)"))
+                            {
+                                if (drUpd[i]["Validate # of characters - NEW (15)"] != DBNull.Value && drUpd[i]["Validate # of characters - NEW (15)"].ToString() != "")
+                                    dr["validate_of_characters_15"] = drUpd[i]["Validate # of characters - NEW (15)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Validate UPC # - NEW"))
+                            {
+                                if (drUpd[i]["Validate UPC # - NEW"] != DBNull.Value && drUpd[i]["Validate UPC # - NEW"].ToString() != "")
+                                    dr["validate_upc"] = drUpd[i]["Validate UPC # - NEW"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Validate UPC # - NEW"))
+                            {
+                                if (drUpd[i]["Identify Duplicate UPC - NEW"] != DBNull.Value && drUpd[i]["Identify Duplicate UPC - NEW"].ToString() != "")
+                                    dr["identify_duplicate_upc"] = drUpd[i]["Identify Duplicate UPC - NEW"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Marketing Copy#com (250 Characters)"))
+                            {
+                                if (drUpd[i]["Marketing Copy#com (250 Characters)"] != DBNull.Value && drUpd[i]["Marketing Copy#com (250 Characters)"].ToString() != "")
+                                    dr["marketing_copy_com"] = drUpd[i]["Marketing Copy#com (250 Characters)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Validate # of characters - NEW (250)"))
+                            {
+                                if (drUpd[i]["Validate # of characters - NEW (250)"] != DBNull.Value && drUpd[i]["Validate # of characters - NEW (250)"].ToString() != "")
+                                    dr["validate_of_characters_250"] = drUpd[i]["Validate # of characters - NEW (250)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Purchase Unit of Measure (2 Characters- lower case) (NEW)"))
+                            {
+                                if (drUpd[i]["Purchase Unit of Measure (2 Characters- lower case) (NEW)"] != DBNull.Value && drUpd[i]["Purchase Unit of Measure (2 Characters- lower case) (NEW)"].ToString() != "")
+                                    dr["purchase_unit_of_measure"] = drUpd[i]["Purchase Unit of Measure (2 Characters- lower case) (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Minimum Order Qty - (New)"))
+                            {
+                                if (drUpd[i]["Minimum Order Qty - (New)"] != DBNull.Value && drUpd[i]["Minimum Order Qty - (New)"].ToString() != "")
+                                    dr["minimum_order_qty"] = drUpd[i]["Minimum Order Qty - (New)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Minimum Order Qty Unit of Measure (2 Characters - lower case) (N"))
+                            {
+                                if (drUpd[i]["Minimum Order Qty Unit of Measure (2 Characters - lower case) (N"] != DBNull.Value && drUpd[i]["Minimum Order Qty Unit of Measure (2 Characters - lower case) (N"].ToString() != "")
+                                    dr["minimum_order_qty_unit_of_measure"] = drUpd[i]["Minimum Order Qty Unit of Measure (2 Characters - lower case) (N"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Inner Pack Quantity - Each (NEW)"))
+                            {
+                                if (drUpd[i]["Inner Pack Quantity - Each (NEW)"] != DBNull.Value && drUpd[i]["Inner Pack Quantity - Each (NEW)"].ToString() != "")
+                                    dr["inner_pack_quantity_each"] = drUpd[i]["Inner Pack Quantity - Each (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Last Distributor Price Provided to GG (NEW)"))
+                            {
+                                if (drUpd[i]["Last Distributor Price Provided to GG (NEW)"] != DBNull.Value && drUpd[i]["Last Distributor Price Provided to GG (NEW)"].ToString() != "")
+                                    dr["last_distributor_price_provided_to_gg"] = drUpd[i]["Last Distributor Price Provided to GG (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("$ Change - Calculated Field (NEW)"))
+                            {
+                                if (drUpd[i]["$ Change - Calculated Field (NEW)"] != DBNull.Value && drUpd[i]["$ Change - Calculated Field (NEW)"].ToString() != "")
+                                    dr["dollar_change_calculated"] = drUpd[i]["$ Change - Calculated Field (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains(" % Change - Calculated Field (NEW)"))
+                            {
+                                if (drUpd[i][" % Change - Calculated Field (NEW)"] != DBNull.Value && drUpd[i][" % Change - Calculated Field (NEW)"].ToString() != "")
+                                    dr["percent_change_calculated"] = drUpd[i][" % Change - Calculated Field (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Last Price Change Date (NEW)"))
+                            {
+                                if (drUpd[i]["Last Price Change Date (NEW)"] != DBNull.Value && drUpd[i]["Last Price Change Date (NEW)"].ToString() != "")
+                                    dr["last_price_change_date"] = drUpd[i]["Last Price Change Date (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Last Dropship Price Provided to GG (NEW)"))
+                            {
+                                if (drUpd[i]["Last Dropship Price Provided to GG (NEW)"] != DBNull.Value && drUpd[i]["Last Dropship Price Provided to GG (NEW)"].ToString() != "")
+                                    dr["last_dropship_price_provided_to_gg"] = drUpd[i]["Last Dropship Price Provided to GG (NEW)"].ToString();
+                            }
+
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Show Price / EA - NEW"))
+                            {
+                                if (drUpd[i]["Show Price / EA - NEW"] != DBNull.Value && drUpd[i]["Show Price / EA - NEW"].ToString() != "")
+                                    dr["show_price_ea"] = drUpd[i]["Show Price / EA - NEW"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Line Item Discount % (NEW)"))
+                            {
+                                if (drUpd[i]["Line Item Discount % (NEW)"] != DBNull.Value && drUpd[i]["Line Item Discount % (NEW)"].ToString() != "")
+                                    dr["line_Item_discount"] = drUpd[i]["Line Item Discount % (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Line Item Price (NEW)"))
+                            {
+                                if (drUpd[i]["Line Item Price (NEW)"] != DBNull.Value && drUpd[i]["Line Item Price (NEW)"].ToString() != "")
+                                    dr["line_item_price"] = drUpd[i]["Line Item Price (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Price F - Distributor / Ea#"))
+                            {
+                                if (drUpd[i]["Price F - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price F - Distributor / Ea#"].ToString() != "")
+                                    dr["price_f_distributor_ea"] = drUpd[i]["Price F - Distributor / Ea#"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Price G - Distributor / Ea#"))
+                            {
+                                if (drUpd[i]["Price G - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price G - Distributor / Ea#"].ToString() != "")
+                                    dr["price_g_distributor_ea"] = drUpd[i]["Price G - Distributor / Ea#"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("P-65 Item Labeled     Y/N (NEW)"))
+                            {
+                                if (drUpd[i]["P-65 Item Labeled     Y/N (NEW)"] != DBNull.Value && drUpd[i]["P-65 Item Labeled     Y/N (NEW)"].ToString() != "")
+                                    dr["p_65_item_labeled"] = drUpd[i]["P-65 Item Labeled     Y/N (NEW)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Washington Hazard Tax - Yes if paid by Distributor -Blank if not"))
+                            {
+                                if (drUpd[i]["Washington Hazard Tax - Yes if paid by Distributor -Blank if not"] != DBNull.Value && drUpd[i]["Washington Hazard Tax - Yes if paid by Distributor -Blank if not"].ToString() != "")
+                                    dr["washington_hazard_tax"] = drUpd[i]["Washington Hazard Tax - Yes if paid by Distributor -Blank if not"].ToString();
+                            }
+
+                            
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Mfr# Item number (COMP)"))
+                            {
+                                if (drUpd[i]["Mfr# Item number (COMP)"] != DBNull.Value && drUpd[i]["Mfr# Item number (COMP)"].ToString() != "")
+                                    dr["mfr_item_number_comp"] = drUpd[i]["Mfr# Item number (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("UPC number  (COMP)"))
+                            {
+                                if (drUpd[i]["UPC number  (COMP)"] != DBNull.Value && drUpd[i]["UPC number  (COMP)"].ToString() != "")
+                                    dr["upc_number_comp"] = drUpd[i]["UPC number  (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("SCC-14/Case Code (COMP)"))
+                            {
+                                if (drUpd[i]["SCC-14/Case Code (COMP)"] != DBNull.Value && drUpd[i]["SCC-14/Case Code (COMP)"].ToString() != "")
+                                    dr["scc_14_case_code_comp"] = drUpd[i]["SCC-14/Case Code (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Description 1 (COMP)"))
+                            {
+                                if (drUpd[i]["Description 1 (COMP)"] != DBNull.Value && drUpd[i]["Description 1 (COMP)"].ToString() != "")
+                                    dr["description_1_comp"] = drUpd[i]["Description 1 (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Description 2 (COMP)"))
+                            {
+                                if (drUpd[i]["Description 2 (COMP)"] != DBNull.Value && drUpd[i]["Description 2 (COMP)"].ToString() != "")
+                                    dr["description_2_comp"] = drUpd[i]["Description 2 (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Price / Ea#   (COMP)"))
+                            {
+                                if (drUpd[i]["Distributor Price / Ea#   (COMP)"] != DBNull.Value && drUpd[i]["Distributor Price / Ea#   (COMP)"].ToString() != "")
+                                    dr["distributor_price_ea_comp"] = drUpd[i]["Distributor Price / Ea#   (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Drop Ship Price / Ea# (COMP)"))
+                            {
+                                if (drUpd[i]["Drop Ship Price / Ea# (COMP)"] != DBNull.Value && drUpd[i]["Drop Ship Price / Ea# (COMP)"].ToString() != "")
+                                    dr["drop_ship_price_ea_comp"] = drUpd[i]["Drop Ship Price / Ea# (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Import FOB/EA (COMP)"))
+                            {
+                                if (drUpd[i]["Distributor Import FOB/EA (COMP)"] != DBNull.Value && drUpd[i]["Distributor Import FOB/EA (COMP)"].ToString() != "")
+                                    dr["distributor_import_fob_ea_comp"] = drUpd[i]["Distributor Import FOB/EA (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Distributor Domestic FOB/EA (COMP)"))
+                            {
+                                if (drUpd[i]["Distributor Domestic FOB/EA (COMP)"] != DBNull.Value && drUpd[i]["Distributor Domestic FOB/EA (COMP)"].ToString() != "")
+                                    dr["distributor_domestic_fob_ea_comp"] = drUpd[i]["Distributor Domestic FOB/EA (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Suggested Retail Price / Ea#  (COMP)"))
+                            {
+                                if (drUpd[i]["Suggested Retail Price / Ea#  (COMP)"] != DBNull.Value && drUpd[i]["Suggested Retail Price / Ea#  (COMP)"].ToString() != "")
+                                    dr["suggested_retail_price_ea_comp"] = drUpd[i]["Suggested Retail Price / Ea#  (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Price Effective Date  (COMP)"))
+                            {
+                                if (drUpd[i]["Price Effective Date  (COMP)"] != DBNull.Value && drUpd[i]["Price Effective Date  (COMP)"].ToString() != "")
+                                    dr["price_effective_date_comp"] = drUpd[i]["Price Effective Date  (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Quantity / Ea# (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Quantity / Ea# (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Quantity / Ea# (COMP)"].ToString() != "")
+                                    dr["case_pack_quantity_ea_comp"] = drUpd[i]["Case Pack Quantity / Ea# (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Weight / lbs# (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Weight / lbs# (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Weight / lbs# (COMP)"].ToString() != "")
+                                    dr["case_pack_weight_lbs_comp"] = drUpd[i]["Case Pack Weight / lbs# (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Height / inches (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Height / inches (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Height / inches (COMP)"].ToString() != "")
+                                    dr["case_pack_height_inches_comp"] = drUpd[i]["Case Pack Height / inches (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Width / inches (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Width / inches (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Width / inches (COMP)"].ToString() != "")
+                                    dr["case_pack_width_inches_comp"] = drUpd[i]["Case Pack Width / inches (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Depth / inches (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Depth / inches (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Depth / inches (COMP)"].ToString() != "")
+                                    dr["case_pack_depth_inches_comp"] = drUpd[i]["Case Pack Depth / inches (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("TI HI Bottom Layer Case Qty (COMP)"))
+                            {
+                                if (drUpd[i]["TI HI Bottom Layer Case Qty (COMP)"] != DBNull.Value && drUpd[i]["TI HI Bottom Layer Case Qty (COMP)"].ToString() != "")
+                                    dr["ti_hi_bottom_layer_case_qty_comp"] = drUpd[i]["TI HI Bottom Layer Case Qty (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("TI HI Row High Case Qty (COMP)"))
+                            {
+                                if (drUpd[i]["TI HI Row High Case Qty (COMP)"] != DBNull.Value && drUpd[i]["TI HI Row High Case Qty (COMP)"].ToString() != "")
+                                    dr["ti_hi_row_high_case_qty_comp"] = drUpd[i]["TI HI Row High Case Qty (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Cases on Pallet Quantity (COMP)"))
+                            {
+                                if (drUpd[i]["Cases on Pallet Quantity (COMP)"] != DBNull.Value && drUpd[i]["Cases on Pallet Quantity (COMP)"].ToString() != "")
+                                    dr["cases_on_pallet_quantity_comp"] = drUpd[i]["Cases on Pallet Quantity (COMP)"].ToString();
+                            }
+
+                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Pack Cubic / Feet (COMP)"))
+                            {
+                                if (drUpd[i]["Case Pack Cubic / Feet (COMP)"] != DBNull.Value && drUpd[i]["Case Pack Cubic / Feet (COMP)"].ToString() != "")
+                                    dr["case_pack_cubic_feet_comp"] = drUpd[i]["Case Pack Cubic / Feet (COMP)"].ToString();
+                            }
+
+
+
+                            //==========END   Add New fields by Rado ====================//
+
                             if (IsValidUPC)
                                 lds.Tables[0].Rows.Add(dr);
                             else
@@ -2128,8 +2255,6 @@ namespace GroGroup.Controllers
                                 ErrRow["mfgupc"] = mfgupc;
                                 ErrRow["mfgtitle"] = mfgtitle;
                                 ErrRow["Type"] = sType;
-                                ErrRow["Price"] = PriceChange;
-                                ErrRow["Other"] = OtherChange;
                                 ErrRow["mfgitem"] = mfgitem;
                                 ErrRow["upc"] = upcno;
                                 ErrRow["CaseUCC"] = CaseUCC;
@@ -2193,332 +2318,6 @@ namespace GroGroup.Controllers
             return Json(new { Items = fileName, Msg = ErrMsg, upccnt = upccnt, chkerr = chkerr });
 
         }
-
-        public ActionResult ProcessPDS_ORIGINAL(string fileName)
-        {
-            string ErrMsg = "", upcno = "";
-            int rcnt = 0, upccnt = 0, chkerr = 0;
-            DataSet PDSDS = new DataSet();
-            DataSet lds = new DataSet();
-            DataSet dsErr = new DataSet();
-            SqlDataAdapter daErr = new SqlDataAdapter();
-            SqlDataAdapter lda = new SqlDataAdapter();
-            try
-            {
-                PDSDS = ConvertPDSExcelFileToDataset(fileName);
-                if (PDSDS != null && PDSDS.Tables.Count > 0 && PDSDS.Tables[0] != null)
-                    PDSDS.Tables[0].TableName = "PDS";
-                else
-                {
-                    ErrMsg = "PDS sheet not found";
-                    return Json(new { Items = fileName, Msg = ErrMsg, upccnt = upccnt, chkerr = chkerr });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { Items = fileName, Msg = ex.Message, upccnt = upccnt, chkerr = chkerr });
-            }
-
-            try
-            {
-                if ((PDSDS != null && PDSDS.Tables["PDS"] != null && PDSDS.Tables["PDS"].Rows.Count > 0))
-                {
-                    string SQL = "select * from temppds where 1=0";
-                    Sconn = new SqlConnection(sqlcon);
-                    Ggrp.Getdataset(SQL, "tblUpdPDS", lds, ref lda, Sconn);
-
-                    SQL = "select top 0 '' as Status, '' as mfgname,'' as mfgupc,'' as mfgtitle,'' as Type,'' as Price,'' as Other,pds.mfgitem,pds.upc,'' as CaseUCC,prod_desc,dist_ea,eff_date from pds left join product p on pds.upc=p.upc left join mfg m on p.mfgno=m.mfgno where pds.mfgno is not null";
-                    Sconn = new SqlConnection(sqlcon);
-                    Ggrp.Getdataset(SQL, "PDSErr", dsErr, ref daErr, Sconn);
-
-                    DataRow[] drUpd, drmfgupc;
-                    //drUpd = PDSDS.Tables["PDS"].Select("isnull([UPC number  (Normally 12 Digits)],'') <> ''");
-
-                    drmfgupc = PDSDS.Tables["PDS"].Select("isnull([UPC number  (Normally 12 Digits)],'') <> ''");
-                    string toponemfgupc = "";
-                    if (drmfgupc != null && drmfgupc.Length > 0)
-                    {
-                        toponemfgupc = drmfgupc[0]["UPC number  (Normally 12 Digits)"].ToString().Trim();
-                        toponemfgupc = toponemfgupc.Substring(0, 6);
-                    }
-
-                    string TypeColName = "";
-                    if (PDSDS.Tables["PDS"].Columns.Contains("Item Type  Required"))
-                        drUpd = PDSDS.Tables["PDS"].Select("isnull([Item Type  Required],'') <> ''");
-                    else
-                    {
-                        TypeColName = PDSDS.Tables["PDS"].Columns[0].ToString();
-                        drUpd = PDSDS.Tables["PDS"].Select("isnull([" + TypeColName + "],'') <> ''");
-                    }
-
-                    for (int i = 0; i < drUpd.Length; i++)
-                    {
-                        //if (drUpd[i]["UPC number  (Normally 12 Digits)"] != DBNull.Value && drUpd[i]["UPC number  (Normally 12 Digits)"].ToString().Trim() != "")
-                        {
-                            rcnt = i;
-                            bool IsValidUPC = true;
-                            upcno = "";
-                            //upcno = drUpd[i]["UPC number  (Normally 12 Digits)"].ToString().Trim();
-                            upcno = (drUpd[i]["UPC number  (Normally 12 Digits)"] != null && drUpd[i]["UPC number  (Normally 12 Digits)"].ToString().Trim() != "") ? drUpd[i]["UPC number  (Normally 12 Digits)"].ToString().Trim() : "";
-
-                            string checkdigit = "", Status = "";
-                            if (!string.IsNullOrEmpty(upcno))
-                            {
-                                string lastdigit = upcno.Substring(upcno.Length - 1, 1);
-                                checkdigit = Ggrp.ValidateUPC(upcno);
-                                if (checkdigit != lastdigit)
-                                {
-                                    if (checkdigit.Trim().ToUpper() == "INVALID")
-                                        Status = "Invalid character found in UPC";
-                                    else
-                                        Status = "UPC Check digit failed. Correct check digit is " + checkdigit;
-                                    IsValidUPC = false;
-                                }
-                            }
-                            else
-                            {
-                                Status = "UPC is missing";
-                                IsValidUPC = false;
-                            }
-
-                            DataRow dr;
-                            dr = lds.Tables[0].NewRow();
-                            string mfgno = "", oldmfgno = "", mfgname = "", mfgupc = "", mfgtitle = "", mfgitem = "", sType = "", PriceChange = "", OtherChange = "", CaseUCC = "", prod_desc = "", dist_ea = "", eff_date = "";
-
-                            if (!string.IsNullOrEmpty(upcno))
-                            {
-                                //Get MfgNo
-                                SQL = "select m.MfgNo,m.company,m.Oldmfgno from product p left join mfg m on m.MfgNo=p.MfgNo where upc='" + upcno.Replace("'", "''") + "'";
-                                Ggrp.Getdataset(SQL, "TblMfgNo", ds, ref da, Sconn);
-
-                                if (ds != null && ds.Tables["TblMfgNo"] != null && ds.Tables["TblMfgNo"].Rows.Count > 0)
-                                {
-                                    mfgno = ds.Tables["TblMfgNo"].Rows[0]["MfgNo"].ToString();
-                                    oldmfgno = ds.Tables["TblMfgNo"].Rows[0]["oldmfgno"].ToString();
-                                    mfgname = ds.Tables["TblMfgNo"].Rows[0]["company"].ToString();
-                                }
-                            }
-
-                            if (!string.IsNullOrEmpty(upcno))
-                                mfgupc = upcno.Substring(0, 6);
-                            else
-                            {
-                                mfgupc = toponemfgupc;
-                            }
-                            SQL = "select m.company,mu.* from mfgupc mu left join mfg m on mu.mfgno=m.mfgno where ltrim(rtrim(mu.mfgupc))='" + mfgupc + "'";
-                            Ggrp.Getdataset(SQL, "TblMfgUpc", ds, ref da, Sconn);
-
-                            if (ds.Tables["TblMfgUpc"] != null && ds.Tables["TblMfgUpc"].Rows.Count > 0)
-                            {
-                                if (string.IsNullOrEmpty(mfgname))
-                                    mfgname = ds.Tables["TblMfgUpc"].Rows[0]["company"].ToString();
-
-                                if (string.IsNullOrEmpty(mfgno))
-                                    mfgno = ds.Tables["TblMfgUpc"].Rows[0]["Mfgno"].ToString();
-
-                                if (string.IsNullOrEmpty(oldmfgno))
-                                    oldmfgno = ds.Tables["TblMfgUpc"].Rows[0]["oldmfgno"].ToString();
-                            }
-
-                            if (!string.IsNullOrEmpty(mfgno))
-                                dr["mfgno"] = mfgno;
-
-                            dr["oldmfgno"] = oldmfgno;
-                            dr["mfgname"] = mfgname;
-
-                            mfgtitle = mfgname.Trim() + "   " + mfgupc.Trim();
-
-                            mfgitem = drUpd[i]["Mfr# Item number"].ToString();
-                            dr["mfgitem"] = mfgitem;
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Item Type  Required"))
-                            {
-                                sType = drUpd[i]["Item Type  Required"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price Changes"))
-                            {
-                                PriceChange = drUpd[i]["Price Changes"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Other Changes"))
-                            {
-                                OtherChange = drUpd[i]["Other Changes"].ToString();
-                            }
-
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Case Code Number"))
-                            {
-                                CaseUCC = drUpd[i]["Case Code Number"].ToString();
-                            }
-
-                            prod_desc = drUpd[i][" Product Description (Inc# color, size, unit meas#)"].ToString();
-                            dr["prod_desc"] = prod_desc;
-                            dr["upc"] = upcno;
-
-                            if (drUpd[i]["Price Effective Date  Required"] != DBNull.Value && drUpd[i]["Price Effective Date  Required"].ToString() != "")
-                                eff_date = drUpd[i]["Price Effective Date  Required"].ToString();
-
-                            if (!string.IsNullOrEmpty(eff_date))
-                            {
-                                dr["eff_date"] = eff_date;
-                            }
-
-                            if (drUpd[i]["Case Pack Cubic / Feet"] != DBNull.Value && drUpd[i]["Case Pack Cubic / Feet"].ToString() != "")
-                                dr["cp_cube"] = drUpd[i]["Case Pack Cubic / Feet"].ToString();
-                            if (drUpd[i]["Case Pack Weight / lbs"] != DBNull.Value && drUpd[i]["Case Pack Weight / lbs"].ToString() != "")
-                                dr["cp_wt"] = drUpd[i]["Case Pack Weight / lbs"].ToString();
-                            if (drUpd[i]["Case Pallet Quantity / cases "] != DBNull.Value && drUpd[i]["Case Pallet Quantity / cases "].ToString() != "")
-                                dr["cp_palqty"] = drUpd[i]["Case Pallet Quantity / cases "].ToString();
-                            if (drUpd[i]["Case Pack Height / inches "] != DBNull.Value && drUpd[i]["Case Pack Height / inches "].ToString() != "")
-                                dr["cp_ht"] = drUpd[i]["Case Pack Height / inches "].ToString();
-                            if (drUpd[i]["Case Pack Width / inches"] != DBNull.Value && drUpd[i]["Case Pack Width / inches"].ToString() != "")
-                                dr["cp_wth"] = drUpd[i]["Case Pack Width / inches"].ToString();
-                            if (drUpd[i]["Case Pack Depth / inches "] != DBNull.Value && drUpd[i]["Case Pack Depth / inches "].ToString() != "")
-                                dr["cp_dpth"] = drUpd[i]["Case Pack Depth / inches "].ToString();
-                            if (drUpd[i]["Master Carton Quantity "] != DBNull.Value && drUpd[i]["Master Carton Quantity "].ToString() != "")
-                                dr["mp_qty"] = drUpd[i]["Master Carton Quantity "].ToString();
-                            dr["h_importc"] = drUpd[i]["Country of Origin  Required if not USA"].ToString();
-                            dr["country"] = drUpd[i]["Country of Origin  Required if not USA"].ToString();
-                            if (drUpd[i]["Case Pack Quantity / Ea#"] != DBNull.Value && drUpd[i]["Case Pack Quantity / Ea#"].ToString() != "")
-                                dr["cp_qty"] = drUpd[i]["Case Pack Quantity / Ea#"].ToString();
-
-                            if (drUpd[i]["Distributor / Ea#   Required"] != DBNull.Value && drUpd[i]["Distributor / Ea#   Required"].ToString() != "")
-                                dist_ea = drUpd[i]["Distributor / Ea#   Required"].ToString();
-
-                            if (!string.IsNullOrEmpty(dist_ea))
-                            {
-                                dr["dist_ea"] = dist_ea;
-                            }
-
-                            if (drUpd[i]["Drive Item Price / Ea."] != DBNull.Value && drUpd[i]["Drive Item Price / Ea."].ToString() != "")
-                                dr["driveitem"] = drUpd[i]["Drive Item Price / Ea."].ToString();
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price A - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price A - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price A - Distributor / Ea#"].ToString() != "")
-                                    dr["price_a"] = drUpd[i]["Price A - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Full Case Price ea#"))
-                            {
-                                if (drUpd[i]["Full Case Price ea#"] != DBNull.Value && drUpd[i]["Full Case Price ea#"].ToString() != "")
-                                    dr["price_a"] = drUpd[i]["Full Case Price ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price B - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price B - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price B - Distributor / Ea#"].ToString() != "")
-                                    dr["price_b"] = drUpd[i]["Price B - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price C - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price C - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price C - Distributor / Ea#"].ToString() != "")
-                                    dr["price_c"] = drUpd[i]["Price C - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Full Case Price"))
-                            {
-                                if (drUpd[i]["Early Order Full Case Price"] != DBNull.Value && drUpd[i]["Early Order Full Case Price"].ToString() != "")
-                                    dr["price_b"] = drUpd[i]["Early Order Full Case Price"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price D - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price D - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price D - Distributor / Ea#"].ToString() != "")
-                                    dr["price_d"] = drUpd[i]["Price D - Distributor / Ea#"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Early Order Broken Case Price"))
-                            {
-                                if (drUpd[i]["Early Order Broken Case Price"] != DBNull.Value && drUpd[i]["Early Order Broken Case Price"].ToString() != "")
-                                    dr["price_d"] = drUpd[i]["Early Order Broken Case Price"].ToString();
-                            }
-                            if (PDSDS.Tables["PDS"].Columns.Contains("Price E - Distributor / Ea#"))
-                            {
-                                if (drUpd[i]["Price E - Distributor / Ea#"] != DBNull.Value && drUpd[i]["Price E - Distributor / Ea#"].ToString() != "")
-                                    dr["price_e"] = drUpd[i]["Price E - Distributor / Ea#"].ToString();
-                            }
-
-                            if (drUpd[i]["Suggested Retail / Ea# "] != null && drUpd[i]["Suggested Retail / Ea# "].ToString().Trim() != "")
-                                dr["sugg_retl"] = drUpd[i]["Suggested Retail / Ea# "].ToString();
-                            if (drUpd[i]["Suggested Dealer / Ea# "] != null && drUpd[i]["Suggested Dealer / Ea# "].ToString().Trim() != "")
-                                dr["sugg_deal"] = drUpd[i]["Suggested Dealer / Ea# "].ToString();
-
-                            if (drUpd[i]["Drop Ship Price / Ea#"] != null && drUpd[i]["Drop Ship Price / Ea#"].ToString().Trim() != "")
-                                dr["dropship"] = drUpd[i]["Drop Ship Price / Ea#"].ToString();
-
-                            if (IsValidUPC)
-                                lds.Tables[0].Rows.Add(dr);
-                            else
-                            {
-                                DataRow ErrRow;
-                                ErrRow = dsErr.Tables[0].NewRow();
-                                ErrRow["mfgname"] = mfgname;
-                                ErrRow["mfgupc"] = mfgupc;
-                                ErrRow["mfgtitle"] = mfgtitle;
-                                ErrRow["Type"] = sType;
-                                ErrRow["Price"] = PriceChange;
-                                ErrRow["Other"] = OtherChange;
-                                ErrRow["mfgitem"] = mfgitem;
-                                ErrRow["upc"] = upcno;
-                                ErrRow["CaseUCC"] = CaseUCC;
-                                ErrRow["prod_desc"] = prod_desc;
-                                if (!string.IsNullOrEmpty(dist_ea))
-                                {
-                                    ErrRow["dist_ea"] = dist_ea;
-                                }
-                                //ErrRow["dist_ea"] = dist_ea;
-                                //ErrRow["eff_date"] = eff_date;
-                                if (!string.IsNullOrEmpty(eff_date))
-                                {
-                                    ErrRow["eff_date"] = eff_date;
-                                }
-                                ErrRow["Status"] = Status;
-                                dsErr.Tables[0].Rows.Add(ErrRow);
-                            }
-
-                            upcno = "";
-                        }
-                    }
-
-                    if (dsErr.Tables[0] != null && dsErr.Tables[0].Rows.Count > 0)
-                    {
-                        chkerr = dsErr.Tables[0].Rows.Count;
-                        Session["PDSErr"] = dsErr;
-                    }
-
-                    if (lds.Tables[0] != null && lds.Tables[0].Rows.Count > 0)
-                    {
-                        upccnt = lds.Tables[0].Rows.Count;
-                        Session["UpdPDS"] = lds;
-                        //string tSQL = "delete from temppds";
-                        //Ggrp.Execute(tSQL, Sconn);
-                        //lda.Update(lds, "tblUpdPDS");
-
-                        //tSQL = "exec STP_Util_PDSUpdate ''";
-                        //Ggrp.Getdataset(tSQL, "tblpds", ds, ref da, Sconn);
-                    }
-                    else
-                    {
-                        ErrMsg = "No records found";
-                    }
-                }
-                else
-                {
-                    ErrMsg = "No records found";
-                }
-            }
-            catch (Exception ex)
-            {
-                string ErrDesc = "";
-                if (!string.IsNullOrEmpty(upcno))
-                    ErrDesc = "UPC: " + upcno + "<br/>" + ex.Message;
-                else
-                    ErrDesc = ex.Message;
-
-                return Json(new { Items = fileName, Msg = ErrDesc, upccnt = upccnt, chkerr = chkerr });
-            }
-
-            return Json(new { Items = fileName, Msg = ErrMsg, upccnt = upccnt, chkerr = chkerr });
-
-        }
-
-
-
 
 
         public ActionResult UpdatePDSFromTemp(string fileName)
@@ -2549,10 +2348,10 @@ namespace GroGroup.Controllers
                 if (lds.Tables[0] != null && lds.Tables[0].Rows.Count > 0)
                 {
                     string tSQL = "delete from temppds";
-                    Ggrp.Execute(tSQL, Sconn);
+                    Ggrp.Execute(tSQL, Sconn);                    
                     lda.Update(lds, "tPDS");
 
-                    tSQL = "exec STP_Util_PDSUpdate_V2 ''";
+                    tSQL = "exec STP_Util_PDSUpdate_V3 ''";
                     Ggrp.Getdataset(tSQL, "tblpds", ds, ref da, Sconn);
                 }
 
